@@ -6,7 +6,7 @@ import { baseServerErrorFactory } from '@/errors/base-server-error'
  */
 export const AssemblyInvalidTokenError = baseServerErrorFactory(
   'AssemblyInvalidTokenError',
-  'Token is invalid',
+  'Custom app token is invalid',
   status.UNAUTHORIZED,
 )
 
@@ -15,7 +15,7 @@ export const AssemblyInvalidTokenError = baseServerErrorFactory(
  */
 export const AssemblyNoTokenError = baseServerErrorFactory(
   'AssemblyNoTokenError',
-  'Token is not provided',
+  'Custom app token is not provided',
   status.BAD_REQUEST,
 )
 
