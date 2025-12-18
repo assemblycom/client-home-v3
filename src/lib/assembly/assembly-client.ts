@@ -1,8 +1,5 @@
 import 'server-only'
 
-import type { CopilotAPI as SDK } from 'copilot-node-sdk'
-import { copilotApi } from 'copilot-node-sdk'
-import env from '@/config/env'
 import {
   type AssemblyListArgs,
   type ClientCreateRequest,
@@ -24,11 +21,14 @@ import {
   InternalUserTokenSchema,
   type WorkspaceResponse,
   WorkspaceResponseSchema,
-} from '@/lib/assembly/types'
+} from '@assembly/types'
+import type { CopilotAPI as SDK } from 'copilot-node-sdk'
+import { copilotApi } from 'copilot-node-sdk'
+import env from '@/config/env'
 import logger from '@/lib/logger'
 import { withRetry } from '@/lib/with-retry'
 
-export class AssemblyClient {
+export default class AssemblyClient {
   readonly assembly: SDK
 
   constructor(
