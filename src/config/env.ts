@@ -8,5 +8,4 @@ const EnvSchema = z.object({
   VERCEL_ENV: z.string().optional(),
 })
 
-const env = process.env.GITHUB_ACTIONS === 'true' ? {} : EnvSchema.parse(process.env)
-export default env
+export default EnvSchema.parse(process.env)

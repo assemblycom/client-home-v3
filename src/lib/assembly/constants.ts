@@ -1,0 +1,1 @@
+export const MAX_FETCH_ASSEMBLY_RESOURCES = 10_000
