@@ -1,9 +1,9 @@
+import { AssemblyInvalidTokenError, AssemblyNoTokenError } from '@assembly/errors'
 import httpStatus from 'http-status'
 import { type NextRequest, NextResponse } from 'next/server'
 import z, { ZodError } from 'zod'
 import APIError from '@/errors/api-error'
 import type { StatusableError } from '@/errors/base-server-error'
-import { AssemblyInvalidTokenError, AssemblyNoTokenError } from '@/lib/assembly/errors'
 import logger from '@/lib/logger'
 
 type RequestHandler = (req: NextRequest, params: unknown) => Promise<NextResponse>
@@ -39,25 +39,25 @@ export const withErrorHandler = (handler: RequestHandler): RequestHandler => {
       if (error instanceof ZodError) {
         status = httpStatus.UNPROCESSABLE_ENTITY
         message = z.prettifyError(error)
-        logger.error('ZodError: ', z.prettifyError(error), '\n', error)
+        logger.error('ZodError :: ', z.prettifyError(error), '\n', error)
       } else if (error instanceof AssemblyNoTokenError) {
-        logger.warn('Found no token:', error)
+        logger.warn('AssemblyNoTokenError :: Found no token for request')
         return NextResponse.json({ error: error.message }, { status: httpStatus.UNAUTHORIZED })
       } else if (error instanceof AssemblyInvalidTokenError) {
-        logger.warn('Found invalid token:', error)
+        logger.warn('AssemblyInvalidTokenError :: Found invalid token for request')
         return NextResponse.json({ error: error.message }, { status: httpStatus.UNAUTHORIZED })
       } else if (error instanceof APIError) {
         status = error.status
         message = error.message || message
         if (status !== httpStatus.OK) {
-          logger.error('APIError:', error.error || error.message)
+          logger.error('APIError :: ', error.error || error.message)
         }
       } else if (error instanceof Error && error.message) {
         message = error.message
-        logger.error('Error:', error)
+        logger.error('Error :: ', error)
       } else {
         message = 'Something went wrong'
-        logger.error(error)
+        logger.error('Unhandled error :: ', error)
       }
 
       return NextResponse.json({ error: message }, { status })

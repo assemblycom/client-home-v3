@@ -52,11 +52,11 @@ export default abstract class BaseUser {
       throw new AssemblyConnectionError()
     }
 
-    const payload = schema.parse(await assembly.getTokenPayload())
-    if (!payload) {
+    const payload = schema.safeParse(await assembly.getTokenPayload())
+    if (!payload.success) {
       throw new AssemblyInvalidTokenError()
     }
 
-    return { token: tokenParsed.data, payload, assembly }
+    return { token: tokenParsed.data, payload: payload.data, assembly }
   }
 }
