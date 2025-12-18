@@ -28,6 +28,7 @@
     "react": "19.2.1",
     "react-dom": "19.2.1",
     "require-in-the-middle": "^8.0.1",
+    "uuid": "^13.0.0",
     "zod": "^4.2.1"
   },
   "devDependencies": {
