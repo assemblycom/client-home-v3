@@ -18,3 +18,12 @@ export const AssemblyNoTokenError = baseServerErrorFactory(
   'Token is not provided',
   status.BAD_REQUEST,
 )
+
+/**
+ * Raised when connection cannot be made to the Assembly API
+ */
+export const AssemblyConnectionError = baseServerErrorFactory(
+  'AssemblyConnectionError',
+  'Unable to connect to Assembly API',
+  status.SERVICE_UNAVAILABLE,
+)
