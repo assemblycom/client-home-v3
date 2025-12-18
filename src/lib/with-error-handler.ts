@@ -2,6 +2,7 @@ import { AssemblyInvalidTokenError, AssemblyNoTokenError } from '@assembly/error
 import httpStatus from 'http-status'
 import { type NextRequest, NextResponse } from 'next/server'
 import z, { ZodError } from 'zod'
+import env from '@/config/env'
 import APIError from '@/errors/api-error'
 import type { StatusableError } from '@/errors/base-server-error'
 import logger from '@/lib/logger'
@@ -32,23 +33,26 @@ export const withErrorHandler = (handler: RequestHandler): RequestHandler => {
       return await handler(req, params)
     } catch (error: unknown) {
       // Build error API response and log error
+      let message: string | undefined
       let status: number = (error as StatusableError).status || httpStatus.INTERNAL_SERVER_ERROR
-      let message = 'Something went wrong'
 
       // Build a proper response based on the type of Error encountered
       if (error instanceof ZodError) {
         status = httpStatus.UNPROCESSABLE_ENTITY
-        message = z.prettifyError(error)
+        // Prevent leaking internal details of app
+        message = env.VERCEL_ENV === 'production' ? 'Failed to parse request body' : z.prettifyError(error)
         logger.error('ZodError :: ', z.prettifyError(error), '\n', error)
       } else if (error instanceof AssemblyNoTokenError) {
         logger.warn('AssemblyNoTokenError :: Found no token for request')
-        return NextResponse.json({ error: error.message }, { status: httpStatus.UNAUTHORIZED })
+        message = error.message
+        status = httpStatus.UNAUTHORIZED
       } else if (error instanceof AssemblyInvalidTokenError) {
         logger.warn('AssemblyInvalidTokenError :: Found invalid token for request')
-        return NextResponse.json({ error: error.message }, { status: httpStatus.UNAUTHORIZED })
+        message = error.message
+        status = httpStatus.UNAUTHORIZED
       } else if (error instanceof APIError) {
         status = error.status
-        message = error.message || message
+        message = error.message
         if (status !== httpStatus.OK) {
           logger.error('APIError :: ', error.error || error.message)
         }
