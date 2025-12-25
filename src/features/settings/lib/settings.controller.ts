@@ -1,0 +1,26 @@
+import AssemblyClient from '@assembly/assembly-client'
+import { authenticateHeaders } from '@auth/lib/authenticate'
+import DrizzleSettingsRepository from '@settings/lib/settings.repository'
+import SettingsService from '@settings/lib/settings.service'
+import { type NextRequest, NextResponse } from 'next/server'
+import type { ControllerResponse } from '@/app/types'
+import db from '@/db'
+
+/**
+ * Retrieves settings for the current workspace
+ */
+export const getSettings = async (req: NextRequest): Promise<NextResponse<ControllerResponse>> => {
+  const user = authenticateHeaders(req.headers)
+
+  // Wire dependencies for settings service
+  const assembly = new AssemblyClient(user.token)
+  const settingsRepository = new DrizzleSettingsRepository(db)
+  const settingsService = new SettingsService(user, assembly, settingsRepository)
+
+  const settings = await settingsService.getForWorkspace()
+
+  return NextResponse.json({
+    message: 'Settings retrieved successfully',
+    data: settings,
+  })
+}
