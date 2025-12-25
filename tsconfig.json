@@ -21,8 +21,10 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
+      "@auth/*": ["./src/features/auth/*"],
       "@assembly/*": ["./src/lib/assembly/*"],
-      "@auth/*": ["./src/lib/auth/*"]
+      "@media/*": ["./src/features/media/*"],
+      "@settings/*": ["./src/features/settings/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".next/dev/types/**/*.ts", "**/*.mts"],

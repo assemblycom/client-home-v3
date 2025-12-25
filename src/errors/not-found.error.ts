@@ -1,5 +1,5 @@
 import httpStatus from 'http-status'
-import { baseServerErrorFactory } from './base-server.error'
+import { baseServerErrorFactory } from '@/errors/base-server.error'
 
 /**
  * Raised when no token is provided for server component / action / API route
