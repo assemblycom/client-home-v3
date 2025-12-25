@@ -49,7 +49,7 @@ class SettingsDrizzleRepository extends BaseDrizzleRepository implements Setting
     const [result] = await this.db
       .insert(settings)
       .values({ ...payload, workspaceId })
-      .onConflictDoNothing({ target: settings.workspaceId })
+      .onConflictDoNothing()
       .returning()
     return result
   }
