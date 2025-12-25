@@ -12,18 +12,17 @@ export type AssemblyListArgs = {
 }
 
 // Schema for decrypted Assembly tokens
-export const InternalUserTokenSchema = z.object({
-  internalUserId: z.uuid(),
-  workspaceId: z.string().min(1),
-})
-export type InternalUserToken = z.infer<typeof InternalUserTokenSchema>
-
-export const ClientTokenSchema = z.object({
-  clientId: z.uuid(),
-  companyId: z.uuid(),
-  workspaceId: z.string().min(1),
-})
-export type ClientToken = z.infer<typeof ClientTokenSchema>
+export const TokenSchema = z
+  .object({
+    internalUserId: z.uuid().optional(),
+    clientId: z.uuid().optional(),
+    companyId: z.uuid().optional(),
+    workspaceId: z.string().min(1),
+  })
+  .refine((val) => val.internalUserId || (val.clientId && val.companyId), {
+    message: 'Token must contain either internalUserId, or clientId and companyId',
+  })
+export type Token = z.infer<typeof TokenSchema>
 
 // Response schema for `/workspace` endpoint
 export const WorkspaceResponseSchema = z.object({

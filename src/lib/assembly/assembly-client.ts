@@ -6,8 +6,6 @@ import {
   type ClientResponse,
   ClientResponseSchema,
   ClientsResponseSchema,
-  type ClientToken,
-  ClientTokenSchema,
   type CompaniesResponse,
   CompaniesResponseSchema,
   type CompanyCreateRequest,
@@ -17,8 +15,8 @@ import {
   InternalUserResponseSchema,
   type InternalUsersResponse,
   InternalUsersResponseSchema,
-  type InternalUserToken,
-  InternalUserTokenSchema,
+  type Token,
+  TokenSchema,
   type WorkspaceResponse,
   WorkspaceResponseSchema,
 } from '@assembly/types'
@@ -45,7 +43,7 @@ export default class AssemblyClient {
   // NOTE: Any normal API method name implements `withRetry` with default config
 
   // Get Token Payload from assembly request token
-  async _getTokenPayload(): Promise<InternalUserToken | ClientToken | null> {
+  async _getTokenPayload(): Promise<Token | null> {
     const getTokenPayload = this.assembly.getTokenPayload
     if (!getTokenPayload) {
       logger.error(`AssemblyClient#getTokenPayload | Could not parse token payload for token ${this.token}`)
@@ -53,12 +51,7 @@ export default class AssemblyClient {
     }
 
     const tokenPayload = await getTokenPayload()
-    if (tokenPayload.internalUserId) {
-      return InternalUserTokenSchema.parse(tokenPayload)
-    } else if (tokenPayload.clientId) {
-      return ClientTokenSchema.parse(tokenPayload)
-    }
-    return null
+    return TokenSchema.parse(tokenPayload)
   }
 
   async _getWorkspace(): Promise<WorkspaceResponse> {
