@@ -13,11 +13,15 @@ export default class SettingsService extends BaseService {
     super(user, assembly)
   }
 
-  getForWorkspace() {
-    return this.repository.getOne(this.user.workspaceId)
-  }
-
-  createForWorkspace(payload: SettingsCreatePayload) {
-    return this.repository.createOne(this.user.workspaceId, payload)
+  async getForWorkspace() {
+    let settings = await this.repository.getOne(this.user.workspaceId)
+    if (!settings) {
+      settings = await this.repository.createOne(this.user.workspaceId, {
+        content: '',
+        backgroundColor: '#fff',
+        bannerImageId: null,
+      })
+    }
+    return settings
   }
 }
