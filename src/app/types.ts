@@ -1,7 +1,9 @@
 /**
  * Standardize the response format returned by the API
  */
-export type ControllerResponse = {
-  message: string
+export type APIResponse = {
+  message?: string
   data?: object
+  page?: number
+  pageSize?: number
 }
