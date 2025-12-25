@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid'
 export const getSanitizedHeaders = (req: NextRequest) => {
   const sanitizedHeaders = new Headers(req.headers)
 
-  sanitizedHeaders.delete('authorization')
+  sanitizedHeaders.delete('x-custom-app-token')
   sanitizedHeaders.delete('x-internal-user-id')
   sanitizedHeaders.delete('x-client-id')
   sanitizedHeaders.delete('x-company-id')
