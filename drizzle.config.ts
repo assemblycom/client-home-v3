@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 export default defineConfig({
   dialect: 'postgresql',
-  schema: './src/db/schema',
+  schema: './src/features/**/*.schema.ts',
   out: './src/db/migrations',
   dbCredentials: {
     url: z.url({ error: 'Please provide a valid DATABASE_URL' }).parse(process.env.DATABASE_URL),
