@@ -1,12 +1,11 @@
 import { AssemblyNoTokenError } from '@assembly/errors'
-import ClientUser from '@assembly/models/client-user.model'
-import InternalUser from '@assembly/models/internal-user.model'
+import { authenticateToken } from '@auth/lib/authenticate'
+import { getSanitizedHeaders } from '@auth/lib/utils'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import authorizedRoutes from '@/lib/auth/authorized-routes'
-import { getSanitizedHeaders } from '@/lib/auth/utils'
+import { authorizedRoutes } from '@/app/routes'
+import { NotFoundError } from '@/errors/not-found.error'
 import { withErrorHandler } from '@/lib/with-error-handler'
-import { NotFoundError } from './errors/not-found.error'
 
 /**
  * Application proxy that handles authentication and authorization for internal and client users
@@ -14,16 +13,16 @@ import { NotFoundError } from './errors/not-found.error'
 export const proxy = withErrorHandler(async (req: NextRequest) => {
   const pathname = req.nextUrl.pathname
 
+  const headers = getSanitizedHeaders(req)
+
   // Handle public routes
   if (authorizedRoutes.public.includes(pathname)) {
-    return NextResponse.next()
+    return NextResponse.next({ headers })
   }
 
   const isInternal = authorizedRoutes.internalUsers.includes(pathname)
   const isClient = authorizedRoutes.clientUsers.includes(pathname)
 
-  // If the route isn't one we protect, don't block it here.
-  // Let Next handle it (including returning 404 for non-existent routes).
   if (!isInternal && !isClient) {
     throw new NotFoundError()
   }
@@ -33,32 +32,18 @@ export const proxy = withErrorHandler(async (req: NextRequest) => {
     throw new AssemblyNoTokenError()
   }
 
-  const headers = getSanitizedHeaders(req)
+  const tokenPayload = await authenticateToken(token)
 
-  // Handle IU routes
-  if (isInternal) {
-    const internalUser = await InternalUser.authenticate(token)
-    return NextResponse.next({
-      headers: {
-        ...headers,
-        'x-internal-user-id': internalUser.internalUserId,
-        'x-workspace-id': internalUser.workspaceId,
-      },
-    })
-  }
-
-  // Handle CU routes
-  else {
-    const client = await ClientUser.authenticate(token)
-    return NextResponse.next({
-      headers: {
-        ...headers,
-        'x-client-id': client.clientId,
-        'x-company-id': client.companyId,
-        'x-workspace-id': client.workspaceId,
-      },
-    })
-  }
+  return NextResponse.next({
+    headers: {
+      ...headers,
+      'x-custom-app-token': token,
+      'x-internal-user-id': tokenPayload.internalUserId,
+      'x-client-id': tokenPayload.clientId,
+      'x-company-id': tokenPayload.companyId,
+      'x-workspace-id': tokenPayload.workspaceId,
+    },
+  })
 })
 
 export const config = {
