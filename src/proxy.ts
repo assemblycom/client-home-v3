@@ -3,7 +3,7 @@ import { authenticateToken } from '@auth/lib/authenticate'
 import { getSanitizedHeaders } from '@auth/lib/utils'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import { authorizedRoutes } from '@/app/routes'
+import { authorizedRoutes, type HttpMethod, type RouteRule } from '@/app/routes'
 import { NotFoundError } from '@/errors/not-found.error'
 import { withErrorHandler } from '@/lib/with-error-handler'
 import { AuthenticatedAPIHeaders } from './app/types'
@@ -12,17 +12,15 @@ import { AuthenticatedAPIHeaders } from './app/types'
  * Application proxy that handles authentication and authorization for internal and client users
  */
 export const proxy = withErrorHandler(async (req: NextRequest) => {
-  const pathname = req.nextUrl.pathname
-
   const headers = getSanitizedHeaders(req)
 
   // Handle public routes
-  if (authorizedRoutes.public.includes(pathname)) {
+  if (isAuthorized(authorizedRoutes.public, req)) {
     return NextResponse.next({ headers })
   }
 
-  const isInternal = authorizedRoutes.internalUsers.includes(pathname)
-  const isClient = authorizedRoutes.clientUsers.includes(pathname)
+  const isInternal = isAuthorized(authorizedRoutes.internalUsers, req)
+  const isClient = isAuthorized(authorizedRoutes.clientUsers, req)
 
   if (!isInternal && !isClient) {
     throw new NotFoundError()
@@ -50,4 +48,17 @@ export const proxy = withErrorHandler(async (req: NextRequest) => {
 export const config = {
   // Run middleware on all routes except Next internals and static files
   matcher: '/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)',
+}
+
+// --- Helpers ---
+
+function matches(rule: RouteRule, pathname: string, method: string) {
+  if (typeof rule === 'string') return rule === pathname
+  if (rule.path !== pathname) return false
+  if (!rule.methods) return true
+  return rule.methods.includes(method as HttpMethod)
+}
+
+function isAuthorized(rules: RouteRule[], req: NextRequest) {
+  return rules.some((r) => matches(r, req.nextUrl.pathname, req.method))
 }
