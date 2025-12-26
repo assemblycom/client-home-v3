@@ -6,7 +6,7 @@ import { baseServerErrorFactory } from '@/errors/base-server.error'
  */
 export const AssemblyInvalidTokenError = baseServerErrorFactory(
   'AssemblyInvalidTokenError',
-  'Custom app token is invalid',
+  'Failed to authenticate Assembly with provided token',
   status.UNAUTHORIZED,
 )
 
