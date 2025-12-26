@@ -73,26 +73,9 @@ export const withErrorHandler = (handler: RequestHandler): RequestHandler => {
       if (req.nextUrl.pathname.includes('/api') || req.nextUrl.pathname.includes('/cron')) {
         return NextResponse.json({ error: message }, { status })
       } else {
-        return new NextResponse(buildErrorPage(status, message), {
-          status,
-          headers: { 'Content-Type': 'text/html' },
-        })
+        // Let NextJS' error boundary handle this
+        return NextResponse.next()
       }
     }
   }
-}
-
-function buildErrorPage(status: number, message: string) {
-  return `
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <title>Error</title>
-      </head>
-      <body style="padding-top: 12px; padding-bottom: 12px; padding-left: 24px; padding-right: 24px;">
-        <div style="font-family:sans-serif;font-size: 20px; font-weight: bold; color: #333; padding-bottom:8px;">Error ${status}</div>
-        <div style="font-family:sans-serif;font-size: 14px; color: #666;">${message}</div>
-      </body>
-    </html>
-`
 }
