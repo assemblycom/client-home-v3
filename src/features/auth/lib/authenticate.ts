@@ -2,6 +2,7 @@ import AssemblyClient from '@assembly/assembly-client'
 import { AssemblyInvalidTokenError, AssemblyNoTokenError } from '@assembly/errors'
 import type { User } from '@auth/lib/user.entity'
 import z from 'zod'
+import { AuthenticatedAPIHeaders } from '@/app/types'
 import type { Token } from '@/lib/assembly/types'
 
 /**
@@ -29,7 +30,7 @@ export const authenticateToken = async (token?: unknown): Promise<Token> => {
 
 /**
  * Authenticates a Assembly user from request headers.
- * Uses: x-custom-app-token, x-internal-user-id, x-client-id, x-company-id, x-workspace-id
+ * Uses: AuthenticatedAPIHeaders
  * @param headers containing required token payload header
  * @returns {User} instance modeled from the token payload headers
  * @throws AssemblyInvalidTokenError when the token payload headers are invalid
@@ -37,11 +38,11 @@ export const authenticateToken = async (token?: unknown): Promise<Token> => {
 export const authenticateHeaders = (headers: Headers): User => {
   const get = (headerName: string) => headers.get(headerName) || undefined
 
-  const token = z.string().parse(get('x-custom-app-token'))
-  const internalUserId = get('x-internal-user-id')
-  const clientId = get('x-client-id')
-  const companyId = get('x-company-id')
-  const workspaceId = z.string().parse(get('x-workspace-id'))
+  const token = z.string().parse(get(AuthenticatedAPIHeaders.CUSTOM_APP_TOKEN))
+  const internalUserId = get(AuthenticatedAPIHeaders.INTERNAL_USER_ID)
+  const clientId = get(AuthenticatedAPIHeaders.CLIENT_ID)
+  const companyId = get(AuthenticatedAPIHeaders.COMPANY_ID)
+  const workspaceId = z.string().parse(get(AuthenticatedAPIHeaders.WORKSPACE_ID))
 
   if (!internalUserId && !clientId) {
     throw new AssemblyInvalidTokenError()

@@ -6,6 +6,7 @@ import { NextResponse } from 'next/server'
 import { authorizedRoutes } from '@/app/routes'
 import { NotFoundError } from '@/errors/not-found.error'
 import { withErrorHandler } from '@/lib/with-error-handler'
+import { AuthenticatedAPIHeaders } from './app/types'
 
 /**
  * Application proxy that handles authentication and authorization for internal and client users
@@ -37,11 +38,11 @@ export const proxy = withErrorHandler(async (req: NextRequest) => {
   return NextResponse.next({
     headers: {
       ...headers,
-      'x-custom-app-token': token,
-      'x-internal-user-id': tokenPayload.internalUserId,
-      'x-client-id': tokenPayload.clientId,
-      'x-company-id': tokenPayload.companyId,
-      'x-workspace-id': tokenPayload.workspaceId,
+      [AuthenticatedAPIHeaders.CUSTOM_APP_TOKEN]: token,
+      [AuthenticatedAPIHeaders.INTERNAL_USER_ID]: tokenPayload.internalUserId,
+      [AuthenticatedAPIHeaders.CLIENT_ID]: tokenPayload.clientId,
+      [AuthenticatedAPIHeaders.COMPANY_ID]: tokenPayload.companyId,
+      [AuthenticatedAPIHeaders.WORKSPACE_ID]: tokenPayload.workspaceId,
     },
   })
 })
