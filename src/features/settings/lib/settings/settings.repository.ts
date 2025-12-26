@@ -4,12 +4,13 @@ import type { SettingsCreatePayload } from '@settings/lib/types'
 import { eq } from 'drizzle-orm'
 import httpStatus from 'http-status'
 import APIError from '@/errors/api.error'
+import type { BaseRepository } from '@/lib/core/base.repository'
 import BaseDrizzleRepository from '@/lib/core/base-drizzle.repository'
 
 /**
  * Injectable settings repository interface
  */
-export interface SettingsRepository {
+export interface SettingsRepository extends BaseRepository {
   getOne(workspaceId: string): Promise<Settings | null>
   createOne(workspaceId: string, payload: SettingsCreatePayload): Promise<Settings>
 }

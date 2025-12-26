@@ -1,12 +1,12 @@
 import type AssemblyClient from '@assembly/assembly-client'
 import type { User } from '@auth/lib/user.entity'
+import type { ActionsRepository } from '@settings/lib/actions/actions.repository'
 import { defaultContent } from '@settings/lib/constants'
 import type SettingsRepository from '@settings/lib/settings/settings.repository'
+import type { SettingsWithActions } from '@settings/lib/settings-actions.entity'
+import type { SettingsActionsQueryRepository } from '@settings/lib/settings-actions.query.repository'
 import BaseService from '@/lib/core/base.service'
-import type { Actions } from './actions/actions.entity'
-import type { ActionsRepository } from './actions/actions.repository'
-import type { Settings } from './settings/settings.entity'
-import type { SettingsActionsQueryRepository } from './settings-actions.query.repository'
+import DBService from '@/lib/core/db.service'
 
 export default class SettingsActionsService extends BaseService {
   constructor(
@@ -19,23 +19,34 @@ export default class SettingsActionsService extends BaseService {
     super(user, assembly)
   }
 
-  async getForWorkspace(): Promise<Settings & { actions: Actions }> {
+  async getForWorkspace(): Promise<SettingsWithActions> {
     const settingsAndActions = await this.queryRepository.getOne(this.user.workspaceId)
 
     // Handle missing settings and/or actions
     if (!settingsAndActions?.settings || !settingsAndActions?.actions) {
-      const newSettings =
-        settingsAndActions?.settings ||
-        (await this.settingsRepository.createOne(this.user.workspaceId, {
-          content: defaultContent,
-          // We can add default banner img here later
-          // bannerImageId: null,
-        }))
-      const actions =
-        settingsAndActions?.actions ||
-        (await this.actionsRepository.createOne(this.user.workspaceId, { settingsId: newSettings.id }))
+      return await DBService.transaction(async (tx) => {
+        this.settingsRepository.setTx(tx)
+        this.actionsRepository.setTx(tx)
 
-      return { ...newSettings, actions }
+        try {
+          const newSettings =
+            settingsAndActions?.settings ||
+            (await this.settingsRepository.createOne(this.user.workspaceId, {
+              content: defaultContent,
+              // We can add default banner img here later
+              // bannerImageId: null,
+            }))
+          const actions =
+            settingsAndActions?.actions ||
+            (await this.actionsRepository.createOne(this.user.workspaceId, { settingsId: newSettings.id }))
+
+          return { ...newSettings, actions }
+        } finally {
+          // Prevent transaction leakage across requests
+          this.settingsRepository.unsetTx()
+          this.actionsRepository.unsetTx()
+        }
+      })
     }
 
     return { ...settingsAndActions.settings, actions: settingsAndActions.actions }

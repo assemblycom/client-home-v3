@@ -3,9 +3,10 @@ import { actions } from '@settings/lib/actions/actions.schema'
 import type { Settings } from '@settings/lib/settings/settings.entity'
 import { settings } from '@settings/lib/settings/settings.schema'
 import { eq } from 'drizzle-orm'
+import type { BaseRepository } from '@/lib/core/base.repository'
 import BaseDrizzleRepository from '@/lib/core/base-drizzle.repository'
 
-export interface SettingsActionsQueryRepository {
+export interface SettingsActionsQueryRepository extends BaseRepository {
   getOne(workspaceId: string): Promise<{ settings: Settings; actions: Actions | null } | null>
 }
 

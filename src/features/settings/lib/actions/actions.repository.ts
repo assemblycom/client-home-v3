@@ -4,12 +4,13 @@ import type { ActionsCreatePayload } from '@settings/lib/actions/types'
 import { eq } from 'drizzle-orm'
 import httpStatus from 'http-status'
 import APIError from '@/errors/api.error'
+import type { BaseRepository } from '@/lib/core/base.repository'
 import BaseDrizzleRepository from '@/lib/core/base-drizzle.repository'
 
 /**
  * Injectable settings repository interface
  */
-export interface ActionsRepository {
+export interface ActionsRepository extends BaseRepository {
   getOne(workspaceId: string): Promise<Actions | null>
   createOne(workspaceId: string, payload: ActionsCreatePayload): Promise<Actions>
 }
