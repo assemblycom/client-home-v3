@@ -1,4 +1,4 @@
-import { settings } from '@settings/lib/settings.schema'
+import { settings } from '@settings/lib/settings/settings.schema'
 import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'drizzle-zod'
 import type z from 'zod'
 
