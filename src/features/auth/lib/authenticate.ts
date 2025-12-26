@@ -26,7 +26,7 @@ const authenticateToken = async (token?: unknown): Promise<Token> => {
   const assembly = new AssemblyClient(tokenParsed.data)
   const tokenPayload = await assembly.getTokenPayload()
   if (!tokenPayload) {
-    throw new AssemblyInvalidTokenError('Unable to decode Copilot token payload')
+    throw new AssemblyInvalidTokenError()
   }
 
   return tokenPayload

@@ -25,6 +25,7 @@ import { copilotApi } from 'copilot-node-sdk'
 import env from '@/config/env'
 import logger from '@/lib/logger'
 import { withRetry } from '@/lib/with-retry'
+import { AssemblyInvalidTokenError } from './errors'
 
 export default class AssemblyClient {
   readonly assembly: SDK
@@ -33,10 +34,14 @@ export default class AssemblyClient {
     private readonly token: string,
     readonly customApiKey?: string,
   ) {
-    this.assembly = copilotApi({
-      apiKey: customApiKey ?? env.ASSEMBLY_API_KEY,
-      token,
-    })
+    try {
+      this.assembly = copilotApi({
+        apiKey: customApiKey ?? env.ASSEMBLY_API_KEY,
+        token,
+      })
+    } catch (_e) {
+      throw new AssemblyInvalidTokenError()
+    }
   }
 
   // NOTE: Any method prefixed with _ is a API method that doesn't implement retry & delay
