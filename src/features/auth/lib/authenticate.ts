@@ -1,8 +1,12 @@
 import AssemblyClient from '@assembly/assembly-client'
 import { AssemblyInvalidTokenError, AssemblyNoTokenError } from '@assembly/errors'
 import type { User } from '@auth/lib/user.entity'
+import { getSanitizedHeaders, isAuthorized } from '@auth/lib/utils'
+import { type NextRequest, NextResponse } from 'next/server'
 import z from 'zod'
+import { authorizedRoutes } from '@/app/routes'
 import { AuthenticatedAPIHeaders } from '@/app/types'
+import { NotFoundError } from '@/errors/not-found.error'
 import type { Token } from '@/lib/assembly/types'
 
 /**
@@ -13,7 +17,7 @@ import type { Token } from '@/lib/assembly/types'
  * @throws AssemblyInvalidTokenError when the token is invalid
  * @throws AssemblyConnectionError when unable to connect to Assembly API
  */
-export const authenticateToken = async (token?: unknown): Promise<Token> => {
+const authenticateToken = async (token?: unknown): Promise<Token> => {
   const tokenParsed = z.string().min(1).safeParse(token)
   if (!tokenParsed.success) {
     throw new AssemblyNoTokenError()
@@ -26,6 +30,40 @@ export const authenticateToken = async (token?: unknown): Promise<Token> => {
   }
 
   return tokenPayload
+}
+
+export const authenticateProxy = async (req: NextRequest): Promise<NextResponse> => {
+  const headers = getSanitizedHeaders(req)
+
+  // Handle public routes
+  if (isAuthorized(authorizedRoutes.public, req)) {
+    return NextResponse.next({ headers })
+  }
+
+  const isInternal = isAuthorized(authorizedRoutes.internalUsers, req)
+  const isClient = isAuthorized(authorizedRoutes.clientUsers, req)
+
+  if (!isInternal && !isClient) {
+    throw new NotFoundError()
+  }
+
+  const token = req.nextUrl.searchParams.get('token')
+  if (!token) {
+    throw new AssemblyNoTokenError()
+  }
+
+  const tokenPayload = await authenticateToken(token)
+
+  return NextResponse.next({
+    headers: {
+      ...headers,
+      [AuthenticatedAPIHeaders.CUSTOM_APP_TOKEN]: token,
+      [AuthenticatedAPIHeaders.INTERNAL_USER_ID]: tokenPayload.internalUserId,
+      [AuthenticatedAPIHeaders.CLIENT_ID]: tokenPayload.clientId,
+      [AuthenticatedAPIHeaders.COMPANY_ID]: tokenPayload.companyId,
+      [AuthenticatedAPIHeaders.WORKSPACE_ID]: tokenPayload.workspaceId,
+    },
+  })
 }
 
 /**
