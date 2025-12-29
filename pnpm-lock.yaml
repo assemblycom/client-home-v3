@@ -14,6 +14,9 @@ importers:
       bottleneck:
         specifier: ^2.19.5
         version: 2.19.5
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       copilot-design-system:
         specifier: ^2.3.2
         version: 2.3.2(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)
@@ -53,6 +56,9 @@ importers:
       require-in-the-middle:
         specifier: ^8.0.1
         version: 8.0.1
+      tailwind-merge:
+        specifier: ^3.4.0
+        version: 3.4.0
       uuid:
         specifier: ^13.0.0
         version: 13.0.0
@@ -3218,6 +3224,9 @@ packages:
   tailwind-merge@2.6.0:
     resolution: {integrity: sha512-P+Vu1qXfzediirmHOC3xKGAYeZtPcV9g76X+xg2FD4tYgR71ewMA35Y3sCz3zhiN/dwefRpJX0yBcgwi1fXNQA==}
 
+  tailwind-merge@3.4.0:
+    resolution: {integrity: sha512-uSaO4gnW+b3Y2aWoWfFpX62vn2sR3skfhbjsEnaBI81WD1wBLlHZe5sWf0AqjksNdYTbGBEd0UasQMT3SNV15g==}
+
   tailwindcss@4.1.18:
     resolution: {integrity: sha512-4+Z+0yiYyEtUVCScyfHCxOYP06L5Ne+JiHhY2IjR2KWMIWhJOYZKLSGZaP5HkZ8+bY0cxfzwDE5uOmzFXyIwxw==}
 
@@ -6280,6 +6289,8 @@ snapshots:
   supports-preserve-symlinks-flag@1.0.0: {}
 
   tailwind-merge@2.6.0: {}
+
+  tailwind-merge@3.4.0: {}
 
   tailwindcss@4.1.18: {}
 
