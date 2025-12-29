@@ -1,3 +1,14 @@
+import { Sidebar } from '@/features/editor/components/Sidebar'
+import { TopBar } from '@/features/editor/components/TopBar'
+
 export default function Home() {
-  return <div>Home Page</div>
+  return (
+    <div className="flex h-screen w-screen">
+      <div className="flex-1">
+        <TopBar />
+        <div className="h-[calc(100vh-57px)] bg-background-primary"></div>
+      </div>
+      <Sidebar className="w-1/3 max-w-[394]" />
+    </div>
+  )
 }
