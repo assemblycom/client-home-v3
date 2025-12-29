@@ -23,6 +23,7 @@
       "@/*": ["./src/*"],
       "@auth/*": ["./src/features/auth/*"],
       "@assembly/*": ["./src/lib/assembly/*"],
+      "@editor/*": ["./src/features/editor/*"],
       "@media/*": ["./src/features/media/*"],
       "@settings/*": ["./src/features/settings/*"]
     }
