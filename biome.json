@@ -72,6 +72,9 @@
   },
   "css": {
     "formatter": { "enabled": true },
-    "linter": { "enabled": false }
+    "linter": { "enabled": false },
+    "parser": {
+      "tailwindDirectives": true
+    }
   }
 }
