@@ -1,8 +1,8 @@
 'use client'
 
+import { usePrimaryCta } from '@app-bridge/hooks'
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import { usePrimaryCta } from '@/features/app-bridge/hooks'
 
 const content = ''
 

@@ -1,4 +1,4 @@
-import { Editor } from '@editor/components/Editor/Editor'
+import { Editor } from '@editor/components/Editor'
 import { Sidebar } from '@editor/components/Sidebar'
 import { TopBar } from '@editor/components/TopBar'
 
