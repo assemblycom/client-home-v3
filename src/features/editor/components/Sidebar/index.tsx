@@ -4,6 +4,7 @@ import { Actions } from '@/features/editor/components/Sidebar/Actions'
 import { BackgroundColor } from '@/features/editor/components/Sidebar/BackgroundColor'
 import { Banner } from '@/features/editor/components/Sidebar/Banner'
 import { DynamicFields } from '@/features/editor/components/Sidebar/DynamicFields'
+import { Segment } from '@/features/editor/components/Sidebar/Segment'
 
 interface SidebarProps {
   className?: string
@@ -25,6 +26,10 @@ const AccordionItems = [
   {
     title: 'Background color',
     content: <BackgroundColor />,
+  },
+  {
+    title: 'Segments',
+    content: <Segment />,
   },
 ]
 
