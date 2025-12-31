@@ -2,6 +2,7 @@ import { cn } from '@/components/utils'
 import { Accordion } from '@/features/editor/components/Sidebar/Accordion'
 import { Actions } from '@/features/editor/components/Sidebar/Actions'
 import { Banner } from '@/features/editor/components/Sidebar/Banner'
+import { DynamicFields } from '@/features/editor/components/Sidebar/DynamicFields'
 
 interface SidebarProps {
   className?: string
@@ -15,6 +16,10 @@ const AccordionItems = [
   {
     title: 'Actions',
     content: <Actions />,
+  },
+  {
+    title: 'Dynamic fields',
+    content: <DynamicFields />,
   },
 ]
 
