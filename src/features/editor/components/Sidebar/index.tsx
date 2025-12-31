@@ -1,6 +1,7 @@
 import { cn } from '@/components/utils'
 import { Accordion } from '@/features/editor/components/Sidebar/Accordion'
 import { Actions } from '@/features/editor/components/Sidebar/Actions'
+import { BackgroundColor } from '@/features/editor/components/Sidebar/BackgroundColor'
 import { Banner } from '@/features/editor/components/Sidebar/Banner'
 import { DynamicFields } from '@/features/editor/components/Sidebar/DynamicFields'
 
@@ -20,6 +21,10 @@ const AccordionItems = [
   {
     title: 'Dynamic fields',
     content: <DynamicFields />,
+  },
+  {
+    title: 'Background color',
+    content: <BackgroundColor />,
   },
 ]
 
