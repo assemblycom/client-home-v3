@@ -2,11 +2,14 @@
 
 import { usePrimaryCta, useSecondaryCta } from '@app-bridge/hooks'
 import { EditorContent, useEditor } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
+import { ClientHomeEditor } from './ClientHomeEditor'
 
-const content = ''
+interface EditorProps {
+  content: string
+  editable?: boolean
+}
 
-export const Editor = () => {
+export const Editor = ({ content, editable = true }: EditorProps) => {
   useSecondaryCta({
     label: 'Cancel',
     onClick: () => {
@@ -24,15 +27,15 @@ export const Editor = () => {
   })
 
   const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        heading: {
-          levels: [1, 2],
-        },
-      }),
-    ],
+    extensions: [ClientHomeEditor],
     content,
+    editable,
     immediatelyRender: false, // Avoid SSR & hydration issues
+    editorProps: {
+      attributes: {
+        class: 'bg-[#fff]', // TODO: Replace later with settings background color
+      },
+    },
   })
 
   return <EditorContent editor={editor} />
