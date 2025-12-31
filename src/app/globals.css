@@ -97,7 +97,7 @@ body {
 }
 
 .tiptap {
-  @apply bg-white px-6 py-5 text-text-primary;
+  @apply px-6 py-5 text-text-primary min-h-[calc(100vh-116px)];
 
   h1 {
     @apply text-xl leading-7 font-medium;
