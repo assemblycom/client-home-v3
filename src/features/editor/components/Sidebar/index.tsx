@@ -1,5 +1,6 @@
 import { cn } from '@/components/utils'
 import { Accordion } from '@/features/editor/components/Sidebar/Accordion'
+import { Actions } from '@/features/editor/components/Sidebar/Actions'
 import { Banner } from '@/features/editor/components/Sidebar/Banner'
 
 interface SidebarProps {
@@ -10,6 +11,10 @@ const AccordionItems = [
   {
     title: 'Banner',
     content: <Banner />,
+  },
+  {
+    title: 'Actions',
+    content: <Actions />,
   },
 ]
 
