@@ -34,7 +34,7 @@ export const Accordion = ({ title, content, className }: AccordionProps) => {
           isOpen ? 'my-2 grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0',
         )}
       >
-        <div className="overflow-hidden">{content}</div>
+        <div className={isOpen ? 'block' : 'hidden'}>{content}</div>
       </div>
     </div>
   )
