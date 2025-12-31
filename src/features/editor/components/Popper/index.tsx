@@ -25,7 +25,7 @@ export const Popper = ({ isOpen = false, setIsOpen, children, className, trigger
         left: `${coords.left}px`,
         zIndex: 50,
       }}
-      className={cn('fade-in zoom-in-95 min-w-37.5 animate-in p-2 duration-200', className)}
+      className={cn('fade-in zoom-in-95 min-w-37.5 animate-in duration-200', className)}
     >
       {children}
     </div>,

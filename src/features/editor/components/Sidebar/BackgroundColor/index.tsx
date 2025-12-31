@@ -23,7 +23,7 @@ export const BackgroundColor = () => {
           isOpen={isOpen}
           setIsOpen={setIsOpen}
           triggerRef={triggerRef}
-          className="rounded-sm border border-border-gray bg-white shadow-lg"
+          className="rounded-sm border border-border-gray bg-white p-4 shadow-lg"
         >
           <Colorful
             color={backgroundColor}
