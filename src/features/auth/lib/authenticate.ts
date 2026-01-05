@@ -7,6 +7,7 @@ import z from 'zod'
 import { authorizedRoutes } from '@/app/routes'
 import { AuthenticatedAPIHeaders } from '@/app/types'
 import { NotFoundError } from '@/errors/not-found.error'
+import { UnauthorizedError } from '@/errors/unauthorized.error'
 import type { Token } from '@/lib/assembly/types'
 
 /**
@@ -53,6 +54,10 @@ export const authenticateProxy = async (req: NextRequest): Promise<NextResponse>
   }
 
   const tokenPayload = await authenticateToken(token)
+
+  if ((tokenPayload.internalUserId && !isInternal) || (tokenPayload.clientId && !isClient)) {
+    throw new UnauthorizedError()
+  }
 
   return NextResponse.next({
     headers: {

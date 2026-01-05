@@ -7,6 +7,7 @@ import SettingsActionsService from '@settings/lib/settings-actions.service'
 import { type NextRequest, NextResponse } from 'next/server'
 import type { APIResponse } from '@/app/types'
 import db from '@/db'
+import { UpdateSettingsWithActionDto } from '@/features/settings/lib/settings-actions.dto'
 
 /**
  * Retrieves settings for the current workspace
@@ -29,6 +30,33 @@ export const getSettingsWithActions = async (req: NextRequest): Promise<NextResp
   )
 
   const settings = await settingsService.getForWorkspace()
+
+  return NextResponse.json({
+    data: settings,
+  })
+}
+
+export const updateSettingsWithActions = async (req: NextRequest): Promise<NextResponse<APIResponse>> => {
+  const user = authenticateHeaders(req.headers)
+
+  const body = await req.json()
+  const parsedBody = UpdateSettingsWithActionDto.parse(body)
+
+  // Wire dependencies for settings service
+  const assembly = new AssemblyClient(user.token)
+  const settingsRepository = new SettingsDrizzleRepository(db)
+  const actionsRepository = new ActionsDrizzleRepository(db)
+  const settingsActionsQueryRepository = new SettingsActionsDrizzleQueryRepository(db)
+
+  const settingsService = new SettingsActionsService(
+    user,
+    assembly,
+    settingsActionsQueryRepository,
+    settingsRepository,
+    actionsRepository,
+  )
+
+  const settings = await settingsService.updateForWorkspace(parsedBody)
 
   return NextResponse.json({
     data: settings,

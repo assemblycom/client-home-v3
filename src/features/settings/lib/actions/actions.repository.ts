@@ -1,6 +1,6 @@
 import type { Actions } from '@settings/lib/actions/actions.entity'
 import { actions } from '@settings/lib/actions/actions.schema'
-import type { ActionsCreatePayload } from '@settings/lib/actions/types'
+import type { ActionsCreatePayload, ActionsUpdatePayload } from '@settings/lib/actions/types'
 import { eq } from 'drizzle-orm'
 import httpStatus from 'http-status'
 import APIError from '@/errors/api.error'
@@ -13,6 +13,7 @@ import BaseDrizzleRepository from '@/lib/core/base-drizzle.repository'
 export interface ActionsRepository extends BaseRepository {
   getOne(workspaceId: string): Promise<Actions | null>
   createOne(workspaceId: string, payload: ActionsCreatePayload): Promise<Actions>
+  updateOne(workspaceId: string, payload: ActionsUpdatePayload): Promise<Actions>
 }
 
 /**
@@ -40,6 +41,11 @@ class ActionsDrizzleRepository extends BaseDrizzleRepository implements ActionsR
         this.unsetTx()
       }
     })
+  }
+
+  async updateOne(workspaceId: string, payload: ActionsUpdatePayload) {
+    const [updated] = await this.db.update(actions).set(payload).where(eq(actions.workspaceId, workspaceId)).returning()
+    return updated
   }
 
   async getOne(workspaceId: string) {

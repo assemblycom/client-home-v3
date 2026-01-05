@@ -5,6 +5,8 @@ import { defaultContent } from '@settings/lib/constants'
 import type SettingsRepository from '@settings/lib/settings/settings.repository'
 import type { SettingsWithActions } from '@settings/lib/settings-actions.entity'
 import type { SettingsActionsQueryRepository } from '@settings/lib/settings-actions.query.repository'
+import type { UpdateSettingsWithActionDto } from '@/features/settings/lib/settings-actions.dto'
+import { SettingsUpdateSchema } from '@/features/settings/lib/types'
 import BaseService from '@/lib/core/base.service'
 import DBService from '@/lib/core/db.service'
 
@@ -38,7 +40,9 @@ export default class SettingsActionsService extends BaseService {
             }))
           const actions =
             settingsAndActions?.actions ||
-            (await this.actionsRepository.createOne(this.user.workspaceId, { settingsId: newSettings.id }))
+            (await this.actionsRepository.createOne(this.user.workspaceId, {
+              settingsId: newSettings.id,
+            }))
 
           return { ...newSettings, actions }
         } finally {
@@ -49,6 +53,27 @@ export default class SettingsActionsService extends BaseService {
       })
     }
 
-    return { ...settingsAndActions.settings, actions: settingsAndActions.actions }
+    return {
+      ...settingsAndActions.settings,
+      actions: settingsAndActions.actions,
+    }
+  }
+
+  async updateForWorkspace(payload: UpdateSettingsWithActionDto) {
+    const settingsPayload = SettingsUpdateSchema.parse(payload)
+    const actionsPayload = payload.actions
+    return await DBService.transaction(async (tx) => {
+      this.settingsRepository.setTx(tx)
+      this.actionsRepository.setTx(tx)
+
+      const updatedSettings = Object.keys(settingsPayload).length
+        ? await this.settingsRepository.updateOne(this.user.workspaceId, settingsPayload)
+        : {}
+      const actions = actionsPayload
+        ? await this.actionsRepository.updateOne(this.user.workspaceId, actionsPayload)
+        : {}
+
+      return { ...updatedSettings, actions }
+    })
   }
 }
