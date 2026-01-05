@@ -20,7 +20,7 @@ export const UpdateSettingsWithActionDto = SettingsCreateSchema.partial()
       })
     }
   })
-  .extend({
+  .safeExtend({
     actions: ActionsCreateSchema.omit({ id: true, settingsId: true }).optional(),
   })
 
