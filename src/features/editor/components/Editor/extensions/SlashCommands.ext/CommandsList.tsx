@@ -10,12 +10,8 @@ export type CommandsListHandle = {
 type Props = SuggestionProps<SlashCommandItem>
 
 export const CommandsList = forwardRef<CommandsListHandle, Props>(function CommandsList({ items, command }, ref) {
+  // We still use forwardRef here because Tiptap does not support React's ref forwarding yet + we have to expose an imperitive handle
   const [selectedIndex, setSelectedIndex] = useState(0)
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: Force reset selection when the list changes.
-  useEffect(() => {
-    setSelectedIndex(0)
-  }, [items])
 
   const selectItem = (index: number) => {
     const item = items[index]
