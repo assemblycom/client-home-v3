@@ -55,7 +55,20 @@ export const SlashCommandsExt = Extension.create({
                   showOnCreate: true,
                   interactive: true,
                   trigger: 'manual',
+                  offset: [0, 5],
                   placement: 'bottom-start',
+                  popperOptions: {
+                    strategy: 'fixed',
+                    modifiers: [
+                      {
+                        name: 'flip',
+                        options: {
+                          allowedAutoPlacements: ['top-start', 'bottom-start'],
+                          fallbackPlacements: ['top-start', 'bottom-start'],
+                        },
+                      },
+                    ],
+                  },
                 }),
               )
             },
