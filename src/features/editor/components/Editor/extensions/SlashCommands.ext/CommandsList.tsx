@@ -1,5 +1,6 @@
 import type { SuggestionProps } from '@tiptap/suggestion'
-import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react'
+import clsx from 'clsx'
+import { forwardRef, useImperativeHandle, useMemo, useState } from 'react'
 import { clampIndex } from '@/utils/array'
 import type { SlashCommandItem } from './types'
 
@@ -54,16 +55,17 @@ export const CommandsList = forwardRef<CommandsListHandle, Props>(function Comma
   if (!items.length) return null
 
   return (
-    <div className="flex flex-col">
+    <div className="relative flex w-48 flex-col gap-0.5 overflow-hidden rounded border border-border-popper bg-white py-2 shadow-vairant-1">
       {items.map((item, index) => (
         <button
           key={item.title.replaceAll(' ', '-')}
           type="button"
-          className={index === selectedIndex ? 'text-red-400' : ''}
+          className={clsx(index === selectedIndex && 'bg-background-highlight')}
           onClick={() => selectItem(index)}
         >
-          <div className="menu-wrapper">
-            <div className="menu-title">{item.element ?? item.title}</div>
+          <div className="flex cursor-pointer items-center gap-x-2.5 px-3 py-1.5">
+            <item.Icon />
+            <div className="text-sm">{item.element ?? item.title}</div>
           </div>
         </button>
       ))}

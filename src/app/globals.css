@@ -16,9 +16,11 @@
   --color-text-secondary: var(--text-secondary);
 
   --color-border-gray: #dfe1e4;
+  --color-border-popper: #ededf0;
 
   --color-background-primary: #f8f9fb;
   --color-background-secondary: #eff1f4;
+  --color-background-highlight: #f8f9fb;
 
   --font-sans: var(--font-inter);
 }
