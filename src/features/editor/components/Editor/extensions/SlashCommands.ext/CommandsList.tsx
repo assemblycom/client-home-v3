@@ -1,3 +1,5 @@
+'use client'
+
 import type { SuggestionProps } from '@tiptap/suggestion'
 import clsx from 'clsx'
 import { forwardRef, useImperativeHandle, useMemo, useState } from 'react'
