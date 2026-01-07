@@ -3,6 +3,14 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: [process.env.NGROK_URL || ''],
+  turbopack: {
+    rules: {
+      '*.svg': {
+        as: '*.js',
+        loaders: ['@svgr/webpack'],
+      },
+    },
+  },
   // biome-ignore lint/suspicious/useAwait: `headers` needs to be async
   headers: async () => {
     return [
