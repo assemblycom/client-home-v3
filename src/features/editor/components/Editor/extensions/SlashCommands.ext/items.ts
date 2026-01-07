@@ -2,6 +2,7 @@ import {
   AutofillIcon,
   BulletListIcon,
   CalloutIcon,
+  DividerIcon,
   EmbedIcon,
   H1Icon,
   H2Icon,
@@ -58,7 +59,7 @@ export const items: SlashCommandItem[] = [
   },
   {
     title: 'Divider',
-    Icon: NumberedListIcon, // TODO in another task
+    Icon: DividerIcon,
     command: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).setHorizontalRule().run()
     },
