@@ -1,3 +1,6 @@
+// @ts-nocheck
+// SVG's imported for svgr obviously don't have type definitions... lol
+
 export type SVGIcon = React.FC<React.SVGProps<SVGSVGElement>>
 
 export { default as AutofillIcon } from './autofill.svg'
