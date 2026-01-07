@@ -68,28 +68,32 @@ export const items: SlashCommandItem[] = [
     title: 'Upload',
     Icon: UploadIcon,
     command: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).setCodeBlock().run()
+      // TODO: Do in another task
+      editor.chain().focus().deleteRange(range).setParagraph().run()
     },
   },
   {
     title: 'Table',
     Icon: TableIcon,
     command: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).insertContentAt(range.from, { type: 'imagePlaceholder' }).run()
+      // TODO: Do in another task
+      editor.chain().focus().deleteRange(range).setParagraph().run()
     },
   },
   {
     title: 'Callout',
     Icon: CalloutIcon,
     command: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).insertContentAt(range.from, { type: 'videoPlaceholder' }).run()
+      // TODO: Do in another task
+      editor.chain().focus().deleteRange(range).setParagraph().run()
     },
   },
   {
     title: 'Embed',
     Icon: EmbedIcon,
     command: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).insertContentAt(range.from, { type: 'videoPlaceholder' }).run()
+      // TODO: Do in another task
+      editor.chain().focus().deleteRange(range).setParagraph().run()
     },
   },
 ]
