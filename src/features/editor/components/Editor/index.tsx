@@ -2,7 +2,6 @@
 
 import { usePrimaryCta, useSecondaryCta } from '@app-bridge/hooks'
 import * as extensions from '@editor/components/Editor/extensions'
-import { Placeholder } from '@tiptap/extensions'
 import { EditorContent, useEditor } from '@tiptap/react'
 
 interface EditorProps {
@@ -28,10 +27,8 @@ export const Editor = ({ content, editable = true }: EditorProps) => {
   })
 
   const editor = useEditor({
-    extensions: [
-      // All extensions exported from the extensions folder
-      ...Object.values(extensions),
-    ],
+    // All extensions exported from the extensions folder
+    extensions: Object.values(extensions),
     content,
     editable,
     immediatelyRender: false, // Avoid SSR & hydration issues

@@ -112,6 +112,11 @@ body {
   p {
     @apply text-sm leading-5.5 font-normal;
   }
+
+  ul,
+  ol {
+    @apply pl-6;
+  }
 }
 
 .ProseMirror-focused {
