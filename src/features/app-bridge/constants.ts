@@ -4,4 +4,3 @@ export const DASHBOARD_DOMAINS = [
   // @deprecated - Drop support for copilot-staging.com/copilot-staging.app
   // 'https://dashboard.copilot-staging.com',
 ]
-export const API_DOMAIN = 'https://api.assembly.com'
