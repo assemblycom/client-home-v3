@@ -126,6 +126,23 @@ body {
     @apply text-text-placeholder float-left h-0 pointer-events-none;
     content: attr(data-placeholder);
   }
+
+  table {
+    @apply overflow-hidden w-full table-fixed bg-white mt-1 mb-1 border-collapse;
+
+    td,
+    th {
+      @apply border border-gray-300 box-border min-w-[1fr] relative;
+    }
+
+    th {
+      @apply bg-gray-100 text-left px-2 py-1;
+    }
+
+    td {
+      @apply px-2 py-1;
+    }
+  }
 }
 
 .ProseMirror-focused {
