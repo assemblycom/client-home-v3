@@ -1,5 +1,5 @@
 import { ActionItemLabel } from '@editor/components/Sidebar/Actions/constant'
-import type { ActionItemLabelType } from '@editor/components/Sidebar/Actions/type'
+import type { ActionItemIcon, ActionItemLabelType } from '@editor/components/Sidebar/Actions/type'
 import { useState } from 'react'
 
 export const useActions = () => {
@@ -12,7 +12,7 @@ export const useActions = () => {
     [ActionItemLabel.FILES]: false,
   })
 
-  const actionLabels = {
+  const actionLabels: Record<ActionItemIcon, ActionItemLabelType> = {
     Billing: ActionItemLabel.INVOICE,
     DragDrop: ActionItemLabel.MESSAGE,
     Contract: ActionItemLabel.CONTRACT,
@@ -22,7 +22,7 @@ export const useActions = () => {
   }
 
   const actionItems = Object.entries(actionLabels).map(([k, v]) => ({
-    icon: k,
+    icon: k as ActionItemIcon,
     label: v,
     onChange: () => setChecked((prev) => ({ ...prev, [v]: !prev[v] })),
   }))
