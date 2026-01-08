@@ -39,7 +39,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
       <div className="box-content flex h-14 items-center border-border-gray border-b px-6 text-custom-xl">
         Customization
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col py-5">
         {AccordionItems.map((item) => (
           <Accordion key={item.title} title={item.title} content={item.content} className="pr-5 pl-6" />
         ))}
