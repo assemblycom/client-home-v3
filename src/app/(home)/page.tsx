@@ -8,6 +8,7 @@ export default function Home() {
       <div className="flex-1">
         <TopBar />
         <div className="h-[calc(100vh-64px)] overflow-y-scroll bg-background-primary px-6 py-6.5">
+          {/* TODO: Add content from DB */}
           <Editor content="" />
         </div>
       </div>
