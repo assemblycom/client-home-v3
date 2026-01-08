@@ -76,8 +76,8 @@ export const items: SlashCommandItem[] = [
     title: 'Table',
     Icon: TableIcon,
     command: ({ editor, range }) => {
-      // TODO: Do in another task
-      editor.chain().focus().deleteRange(range).setParagraph().run()
+      // TODO: Add redesigned table in another task
+      editor.chain().focus().deleteRange(range).insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
     },
   },
   {
