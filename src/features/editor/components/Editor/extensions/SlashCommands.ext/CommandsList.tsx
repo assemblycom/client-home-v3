@@ -62,7 +62,7 @@ export const CommandsList = forwardRef<CommandsListHandle, Props>(function Comma
         <button
           key={item.title.replaceAll(' ', '-')}
           type="button"
-          className={clsx(index === selectedIndex && 'bg-background-highlight')}
+          className={clsx(index === selectedIndex && 'bg-background-primary')}
           onClick={() => selectItem(index)}
         >
           <div className="flex cursor-pointer items-center gap-x-2.5 px-3 py-1.5">
