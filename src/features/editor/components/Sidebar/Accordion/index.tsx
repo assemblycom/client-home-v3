@@ -18,7 +18,7 @@ export const Accordion = ({ title, content, className }: AccordionProps) => {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between py-4 text-left focus:outline-none"
+        className="flex w-full items-center justify-between py-3.5 text-left focus:outline-none"
       >
         <span className="font-medium text-gray-900 leading-6">{title}</span>
         <Icon
