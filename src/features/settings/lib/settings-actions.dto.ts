@@ -4,7 +4,7 @@ import { SettingsCreateSchema } from '@/features/settings/lib/types'
 
 export const UpdateSettingsWithActionDto = SettingsCreateSchema.partial()
   .superRefine((val, ctx) => {
-    if (val.content && val.content.length < 1) {
+    if (val.content === '') {
       ctx.addIssue({
         code: 'custom',
         message: 'Content should not be empty string',
@@ -21,7 +21,7 @@ export const UpdateSettingsWithActionDto = SettingsCreateSchema.partial()
     }
   })
   .safeExtend({
-    actions: ActionsCreateSchema.omit({ id: true, settingsId: true }).optional(),
+    actions: ActionsCreateSchema.omit({ settingsId: true }).optional(),
   })
 
 export type UpdateSettingsWithActionDto = z.infer<typeof UpdateSettingsWithActionDto>

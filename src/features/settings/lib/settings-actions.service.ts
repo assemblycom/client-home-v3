@@ -60,20 +60,29 @@ export default class SettingsActionsService extends BaseService {
   }
 
   async updateForWorkspace(payload: UpdateSettingsWithActionDto) {
-    const settingsPayload = SettingsUpdateSchema.parse(payload)
-    const actionsPayload = payload.actions
+    const settingsPayload = SettingsUpdateSchema.parse(payload) // parsed again just to retrieve necessary keys
+    const actionsPayload = payload.actions || {}
+    const settingsAndActions = await this.queryRepository.getOne(this.user.workspaceId)
+
     return await DBService.transaction(async (tx) => {
       this.settingsRepository.setTx(tx)
       this.actionsRepository.setTx(tx)
 
-      const updatedSettings = Object.keys(settingsPayload).length
-        ? await this.settingsRepository.updateOne(this.user.workspaceId, settingsPayload)
-        : {}
-      const actions = actionsPayload
-        ? await this.actionsRepository.updateOne(this.user.workspaceId, actionsPayload)
-        : {}
+      try {
+        const updatedSettings = Object.keys(settingsPayload).length
+          ? await this.settingsRepository.updateOne(this.user.workspaceId, settingsPayload)
+          : settingsAndActions?.settings
 
-      return { ...updatedSettings, actions }
+        const actions = Object.keys(actionsPayload).length
+          ? await this.actionsRepository.updateOne(this.user.workspaceId, actionsPayload)
+          : settingsAndActions?.actions
+
+        return { ...updatedSettings, actions }
+      } finally {
+        // Prevent transaction leakage across requests
+        this.settingsRepository.unsetTx()
+        this.actionsRepository.unsetTx()
+      }
     })
   }
 }
