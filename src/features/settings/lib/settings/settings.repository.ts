@@ -1,6 +1,6 @@
 import type { Settings } from '@settings/lib/settings/settings.entity'
 import { settings } from '@settings/lib/settings/settings.schema'
-import type { SettingsCreatePayload } from '@settings/lib/types'
+import type { SettingsCreatePayload, SettingsUpdatePayload } from '@settings/lib/types'
 import { eq } from 'drizzle-orm'
 import httpStatus from 'http-status'
 import APIError from '@/errors/api.error'
@@ -13,6 +13,7 @@ import BaseDrizzleRepository from '@/lib/core/base-drizzle.repository'
 export interface SettingsRepository extends BaseRepository {
   getOne(workspaceId: string): Promise<Settings | null>
   createOne(workspaceId: string, payload: SettingsCreatePayload): Promise<Settings>
+  updateOne(workspaceId: string, payload: SettingsUpdatePayload): Promise<Settings>
 }
 
 /**
@@ -40,6 +41,15 @@ class SettingsDrizzleRepository extends BaseDrizzleRepository implements Setting
         this.unsetTx()
       }
     })
+  }
+
+  async updateOne(workspaceId: string, payload: SettingsUpdatePayload) {
+    const [updated] = await this.db
+      .update(settings)
+      .set(payload)
+      .where(eq(settings.workspaceId, workspaceId))
+      .returning()
+    return updated
   }
 
   async getOne(workspaceId: string) {
