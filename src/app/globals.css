@@ -27,26 +27,15 @@
 
 @layer components {
   .text-custom-xs {
-    font-family: var(--font-inter);
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 20px;
+    @apply text-xs leading-5 font-normal;
   }
   .text-custom-xl {
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 24px;
-    letter-spacing: -0.1px;
-    color: var(--text-primary);
+    @apply text-xl leading-6 font-normal tracking-[-0.1px] text-text-primary;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-inter);
-  box-sizing: border-box;
+  @apply bg-background text-foreground box-border;
 }
 
 /* react color pickup */
@@ -143,8 +132,14 @@ body {
       @apply px-2 py-1;
     }
   }
-}
 
+  .callout {
+    @apply my-5 bg-background-primary p-3;
+    .callout__content {
+      @apply font-medium text-sm leading-5.5;
+    }
+  }
+}
 .ProseMirror-focused {
   outline: none;
 }

@@ -1,3 +1,4 @@
+import type { SlashCommandItem } from '@editor/components/Editor/extensions/SlashCommands.ext/types'
 import {
   AutofillIcon,
   BulletListIcon,
@@ -11,7 +12,6 @@ import {
   TextIcon,
   UploadIcon,
 } from '@/icons'
-import type { SlashCommandItem } from './types'
 
 export const items: SlashCommandItem[] = [
   {
@@ -84,8 +84,7 @@ export const items: SlashCommandItem[] = [
     title: 'Callout',
     Icon: CalloutIcon,
     command: ({ editor, range }) => {
-      // TODO: Do in another task
-      editor.chain().focus().deleteRange(range).setParagraph().run()
+      editor.chain().focus().deleteRange(range).setCallout().run()
     },
   },
   {
@@ -93,7 +92,7 @@ export const items: SlashCommandItem[] = [
     Icon: EmbedIcon,
     command: ({ editor, range }) => {
       // TODO: Do in another task
-      editor.chain().focus().deleteRange(range).setParagraph().run()
+      editor.chain().focus().deleteRange(range).setNode('embed').run()
     },
   },
 ]
