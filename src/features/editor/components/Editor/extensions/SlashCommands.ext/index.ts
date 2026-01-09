@@ -11,7 +11,7 @@ const normalizeTippyInstance = (value: Instance<TippyProps> | Array<Instance<Tip
 const fallbackClientRect: GetReferenceClientRect = () => new DOMRect(0, 0, 0, 0)
 
 export const SlashCommandsExt = Extension.create({
-  name: 'insertMenu',
+  name: 'slashCommands',
 
   addProseMirrorPlugins() {
     return [
