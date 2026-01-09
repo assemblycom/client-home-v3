@@ -1,7 +1,7 @@
 'use client'
 
 import { usePrimaryCta, useSecondaryCta } from '@app-bridge/hooks'
-import * as extensions from '@editor/components/Editor/extensions'
+import extensions from '@editor/components/Editor/extensions'
 import { EditorContent, useEditor } from '@tiptap/react'
 
 interface EditorProps {
@@ -28,13 +28,13 @@ export const Editor = ({ content, editable = true }: EditorProps) => {
 
   const editor = useEditor({
     // All extensions exported from the extensions folder
-    extensions: Object.values(extensions),
+    extensions,
     content,
     editable,
     immediatelyRender: false, // Avoid SSR & hydration issues
     editorProps: {
       attributes: {
-        class: 'bg-[#fff]', // TODO: Replace later with settings background color
+        class: 'bg-[#fff] text-custom-xs', // TODO: Replace later with settings background color
       },
     },
   })

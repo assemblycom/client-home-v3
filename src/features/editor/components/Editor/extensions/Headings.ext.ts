@@ -9,7 +9,7 @@ declare module '@tiptap/core' {
   }
 }
 
-export const HeadingCommands = Extension.create({
+export const Headings = Extension.create({
   name: 'headingCommands',
 
   addCommands() {
