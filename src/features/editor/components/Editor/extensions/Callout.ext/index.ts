@@ -13,6 +13,9 @@ declare module '@tiptap/core' {
 export const CalloutExt = Node.create<CalloutOptions>({
   name: 'callout',
   group: 'block',
+  // See: https://prosemirror.net/docs/guide/#schema.content_expressions
+  // NOTE: Zero or more inline nodes here.
+  // Using inline* instead of inline+, since inline+ requires at least one child and adds extra line at bottom.
   content: 'inline*',
 
   addOptions: () => ({
