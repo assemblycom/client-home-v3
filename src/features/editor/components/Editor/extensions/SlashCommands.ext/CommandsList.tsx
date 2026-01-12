@@ -1,10 +1,10 @@
 'use client'
 
+import type { SlashCommandItem } from '@extensions/SlashCommands.ext/types'
 import type { SuggestionProps } from '@tiptap/suggestion'
 import clsx from 'clsx'
 import { forwardRef, useImperativeHandle, useMemo, useState } from 'react'
 import { clampIndex } from '@/utils/array'
-import type { SlashCommandItem } from './types'
 
 export type CommandsListHandle = {
   onKeyDown: (event: KeyboardEvent) => boolean
