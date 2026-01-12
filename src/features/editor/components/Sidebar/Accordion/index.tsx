@@ -2,8 +2,8 @@
 
 import { Icon } from 'copilot-design-system'
 import type { ReactNode } from 'react'
-import { cn } from '@/components/utils'
 import { useAccordion } from '@/features/editor/components/Sidebar/Accordion/useAccordion'
+import { cn } from '@/utils/tailwind'
 
 export type AccordionProps = {
   title: string
