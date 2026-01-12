@@ -1,9 +1,5 @@
+import type { CalloutOptions } from '@extensions/Callout.ext'
 import { NodeViewContent, type NodeViewProps, NodeViewWrapper } from '@tiptap/react'
-
-export type CalloutOptions = {
-  wrapperClass?: string
-  contentClass?: string
-}
 
 interface CalloutProps extends NodeViewProps {
   extension: NodeViewProps['extension'] & {
