@@ -1,7 +1,7 @@
 import { createPortal } from 'react-dom'
-import { cn } from '@/components/utils'
 import type { RefObjectType } from '@/features/editor/components/Popper/type'
 import { usePopper } from '@/features/editor/components/Popper/usePopper'
+import { cn } from '@/utils/tailwind'
 
 type PopperProps = {
   isOpen?: boolean

@@ -1,10 +1,10 @@
-import { cn } from '@/components/utils'
 import { Accordion } from '@/features/editor/components/Sidebar/Accordion'
 import { Actions } from '@/features/editor/components/Sidebar/Actions'
 import { BackgroundColor } from '@/features/editor/components/Sidebar/BackgroundColor'
 import { Banner } from '@/features/editor/components/Sidebar/Banner'
 import { DynamicFields } from '@/features/editor/components/Sidebar/DynamicFields'
 import { Segment } from '@/features/editor/components/Sidebar/Segment'
+import { cn } from '@/utils/tailwind'
 
 interface SidebarProps {
   className?: string
