@@ -1,9 +1,9 @@
+import { CommandsList, type CommandsListHandle } from '@extensions/SlashCommands.ext/CommandsList'
+import { items } from '@extensions/SlashCommands.ext/items'
+import type { SlashCommandItem } from '@extensions/SlashCommands.ext/types'
 import { Extension, ReactRenderer } from '@tiptap/react'
 import { Suggestion } from '@tiptap/suggestion'
 import tippy, { type GetReferenceClientRect, type Instance, type Props as TippyProps } from 'tippy.js'
-import { CommandsList, type CommandsListHandle } from './CommandsList'
-import { items } from './items'
-import type { SlashCommandItem } from './types'
 
 const normalizeTippyInstance = (value: Instance<TippyProps> | Array<Instance<TippyProps>>) =>
   Array.isArray(value) ? value[0] : value
