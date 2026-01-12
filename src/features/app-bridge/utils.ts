@@ -1,5 +1,5 @@
 import { DASHBOARD_DOMAINS } from '@app-bridge/constants'
-import { ensureHttps } from '@/utils/https'
+import { ensureHttps } from '@/utils/urls'
 
 /**
  * Attempts to send window.parent.postMessage to an array of possible domains
