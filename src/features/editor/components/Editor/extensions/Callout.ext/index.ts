@@ -1,6 +1,6 @@
+import { Callout } from '@extensions/Callout.ext/Callout'
 import { mergeAttributes, Node } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
-import { Callout, type CalloutOptions } from './Callout'
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -8,6 +8,11 @@ declare module '@tiptap/core' {
       setCallout: () => ReturnType
     }
   }
+}
+
+export type CalloutOptions = {
+  wrapperClass?: string
+  contentClass?: string
 }
 
 export const CalloutExt = Node.create<CalloutOptions>({
