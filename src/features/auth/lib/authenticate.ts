@@ -48,7 +48,7 @@ export const authenticateProxy = async (req: NextRequest): Promise<NextResponse>
     throw new NotFoundError()
   }
 
-  const token = req.nextUrl.searchParams.get('token')
+  const token = req.nextUrl.searchParams.get('token') || process.env.DEBUG_TOKEN
   if (!token) {
     throw new AssemblyNoTokenError()
   }

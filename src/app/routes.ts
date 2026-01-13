@@ -33,7 +33,6 @@ export const authorizedRoutes: Record<string, RouteRule[]> = {
   ],
   clientUsers: [
     ROUTES.client,
-    ROUTES.workspace,
     {
       path: ROUTES.api.settings,
       methods: ['GET'],
