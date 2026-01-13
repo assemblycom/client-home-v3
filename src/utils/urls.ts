@@ -14,7 +14,7 @@ export const ensureHttps = (url: string) => {
   return `https://${url}`
 }
 
-export const fixUrl = (url: string) => {
+export const fixEmbedUrl = (url: string) => {
   const pattern = new RegExp(
     '^(https?:\\/\\/)?' + // protocol
       '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
