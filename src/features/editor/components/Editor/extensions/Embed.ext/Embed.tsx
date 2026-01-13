@@ -1,8 +1,7 @@
 import type { EmbedOptions } from '@extensions/Embed.ext'
 import { ResizeBar } from '@extensions/Embed.ext/ResizeBar'
 import { type NodeViewProps, NodeViewWrapper } from '@tiptap/react'
-import { useCallback } from 'react'
-import { debounce } from '@/utils/debounce'
+import { useCallback, useRef } from 'react'
 
 interface EmbedProps extends NodeViewProps {
   extension: NodeViewProps['extension'] & {
@@ -11,56 +10,89 @@ interface EmbedProps extends NodeViewProps {
 }
 
 export const Embed = (props: EmbedProps) => {
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const rafRef = useRef<number | null>(null)
+  const isDraggingRef = useRef(false)
+
   const handleMouseDown = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
-      const parent = event.currentTarget.closest('.embed')
-      const image = parent?.querySelector('div.embed__container')
-      if (!image) return
+      event.preventDefault()
+      event.stopPropagation()
 
-      const startSize = { x: image.clientWidth, y: image.clientHeight }
-      const startPosition = { x: event.pageX, y: event.pageY }
+      const el = containerRef.current
+      if (!el) return
 
-      const onMouseMove = debounce((mouseMoveEvent: MouseEvent) => {
-        props.updateAttributes({
-          width: startSize.x - startPosition.x + mouseMoveEvent.pageX,
-          height: startSize.y - startPosition.y + mouseMoveEvent.pageY,
+      isDraggingRef.current = true
+
+      const startW = el.clientWidth
+      const startH = el.clientHeight
+      const startX = event.clientX
+      const startY = event.clientY
+
+      // Avoid iframe stealing pointer events while dragging
+      el.style.pointerEvents = 'none'
+      document.body.style.userSelect = 'none'
+
+      const onMove = (e: MouseEvent) => {
+        if (!isDraggingRef.current) return
+
+        const nextW = Math.max(100, startW + (e.clientX - startX))
+        const nextH = Math.max(60, startH + (e.clientY - startY))
+
+        // IMPORTANT: Throttle DOM writes to one per animation frame
+        if (rafRef.current) cancelAnimationFrame(rafRef.current)
+        rafRef.current = requestAnimationFrame(() => {
+          el.style.width = `${nextW}px`
+          el.style.height = `${nextH}px`
         })
-      }, 10)
-
-      const onMouseUp = () => {
-        document.removeEventListener('mousemove', onMouseMove)
-        document.removeEventListener('mouseup', onMouseUp)
       }
 
-      document.addEventListener('mousemove', onMouseMove)
-      document.addEventListener('mouseup', onMouseUp)
+      const onUp = () => {
+        isDraggingRef.current = false
+
+        if (rafRef.current) cancelAnimationFrame(rafRef.current)
+        rafRef.current = null
+
+        // restore
+        el.style.pointerEvents = ''
+        document.body.style.userSelect = ''
+
+        // commit final size to TipTap once
+        const finalW = el.getBoundingClientRect().width
+        const finalH = el.getBoundingClientRect().height
+        props.updateAttributes({
+          width: Math.round(finalW),
+          height: Math.round(finalH),
+        })
+
+        document.removeEventListener('mousemove', onMove)
+        document.removeEventListener('mouseup', onUp)
+      }
+
+      document.addEventListener('mousemove', onMove)
+      document.addEventListener('mouseup', onUp)
     },
     [props.updateAttributes],
   )
 
   function extractIframeSrc(inputString: string) {
-    // Regular expression to match the src attribute of an iframe tag
     const iframeSrcRegex = /<iframe.*?src=["']([^"']+)["'][^>]*><\/iframe>/
-
     const match = inputString.match(iframeSrcRegex)
-    if (match) {
-      return match[1]
-    } else {
-      return inputString
-    }
+    return match ? match[1] : inputString
   }
 
   const isReadonly = false
 
   return (
-    <NodeViewWrapper
-      className="embed group relative inline-block"
-      style={{
-        height: props.node.attrs.height,
-        width: props.node.attrs.width,
-      }}
-    >
-      <div className="embed__container h-full w-full">
+    <NodeViewWrapper className="embed group relative inline-block">
+      <div
+        ref={containerRef}
+        className="embed__container"
+        style={{
+          height: props.node.attrs.height,
+          width: props.node.attrs.width,
+        }}
+      >
         <iframe
           title="Client Home embed"
           src={extractIframeSrc(props.node.attrs.src)}
