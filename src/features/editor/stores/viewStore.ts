@@ -11,23 +11,30 @@ export enum DisplayMode {
 }
 
 interface ViewStoreState {
-  portalUrl?: string | null
-  setPortalUrl: (portalurl: string) => void
-  viewMode: ViewMode | null
-  setViewMode: (mode: ViewMode) => void
-  displayMode?: DisplayMode | null
-  setDisplayMode: (mode: DisplayMode) => void
+  viewMode: ViewMode
+  displayMode: DisplayMode
 }
 
-export const useViewStore = create<ViewStoreState>()((set) => ({
-  portalUrl: null,
-  setPortalUrl: (portalUrl) => set({ portalUrl }),
+interface ViewStoreAction {
+  reset: () => void
+  changeView: (data: Partial<ViewStoreState>) => void
+}
 
-  displayMode: null,
-  setDisplayMode: (displayMode) => set({ displayMode }),
+const defaultState = {
+  viewMode: ViewMode.EDITOR,
+  displayMode: DisplayMode.DESKTOP,
+} as const satisfies Partial<ViewStoreState>
 
-  viewMode: null,
-  setViewMode: (viewMode) => set({ viewMode }),
+type ViewStore = ViewStoreState & ViewStoreAction
+
+export const useViewStore = create<ViewStore>()((set) => ({
+  ...defaultState,
+  changeView: (data: Partial<ViewStoreState>) => {
+    set(data)
+  },
+  reset: () => {
+    set(defaultState)
+  },
 }))
 
 export const viewStore = useViewStore
