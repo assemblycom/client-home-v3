@@ -2,6 +2,7 @@ import type { EmbedOptions } from '@extensions/Embed.ext'
 import { ResizeBar } from '@extensions/Embed.ext/ResizeBar'
 import { type NodeViewProps, NodeViewWrapper } from '@tiptap/react'
 import { useCallback, useRef } from 'react'
+import { cn } from '@/utils/tailwind'
 
 interface EmbedProps extends NodeViewProps {
   extension: NodeViewProps['extension'] & {
@@ -94,7 +95,7 @@ export const Embed = (props: EmbedProps) => {
       <div className="embed group relative inline-block">
         <div
           ref={containerRef}
-          className="embed__container"
+          className={cn('embed__container', props.selected && 'outline-2 outline-border-gray outline-offset-3')}
           style={{
             height: props.node.attrs.height,
             width: props.node.attrs.width,
