@@ -25,6 +25,7 @@ export const authorizedRoutes: Record<string, RouteRule[]> = {
   public: [ROUTES.api.health],
   internalUsers: [
     ROUTES.home,
+    ROUTES.api.workspace,
     {
       path: ROUTES.api.settings,
       methods: ['GET', 'PATCH'],
