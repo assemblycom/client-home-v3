@@ -1,4 +1,5 @@
 import type { SlashCommandItem } from '@editor/components/Editor/extensions/SlashCommands.ext/types'
+import { editorStore } from '@/features/editor/stores/editorStore'
 import {
   AutofillIcon,
   BulletListIcon,
@@ -18,7 +19,12 @@ export const items: SlashCommandItem[] = [
     title: 'Heading 1',
     Icon: H1Icon,
     command: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).setHeading1().run()
+      editor
+        .chain()
+        .focus()
+        .deleteRange({ from: range.from, to: range.to + 1 })
+        .setHeading1()
+        .run()
     },
   },
   {
@@ -91,8 +97,8 @@ export const items: SlashCommandItem[] = [
     title: 'Embed',
     Icon: EmbedIcon,
     command: ({ editor, range }) => {
-      // TODO: Do in another task
-      editor.chain().focus().deleteRange(range).setNode('embed').run()
+      editor.chain().deleteRange(range).run()
+      editorStore.getState().setShowEmbedInput(true)
     },
   },
 ]
