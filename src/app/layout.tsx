@@ -1,7 +1,8 @@
+import 'copilot-design-system/dist/styles/main.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import AppProvider from './app-provder'
 import './globals.css'
-import 'copilot-design-system/dist/styles/main.css'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -20,7 +21,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased`}>{children}</body>
+      <body className={`${inter.className} antialiased`}>
+        <AppProvider>{children}</AppProvider>
+      </body>
     </html>
   )
 }
