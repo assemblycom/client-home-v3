@@ -1,8 +1,8 @@
 import type { EmbedOptions } from '@extensions/Embed.ext'
 import { ResizeBar } from '@extensions/Embed.ext/ResizeBar'
 import { type NodeViewProps, NodeViewWrapper } from '@tiptap/react'
-import { useCallback, useState } from 'react'
-import { debounce } from '@/utils/debounce'
+import { useCallback, useRef } from 'react'
+import { cn } from '@/utils/tailwind'
 
 interface EmbedProps extends NodeViewProps {
   extension: NodeViewProps['extension'] & {
@@ -11,81 +11,115 @@ interface EmbedProps extends NodeViewProps {
 }
 
 export const Embed = (props: EmbedProps) => {
-  const [isResizing, setIsResizing] = useState(false)
+  const parentRef = useRef<HTMLDivElement | null>(null)
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const rafRef = useRef<number | null>(null)
+  const isDraggingRef = useRef(false)
 
   const handleMouseDown = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
-      const parent = event.currentTarget.closest('.embed')
-      const image = parent?.querySelector('div.iframe_container')
-      if (!image) return
+      event.preventDefault()
+      event.stopPropagation()
 
-      setIsResizing(true)
+      const el = containerRef.current
+      const parentEl = parentRef.current
+      if (!el || !parentEl) return
 
-      const startSize = { x: image.clientWidth, y: image.clientHeight }
-      const startPosition = { x: event.pageX, y: event.pageY }
+      isDraggingRef.current = true
 
-      const onMouseMove = debounce((mouseMoveEvent: MouseEvent) => {
-        props.updateAttributes({
-          width: startSize.x - startPosition.x + mouseMoveEvent.pageX,
-          height: startSize.y - startPosition.y + mouseMoveEvent.pageY,
+      const startW = el.clientWidth
+      const startH = el.clientHeight
+      const startX = event.clientX
+      const startY = event.clientY
+
+      // Avoid iframe stealing pointer events while dragging
+      el.style.pointerEvents = 'none'
+      document.body.style.userSelect = 'none'
+
+      const onMove = (e: MouseEvent) => {
+        if (!isDraggingRef.current) return
+
+        const nextW = Math.max(100, startW + (e.clientX - startX))
+        const nextH = Math.max(60, startH + (e.clientY - startY))
+
+        // Do not allow iframe to exceed parent width.
+        // Exceeding parent height is okay.
+        if (nextW >= parentEl.clientWidth) return
+
+        // IMPORTANT: Throttle DOM writes to one per animation frame
+        if (rafRef.current) cancelAnimationFrame(rafRef.current)
+        rafRef.current = requestAnimationFrame(() => {
+          el.style.width = `${nextW}px`
+          el.style.height = `${nextH}px`
         })
-      }, 10)
-
-      const onMouseUp = () => {
-        setIsResizing(false)
-        document.removeEventListener('mousemove', onMouseMove)
-        document.removeEventListener('mouseup', onMouseUp)
       }
 
-      document.addEventListener('mousemove', onMouseMove)
-      document.addEventListener('mouseup', onMouseUp)
+      const onUp = () => {
+        isDraggingRef.current = false
+
+        if (rafRef.current) cancelAnimationFrame(rafRef.current)
+        rafRef.current = null
+
+        // restore
+        el.style.pointerEvents = ''
+        document.body.style.userSelect = ''
+
+        // Commit final size to TipTap once only
+        const finalW = el.getBoundingClientRect().width
+        const finalH = el.getBoundingClientRect().height
+        props.updateAttributes({
+          width: Math.round(finalW),
+          height: Math.round(finalH),
+        })
+
+        document.removeEventListener('mousemove', onMove)
+        document.removeEventListener('mouseup', onUp)
+      }
+
+      document.addEventListener('mousemove', onMove)
+      document.addEventListener('mouseup', onUp)
     },
     [props.updateAttributes],
   )
 
   function extractIframeSrc(inputString: string) {
-    // Regular expression to match the src attribute of an iframe tag
     const iframeSrcRegex = /<iframe.*?src=["']([^"']+)["'][^>]*><\/iframe>/
-
     const match = inputString.match(iframeSrcRegex)
-    if (match) {
-      return match[1]
-    } else {
-      return inputString
-    }
+    return match ? match[1] : inputString
   }
 
   const isReadonly = false
 
   return (
-    <NodeViewWrapper className="embed relative">
-      <div
-        className="iframe_container"
-        style={{
-          height: props.node.attrs.height,
-          width: props.node.attrs.width,
-        }}
-      >
-        <iframe
-          title="Client Home embed"
-          src={extractIframeSrc(props.node.attrs.src)}
-          width="100%"
-          height="100%"
-          onError={(e) => {
-            e.stopPropagation()
-            console.info('[iframe error]:', e)
-          }}
-        />
-      </div>
-      {!isReadonly && (
-        // biome-ignore lint/a11y/noStaticElementInteractions: This is more semantic as a div since it is draggable
+    <NodeViewWrapper ref={parentRef}>
+      <div className="embed group relative inline-block">
         <div
-          className={`resize-trigger${isResizing ? '' : 'pointer-events-none!'} !hover:pointer-events-auto absolute grid h-full w-full place-items-end`}
-          onMouseDown={handleMouseDown}
+          ref={containerRef}
+          className={cn('embed__container', props.selected && 'outline-2 outline-border-gray outline-offset-3')}
+          style={{
+            height: props.node.attrs.height,
+            width: props.node.attrs.width,
+          }}
         >
-          <ResizeBar />
+          <iframe
+            title="Client Home embed"
+            src={extractIframeSrc(props.node.attrs.src)}
+            width="100%"
+            height="100%"
+            onError={(e) => {
+              e.stopPropagation()
+              console.info('[iframe error]:', e)
+            }}
+          />
         </div>
-      )}
+
+        {!isReadonly && (
+          <ResizeBar
+            onMouseDown={handleMouseDown}
+            className="opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100"
+          />
+        )}
+      </div>
     </NodeViewWrapper>
   )
 }
