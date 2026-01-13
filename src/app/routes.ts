@@ -1,9 +1,10 @@
-const ROUTES = Object.freeze({
+export const ROUTES = Object.freeze({
   home: '/',
   client: '/client',
   api: {
     health: '/api/health',
     settings: '/api/settings',
+    workspace: '/api/workspace',
   },
 })
 

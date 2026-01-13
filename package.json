@@ -28,6 +28,7 @@
     "@tiptap/starter-kit": "^3.15.3",
     "@tiptap/suggestion": "^3.15.3",
     "@uiw/react-color-colorful": "^2.9.2",
+    "axios": "^1.13.2",
     "bottleneck": "^2.19.5",
     "clsx": "^2.1.1",
     "copilot-design-system": "^2.3.3",
