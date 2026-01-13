@@ -3,7 +3,7 @@
 import type { SlashCommandItem } from '@extensions/SlashCommands.ext/types'
 import type { SuggestionProps } from '@tiptap/suggestion'
 import clsx from 'clsx'
-import { forwardRef, useImperativeHandle, useMemo, useState } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react'
 import { clampIndex } from '@/utils/array'
 
 export type CommandsListHandle = {
@@ -50,9 +50,12 @@ export const CommandsList = forwardRef<CommandsListHandle, Props>(function Comma
 
     return { onKeyDown }
     // selectedIndex is used by enter()
-  }, [items.length, selectedIndex])
+  }, [items.length, selectedIndex, command])
 
   useImperativeHandle(ref, () => ({ onKeyDown: handlers.onKeyDown }), [handlers])
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Reset selected index when items changes.
+  useEffect(() => setSelectedIndex(0), [items])
 
   if (!items.length) return null
 
