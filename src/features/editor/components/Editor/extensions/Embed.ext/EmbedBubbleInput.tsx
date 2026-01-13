@@ -1,3 +1,4 @@
+import { EMBED_PLACEHOLDER } from '@editor/constants'
 import type { Editor } from '@tiptap/core'
 import { Icon } from 'copilot-design-system'
 import { type KeyboardEvent, useEffect, useRef, useState } from 'react'
@@ -52,7 +53,7 @@ export const EmbedBubbleInput = ({ editor, showEmbedInput, setShowEmbedInput }: 
       <input
         ref={urlInputRef}
         type="text"
-        placeholder="Add embed URL"
+        placeholder={EMBED_PLACEHOLDER}
         value={url}
         onChange={(e) => setUrl(e.target.value)}
         onKeyDown={handleKeyDown}
