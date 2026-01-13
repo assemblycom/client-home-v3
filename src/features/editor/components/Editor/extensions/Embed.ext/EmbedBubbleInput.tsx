@@ -1,7 +1,8 @@
+import { EMBED_PLACEHOLDER } from '@editor/constants'
 import type { Editor } from '@tiptap/core'
 import { Icon } from 'copilot-design-system'
 import { type KeyboardEvent, useEffect, useRef, useState } from 'react'
-import { fixUrl } from '@/utils/urls'
+import { fixEmbedUrl } from '@/utils/urls'
 
 interface EmbedBubbleInputProps {
   editor: Editor
@@ -13,12 +14,15 @@ export const EmbedBubbleInput = ({ editor, showEmbedInput, setShowEmbedInput }: 
   const [url, setUrl] = useState('')
   const urlInputRef = useRef<HTMLInputElement>(null)
 
+  const handleInputUnload = () => {
+    setUrl('')
+    setShowEmbedInput(false)
+  }
+
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.code === 'Escape') {
       event.preventDefault()
-      setShowEmbedInput(false)
-      setUrl('')
-      return
+      return handleInputUnload()
     }
 
     if (event.code === 'Enter') {
@@ -26,10 +30,9 @@ export const EmbedBubbleInput = ({ editor, showEmbedInput, setShowEmbedInput }: 
       editor
         .chain()
         .focus()
-        .setEmbed({ src: fixUrl(url) })
+        .setEmbed({ src: fixEmbedUrl(url) })
         .run()
-      setShowEmbedInput(false)
-      setUrl('')
+      return handleInputUnload()
     }
   }
 
@@ -50,17 +53,17 @@ export const EmbedBubbleInput = ({ editor, showEmbedInput, setShowEmbedInput }: 
       <input
         ref={urlInputRef}
         type="text"
-        placeholder="Paste embed URL"
+        placeholder={EMBED_PLACEHOLDER}
         value={url}
         onChange={(e) => setUrl(e.target.value)}
         onKeyDown={handleKeyDown}
-        className="px-2 focus:outline-none"
+        className="px-2 text-custom-xs focus:outline-none"
       />
-      <button type="reset" onClick={() => setShowEmbedInput(false)}>
+      <button type="reset" onClick={handleInputUnload} className="p-1 hover:bg-background-primary">
         <Icon
-          icon="Cancel"
-          width={16}
-          height={16}
+          icon="Close"
+          width={12}
+          height={12}
           className="text-text-primary transition-all duration-100 ease-in-out"
         />
       </button>

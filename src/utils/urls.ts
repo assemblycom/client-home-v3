@@ -1,3 +1,6 @@
+import { linkToIframe } from 'link-to-iframe'
+import z from 'zod'
+
 /**
  * Takes a URL and ensures / modifies it to use HTTPS protocol string
  */
@@ -11,7 +14,7 @@ export const ensureHttps = (url: string) => {
   return `https://${url}`
 }
 
-export const fixUrl = (url: string) => {
+export const fixEmbedUrl = (url: string) => {
   const pattern = new RegExp(
     '^(https?:\\/\\/)?' + // protocol
       '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
@@ -33,13 +36,17 @@ export const fixUrl = (url: string) => {
 
     // If "www" is present with only one or two 'w's, correct it to three 'w's
     url = url.replace(/^(https?:\/\/)w{1,2}\./, '$1www.')
-
-    return url
   } else {
     // If the URL doesn't match the pattern, consider it invalid and try to fix it
     // You can customize this part based on your needs
     url = `https://${url}` // Add "https://" assuming it's missing
     url = url.replace(/^(https?:\/\/)w{1,2}\./, '$1www.') // Correct "www" if needed
-    return url
   }
+
+  const urlResultObject = z
+    .object({
+      src: z.url(),
+    })
+    .safeParse(linkToIframe(url, { returnObject: true }))
+  return urlResultObject.success ? urlResultObject.data.src : url
 }
