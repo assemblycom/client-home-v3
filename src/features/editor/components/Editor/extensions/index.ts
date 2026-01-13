@@ -1,9 +1,10 @@
-import { CalloutExt } from '@editor/components/Editor/extensions/Callout.ext'
-import { Headings } from '@editor/components/Editor/extensions/Headings.ext'
-import { PlaceholderExt } from '@editor/components/Editor/extensions/Placeholder.ext'
-import { SlashCommandsExt } from '@editor/components/Editor/extensions/SlashCommands.ext'
-import { StarterKitExt } from '@editor/components/Editor/extensions/StarterKit.ext'
-import { TableExt } from '@editor/components/Editor/extensions/Table.ext'
+import { CalloutExt } from '@extensions/Callout.ext'
+import { EmbedExt } from '@extensions/Embed.ext'
+import { Headings } from '@extensions/Headings.ext'
+import { PlaceholderExt } from '@extensions/Placeholder.ext'
+import { SlashCommandsExt } from '@extensions/SlashCommands.ext'
+import { StarterKitExt } from '@extensions/StarterKit.ext'
+import { TableExt } from '@extensions/Table.ext'
 import type { Extension, Node } from '@tiptap/core'
 
 const extensions: Array<Extension | Node> = [
@@ -12,6 +13,7 @@ const extensions: Array<Extension | Node> = [
   CalloutExt,
   TableExt,
   PlaceholderExt,
+  EmbedExt,
   SlashCommandsExt,
 ]
 
