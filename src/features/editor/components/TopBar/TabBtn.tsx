@@ -11,7 +11,7 @@ export const TabBtn = ({ label, active, handleClick }: TabBtnProps) => {
     <button
       type="button"
       onClick={handleClick}
-      className={cn('flex px-1.5 py-0.5 text-custom-xs', active && 'bg-background-secondary')}
+      className={cn('flex cursor-pointer px-1.5 py-0.5 text-custom-xs', active && 'bg-background-secondary')}
     >
       {label}
     </button>
