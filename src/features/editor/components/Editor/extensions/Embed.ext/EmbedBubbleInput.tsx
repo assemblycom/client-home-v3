@@ -52,7 +52,7 @@ export const EmbedBubbleInput = ({ editor, showEmbedInput, setShowEmbedInput }: 
       <input
         ref={urlInputRef}
         type="text"
-        placeholder="Paste embed URL"
+        placeholder="Add embed URL"
         value={url}
         onChange={(e) => setUrl(e.target.value)}
         onKeyDown={handleKeyDown}
