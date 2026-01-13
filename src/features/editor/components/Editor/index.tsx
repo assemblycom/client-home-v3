@@ -1,8 +1,12 @@
 'use client'
 
 import { usePrimaryCta, useSecondaryCta } from '@app-bridge/hooks'
+import { BubbleMenu } from '@editor/components/Editor/BubbleMenu'
 import extensions from '@editor/components/Editor/extensions'
+import { useEditorStore } from '@editor/stores/editorStore'
+import { EmbedBubbleInput } from '@extensions/Embed.ext/EmbedBubbleInput'
 import { EditorContent, useEditor } from '@tiptap/react'
+import { useEffect } from 'react'
 
 interface EditorProps {
   content: string
@@ -27,7 +31,6 @@ export const Editor = ({ content, editable = true }: EditorProps) => {
   })
 
   const editor = useEditor({
-    // All extensions exported from the extensions folder
     extensions,
     content,
     editable,
@@ -39,5 +42,21 @@ export const Editor = ({ content, editable = true }: EditorProps) => {
     },
   })
 
-  return <EditorContent editor={editor} />
+  const { setEditor, destroyEditor, showEmbedInput, setShowEmbedInput } = useEditorStore()
+
+  useEffect(() => {
+    if (editor) {
+      setEditor(editor)
+    }
+    return destroyEditor
+  }, [editor, destroyEditor, setEditor])
+
+  return editor ? (
+    <div>
+      <BubbleMenu id="asdf" editor={editor} open={showEmbedInput}>
+        <EmbedBubbleInput editor={editor} showEmbedInput={showEmbedInput} setShowEmbedInput={setShowEmbedInput} />
+      </BubbleMenu>
+      <EditorContent editor={editor} />
+    </div>
+  ) : null
 }
