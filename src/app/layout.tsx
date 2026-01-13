@@ -1,11 +1,11 @@
 import 'copilot-design-system/dist/styles/main.css'
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import AppProvider from './app-provder'
-import './globals.css'
 import { authenticateHeaders } from '@auth/lib/authenticate'
 import { AuthProvider } from '@auth/providers/auth.provider'
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
 import { headers } from 'next/headers'
+import { AppProvider } from './app-provider'
+import './globals.css'
 
 const inter = Inter({
   subsets: ['latin'],

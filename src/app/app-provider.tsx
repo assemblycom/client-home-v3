@@ -30,7 +30,7 @@ export function getQueryClient() {
   }
 }
 
-export default function AppProvider({ children }: { children: React.ReactNode }) {
+export function AppProvider({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient()
 
   return (
