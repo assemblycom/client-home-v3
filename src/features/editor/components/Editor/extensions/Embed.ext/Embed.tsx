@@ -1,7 +1,7 @@
 import type { EmbedOptions } from '@extensions/Embed.ext'
 import { ResizeBar } from '@extensions/Embed.ext/ResizeBar'
 import { type NodeViewProps, NodeViewWrapper } from '@tiptap/react'
-import { useCallback, useState } from 'react'
+import { useCallback } from 'react'
 import { debounce } from '@/utils/debounce'
 
 interface EmbedProps extends NodeViewProps {
@@ -11,15 +11,11 @@ interface EmbedProps extends NodeViewProps {
 }
 
 export const Embed = (props: EmbedProps) => {
-  const [isResizing, setIsResizing] = useState(false)
-
   const handleMouseDown = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
       const parent = event.currentTarget.closest('.embed')
-      const image = parent?.querySelector('div.iframe_container')
+      const image = parent?.querySelector('div.embed__container')
       if (!image) return
-
-      setIsResizing(true)
 
       const startSize = { x: image.clientWidth, y: image.clientHeight }
       const startPosition = { x: event.pageX, y: event.pageY }
@@ -32,7 +28,6 @@ export const Embed = (props: EmbedProps) => {
       }, 10)
 
       const onMouseUp = () => {
-        setIsResizing(false)
         document.removeEventListener('mousemove', onMouseMove)
         document.removeEventListener('mouseup', onMouseUp)
       }
@@ -58,14 +53,14 @@ export const Embed = (props: EmbedProps) => {
   const isReadonly = false
 
   return (
-    <NodeViewWrapper className="embed relative">
-      <div
-        className="iframe_container"
-        style={{
-          height: props.node.attrs.height,
-          width: props.node.attrs.width,
-        }}
-      >
+    <NodeViewWrapper
+      className="embed group relative inline-block"
+      style={{
+        height: props.node.attrs.height,
+        width: props.node.attrs.width,
+      }}
+    >
+      <div className="embed__container h-full w-full">
         <iframe
           title="Client Home embed"
           src={extractIframeSrc(props.node.attrs.src)}
@@ -77,14 +72,12 @@ export const Embed = (props: EmbedProps) => {
           }}
         />
       </div>
+
       {!isReadonly && (
-        // biome-ignore lint/a11y/noStaticElementInteractions: This is more semantic as a div since it is draggable
-        <div
-          className={`resize-trigger${isResizing ? '' : 'pointer-events-none!'} !hover:pointer-events-auto absolute grid h-full w-full place-items-end`}
+        <ResizeBar
           onMouseDown={handleMouseDown}
-        >
-          <ResizeBar />
-        </div>
+          className="opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100"
+        />
       )}
     </NodeViewWrapper>
   )
