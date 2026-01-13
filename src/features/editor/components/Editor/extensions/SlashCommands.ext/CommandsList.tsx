@@ -3,7 +3,7 @@
 import type { SlashCommandItem } from '@extensions/SlashCommands.ext/types'
 import type { SuggestionProps } from '@tiptap/suggestion'
 import clsx from 'clsx'
-import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { clampIndex } from '@/utils/array'
 
 export type CommandsListHandle = {
