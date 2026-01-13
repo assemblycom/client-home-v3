@@ -3,7 +3,7 @@
 import type { SlashCommandItem } from '@extensions/SlashCommands.ext/types'
 import type { SuggestionProps } from '@tiptap/suggestion'
 import clsx from 'clsx'
-import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 import { clampIndex } from '@/utils/array'
 
 export type CommandsListHandle = {
@@ -12,47 +12,47 @@ export type CommandsListHandle = {
 
 type Props = SuggestionProps<SlashCommandItem>
 
-export const CommandsList = forwardRef<CommandsListHandle, Props>(function CommandsList({ items, command }, ref) {
-  // We still use forwardRef here because Tiptap does not support React's ref forwarding yet + we have to expose an imperitive handle
+export const CommandsList = forwardRef<CommandsListHandle, Props>(function CommandsList(props, ref) {
+  const { items, command } = props
   const [selectedIndex, setSelectedIndex] = useState(0)
 
+  // keep latest values
+  const latest = useRef({ items, command, selectedIndex })
+
+  useEffect(() => {
+    latest.current = { items, command, selectedIndex }
+  }, [items, command, selectedIndex])
+
   const selectItem = (index: number) => {
+    const { items, command } = latest.current
     const item = items[index]
     if (item) command(item)
   }
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: Force recompute handlers when items changes.
-  const handlers = useMemo(() => {
-    const up = () => setSelectedIndex((i) => clampIndex(i - 1, items.length))
-    const down = () => setSelectedIndex((i) => clampIndex(i + 1, items.length))
-    const enter = () => selectItem(clampIndex(selectedIndex, items.length))
-
-    const onKeyDown = (event: KeyboardEvent): boolean => {
+  useImperativeHandle(ref, () => ({
+    onKeyDown(event) {
+      const { items, selectedIndex } = latest.current
       if (!items.length) return false
 
       switch (event.key) {
         case 'ArrowUp':
           event.preventDefault()
-          up()
+          setSelectedIndex((i) => clampIndex(i - 1, items.length))
           return true
         case 'ArrowDown':
           event.preventDefault()
-          down()
+          setSelectedIndex((i) => clampIndex(i + 1, items.length))
           return true
         case 'Enter':
           event.preventDefault()
-          enter()
+          selectItem(clampIndex(selectedIndex, items.length))
           return true
         default:
           return false
       }
-    }
-
-    return { onKeyDown }
-    // selectedIndex is used by enter()
-  }, [items.length, selectedIndex, command])
-
-  useImperativeHandle(ref, () => ({ onKeyDown: handlers.onKeyDown }), [handlers])
+    },
+  }))
+  // no deps needed; it always reads latest.current
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Reset selected index when items changes.
   useEffect(() => setSelectedIndex(0), [items])
