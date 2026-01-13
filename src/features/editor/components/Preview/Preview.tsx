@@ -1,4 +1,3 @@
-import type { User } from '@auth/lib/user.entity'
 import { useAuthStore } from '@auth/providers/auth.provider'
 import { useQuery } from '@tanstack/react-query'
 import { ROUTES } from '@/app/routes'
