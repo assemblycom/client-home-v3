@@ -58,7 +58,7 @@ export const EmbedBubbleInput = ({ editor, showEmbedInput, setShowEmbedInput }: 
         onKeyDown={handleKeyDown}
         className="px-2 text-custom-xs focus:outline-none"
       />
-      <button type="reset" onClick={() => setShowEmbedInput(false)} className="p-1 hover:bg-background-primary">
+      <button type="reset" onClick={handleInputUnload} className="p-1 hover:bg-background-primary">
         <Icon
           icon="Close"
           width={12}
