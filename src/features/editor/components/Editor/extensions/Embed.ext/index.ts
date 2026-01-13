@@ -1,30 +1,25 @@
-import { IframeEmbed } from '@extensions/Embed.ext/Embed'
+import { Embed } from '@extensions/Embed.ext/Embed'
 import { mergeAttributes, Node } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
-    iframe: {
-      /**
-       * Add an iframe
-       */
-      setIframe: (options: { src: string }) => ReturnType
+    embed: {
+      setEmbed: (options: { src: string }) => ReturnType
     }
   }
 }
 
-export interface IframeOptions {
+export interface EmbedOptions {
   allowFullscreen: boolean
   HTMLAttributes: {
     [key: string]: string
   }
 }
 
-export const IframeExtension = Node.create<IframeOptions>({
-  name: 'iframe',
-
+export const EmbedExt = Node.create<EmbedOptions>({
+  name: 'embed',
   group: 'block',
-
   atom: true,
 
   addOptions() {
@@ -78,12 +73,12 @@ export const IframeExtension = Node.create<IframeOptions>({
   },
 
   addNodeView() {
-    return ReactNodeViewRenderer(IframeEmbed)
+    return ReactNodeViewRenderer(Embed)
   },
 
   addCommands() {
     return {
-      setIframe:
+      setEmbed:
         (options: { src: string }) =>
         ({ tr, dispatch }) => {
           const { selection } = tr
