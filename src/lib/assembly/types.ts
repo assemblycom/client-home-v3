@@ -27,6 +27,7 @@ export type Token = z.infer<typeof TokenSchema>
 // Response schema for `/workspace` endpoint
 export const WorkspaceResponseSchema = z.object({
   id: z.string(),
+  portalUrl: z.string().nullish(),
   brandName: z.string().optional(),
   labels: z
     .object({

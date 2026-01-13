@@ -68,6 +68,8 @@ export const withErrorHandler = (handler: RequestHandler): RequestHandler => {
         logger.error('Unhandled error :: ', error)
       }
 
+      console.log(error)
+      console.trace()
       // Return a JSON error response instead of HTML error page for API routes
       // In the past we have struggled a lot with "Failed to parse JSON from "<!DOCTYPE..." kind of errors
       if (req.nextUrl.pathname.includes('/api') || req.nextUrl.pathname.includes('/cron')) {

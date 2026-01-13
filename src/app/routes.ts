@@ -5,6 +5,7 @@ const ROUTES = Object.freeze({
     health: '/api/health',
     settings: '/api/settings',
   },
+  workspace: '/api/workspace',
 })
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'HEAD'
@@ -24,6 +25,7 @@ export const authorizedRoutes: Record<string, RouteRule[]> = {
   public: [ROUTES.api.health],
   internalUsers: [
     ROUTES.home,
+    ROUTES.workspace,
     {
       path: ROUTES.api.settings,
       methods: ['GET', 'PATCH'],
@@ -31,6 +33,7 @@ export const authorizedRoutes: Record<string, RouteRule[]> = {
   ],
   clientUsers: [
     ROUTES.client,
+    ROUTES.workspace,
     {
       path: ROUTES.api.settings,
       methods: ['GET'],
