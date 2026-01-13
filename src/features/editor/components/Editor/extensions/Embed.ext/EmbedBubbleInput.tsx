@@ -2,7 +2,7 @@ import { EMBED_PLACEHOLDER } from '@editor/constants'
 import type { Editor } from '@tiptap/core'
 import { Icon } from 'copilot-design-system'
 import { type KeyboardEvent, useEffect, useRef, useState } from 'react'
-import { fixUrl } from '@/utils/urls'
+import { fixEmbedUrl } from '@/utils/urls'
 
 interface EmbedBubbleInputProps {
   editor: Editor
@@ -30,7 +30,7 @@ export const EmbedBubbleInput = ({ editor, showEmbedInput, setShowEmbedInput }: 
       editor
         .chain()
         .focus()
-        .setEmbed({ src: fixUrl(url) })
+        .setEmbed({ src: fixEmbedUrl(url) })
         .run()
       return handleInputUnload()
     }
