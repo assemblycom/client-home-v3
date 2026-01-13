@@ -2,7 +2,7 @@ import { Sidebar } from '@editor/components/Sidebar'
 import { TopBar } from '@editor/components/TopBar'
 import { EditorWrapper } from '@/features/editor/components/EditorWrapper'
 
-export default async function Home() {
+export default function Home() {
   return (
     <div className="flex h-screen w-screen">
       <div className="flex-1">
