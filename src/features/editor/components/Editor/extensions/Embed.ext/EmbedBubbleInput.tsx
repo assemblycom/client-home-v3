@@ -1,60 +1,69 @@
 import type { Editor } from '@tiptap/core'
-import { type SyntheticEvent, useEffect, useRef, useState } from 'react'
+import { Icon } from 'copilot-design-system'
+import { type KeyboardEvent, useEffect, useRef, useState } from 'react'
 import { fixUrl } from '@/utils/urls'
 
-interface IframeBubbleInputProps {
+interface EmbedBubbleInputProps {
   editor: Editor
+  showEmbedInput: boolean
+  setShowEmbedInput: (showEmbedInput: boolean) => void
 }
 
-export const IframeBubbleInput = ({ editor }: IframeBubbleInputProps) => {
+export const EmbedBubbleInput = ({ editor, showEmbedInput, setShowEmbedInput }: EmbedBubbleInputProps) => {
   const [url, setUrl] = useState('')
-
   const urlInputRef = useRef<HTMLInputElement>(null)
 
-  const handleKeyDown = (event: SyntheticEvent<HTMLDivElement>) => {
-    //@ts-expect-error event should contain code
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.code === 'Escape') {
       event.preventDefault()
-      // TODO: trigger setShowEmbedInput(false)
+      setShowEmbedInput(false)
+      setUrl('')
+      return
     }
 
-    //@ts-expect-error event should contain code
     if (event.code === 'Enter') {
       event.preventDefault()
-      console.info(fixUrl(url))
       editor
         .chain()
         .focus()
-        .setIframe({ src: fixUrl(url) })
+        .setEmbed({ src: fixUrl(url) })
         .run()
-      // TODO: trigger setShowEmbedInput(false)
+      setShowEmbedInput(false)
       setUrl('')
     }
   }
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: force side-effect here
   useEffect(() => {
-    if (urlInputRef.current) {
-      urlInputRef.current.focus()
-    }
-  }, [urlInputRef.current])
+    if (!showEmbedInput) return
+
+    // Wait until tippy has actually mounted/moved the node into the popper
+    const raf = requestAnimationFrame(() => {
+      urlInputRef.current?.focus()
+      urlInputRef.current?.select()
+    })
+
+    return () => cancelAnimationFrame(raf)
+  }, [showEmbedInput])
 
   return (
-    <div>
+    <div className="flex items-center border border-border-gray bg-white p-2">
       <input
-        type="text"
-        onChange={(e) => setUrl(e.target.value)}
         ref={urlInputRef}
-        onKeyDown={handleKeyDown}
+        type="text"
+        placeholder="Paste embed URL"
         value={url}
+        onChange={(e) => setUrl(e.target.value)}
+        onKeyDown={handleKeyDown}
+        className="px-2 focus:outline-none"
       />
-      <button
-        type="reset"
-        onClick={() => {
-          // TODO: setShowEmbedInput(false)
-          console.info('cancelled')
-        }}
-      />
+      <button type="reset" onClick={() => setShowEmbedInput(false)}>
+        <Icon
+          icon="Cancel"
+          width={16}
+          height={16}
+          className="text-text-primary transition-all duration-100 ease-in-out"
+        />
+      </button>
     </div>
   )
 }

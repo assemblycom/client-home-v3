@@ -1,16 +1,16 @@
-import type { IframeOptions } from '@extensions/Embed.ext'
+import type { EmbedOptions } from '@extensions/Embed.ext'
 import { ResizeBar } from '@extensions/Embed.ext/ResizeBar'
 import { type NodeViewProps, NodeViewWrapper } from '@tiptap/react'
 import { useCallback, useState } from 'react'
 import { debounce } from '@/utils/debounce'
 
-interface IframeProps extends NodeViewProps {
+interface EmbedProps extends NodeViewProps {
   extension: NodeViewProps['extension'] & {
-    options: IframeOptions
+    options: EmbedOptions
   }
 }
 
-export const IframeEmbed = (props: IframeProps) => {
+export const Embed = (props: EmbedProps) => {
   const [isResizing, setIsResizing] = useState(false)
 
   const handleMouseDown = useCallback(
@@ -55,7 +55,7 @@ export const IframeEmbed = (props: IframeProps) => {
     }
   }
 
-  const isReadonly = true
+  const isReadonly = false
 
   return (
     <NodeViewWrapper className="embed relative">
