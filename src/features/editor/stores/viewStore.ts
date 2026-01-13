@@ -6,7 +6,7 @@ export enum ViewMode {
 }
 
 export enum DisplayMode {
-  DESKTOP = 'dekstop',
+  DESKTOP = 'desktop',
   MOBILE = 'mobile',
 }
 
@@ -29,12 +29,8 @@ type ViewStore = ViewStoreState & ViewStoreAction
 
 export const useViewStore = create<ViewStore>()((set) => ({
   ...defaultState,
-  changeView: (data: Partial<ViewStoreState>) => {
-    set(data)
-  },
-  reset: () => {
-    set(defaultState)
-  },
+  changeView: (data: Partial<ViewStoreState>) => set(data),
+  reset: () => set(defaultState),
 }))
 
 export const viewStore = useViewStore

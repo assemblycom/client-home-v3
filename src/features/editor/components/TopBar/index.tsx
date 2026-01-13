@@ -2,16 +2,16 @@
 
 import { TabBtn } from '@editor/components/TopBar/TabBtn'
 import { useViewStore, ViewMode } from '@editor/stores/viewStore'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useEffectEvent, useMemo } from 'react'
 import { debounce } from '@/utils/debounce'
 
 export const TopBar = () => {
-  const { viewMode, changeView } = useViewStore()
+  const viewMode = useViewStore((store) => store.viewMode)
+  const changeView = useViewStore((store) => store.changeView)
 
-  const debouncedChangeView = useMemo(
-    () => debounce((view: ViewMode) => changeView({ viewMode: view }), 150),
-    [changeView],
-  )
+  const changeViewInStore = useEffectEvent((viewMode: ViewMode) => changeView({ viewMode }))
+
+  const debouncedChangeView = useMemo(() => debounce((view: ViewMode) => changeViewInStore(view), 250), [])
 
   useEffect(() => {
     return () => {

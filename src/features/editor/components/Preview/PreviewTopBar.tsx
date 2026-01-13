@@ -13,8 +13,8 @@ export const PreviewTopBar: React.FC<PreviewTopBarProps> = ({ url }) => {
         <div className="h-3 w-3 rounded-full bg-neutral-200" />
       </div>
       <div className="flex justify-center">
-        <div className="line-clamp-1 w-full max-w-md truncate text-ellipsis rounded-md bg-neutral-100 px-3 pt-1.25 pb-1 text-center text-gray-300 text-xs">
-          {url || 'Loading...'}
+        <div className="line-clamp-1 w-full max-w-109 truncate text-ellipsis rounded-md bg-neutral-100 px-3 pt-1.25 pb-1 text-center text-gray-300 text-xs">
+          {url || ''}
         </div>
       </div>
       <div />

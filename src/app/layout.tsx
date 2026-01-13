@@ -3,6 +3,9 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import AppProvider from './app-provder'
 import './globals.css'
+import { authenticateHeaders } from '@auth/lib/authenticate'
+import { AuthProvider } from '@auth/providers/auth.provider'
+import { headers } from 'next/headers'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -14,15 +17,20 @@ export const metadata: Metadata = {
   description: 'A modern and dynamic Homepage for your clients',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const requestHeaders = await headers()
+  const user = authenticateHeaders(requestHeaders)
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
-        <AppProvider>{children}</AppProvider>
+        {/* TODO:- tbd is this the good place for this?*/}
+        <AuthProvider {...user}>
+          <AppProvider>{children}</AppProvider>
+        </AuthProvider>
       </body>
     </html>
   )
