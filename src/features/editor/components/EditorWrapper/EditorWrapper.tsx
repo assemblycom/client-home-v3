@@ -9,7 +9,7 @@ import { useViewStore, ViewMode } from '@/features/editor/stores/viewStore'
 interface Props extends User {}
 
 export function EditorWrapper(props: Props) {
-  const { viewMode } = useViewStore()
+  const viewMode = useViewStore(s => s.viewMode)
 
   return (
     <div className="contents">
