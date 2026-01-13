@@ -13,12 +13,15 @@ export const EmbedBubbleInput = ({ editor, showEmbedInput, setShowEmbedInput }: 
   const [url, setUrl] = useState('')
   const urlInputRef = useRef<HTMLInputElement>(null)
 
+  const handleInputUnload = () => {
+    setUrl('')
+    setShowEmbedInput(false)
+  }
+
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.code === 'Escape') {
       event.preventDefault()
-      setShowEmbedInput(false)
-      setUrl('')
-      return
+      return handleInputUnload()
     }
 
     if (event.code === 'Enter') {
@@ -28,8 +31,7 @@ export const EmbedBubbleInput = ({ editor, showEmbedInput, setShowEmbedInput }: 
         .focus()
         .setEmbed({ src: fixUrl(url) })
         .run()
-      setShowEmbedInput(false)
-      setUrl('')
+      return handleInputUnload()
     }
   }
 
@@ -54,13 +56,13 @@ export const EmbedBubbleInput = ({ editor, showEmbedInput, setShowEmbedInput }: 
         value={url}
         onChange={(e) => setUrl(e.target.value)}
         onKeyDown={handleKeyDown}
-        className="px-2 focus:outline-none"
+        className="px-2 text-custom-xs focus:outline-none"
       />
-      <button type="reset" onClick={() => setShowEmbedInput(false)}>
+      <button type="reset" onClick={() => setShowEmbedInput(false)} className="p-1 hover:bg-background-primary">
         <Icon
-          icon="Cancel"
-          width={16}
-          height={16}
+          icon="Close"
+          width={12}
+          height={12}
           className="text-text-primary transition-all duration-100 ease-in-out"
         />
       </button>
