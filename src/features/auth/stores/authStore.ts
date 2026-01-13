@@ -10,7 +10,7 @@ interface AuthAction {
 export type AuthStore = AuthState & AuthAction
 
 export const createAuthStore = (user: User) =>
-  createStore<AuthStore>()((set, get) => ({
+  createStore<AuthStore>()((set) => ({
     ...user,
     setUser: (user: User) => set(() => user),
   }))
