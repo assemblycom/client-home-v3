@@ -10,6 +10,7 @@ interface EmbedProps extends NodeViewProps {
 }
 
 export const Embed = (props: EmbedProps) => {
+  const parentRef = useRef<HTMLDivElement | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
   const rafRef = useRef<number | null>(null)
   const isDraggingRef = useRef(false)
@@ -20,7 +21,8 @@ export const Embed = (props: EmbedProps) => {
       event.stopPropagation()
 
       const el = containerRef.current
-      if (!el) return
+      const parentEl = parentRef.current
+      if (!el || !parentEl) return
 
       isDraggingRef.current = true
 
@@ -38,6 +40,10 @@ export const Embed = (props: EmbedProps) => {
 
         const nextW = Math.max(100, startW + (e.clientX - startX))
         const nextH = Math.max(60, startH + (e.clientY - startY))
+
+        // Do not allow iframe to exceed parent width.
+        // Exceeding parent height is okay.
+        if (nextW >= parentEl.clientWidth) return
 
         // IMPORTANT: Throttle DOM writes to one per animation frame
         if (rafRef.current) cancelAnimationFrame(rafRef.current)
@@ -57,7 +63,7 @@ export const Embed = (props: EmbedProps) => {
         el.style.pointerEvents = ''
         document.body.style.userSelect = ''
 
-        // commit final size to TipTap once
+        // Commit final size to TipTap once only
         const finalW = el.getBoundingClientRect().width
         const finalH = el.getBoundingClientRect().height
         props.updateAttributes({
@@ -84,33 +90,35 @@ export const Embed = (props: EmbedProps) => {
   const isReadonly = false
 
   return (
-    <NodeViewWrapper className="embed group relative inline-block">
-      <div
-        ref={containerRef}
-        className="embed__container"
-        style={{
-          height: props.node.attrs.height,
-          width: props.node.attrs.width,
-        }}
-      >
-        <iframe
-          title="Client Home embed"
-          src={extractIframeSrc(props.node.attrs.src)}
-          width="100%"
-          height="100%"
-          onError={(e) => {
-            e.stopPropagation()
-            console.info('[iframe error]:', e)
+    <NodeViewWrapper ref={parentRef}>
+      <div className="embed group relative inline-block">
+        <div
+          ref={containerRef}
+          className="embed__container"
+          style={{
+            height: props.node.attrs.height,
+            width: props.node.attrs.width,
           }}
-        />
-      </div>
+        >
+          <iframe
+            title="Client Home embed"
+            src={extractIframeSrc(props.node.attrs.src)}
+            width="100%"
+            height="100%"
+            onError={(e) => {
+              e.stopPropagation()
+              console.info('[iframe error]:', e)
+            }}
+          />
+        </div>
 
-      {!isReadonly && (
-        <ResizeBar
-          onMouseDown={handleMouseDown}
-          className="opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100"
-        />
-      )}
+        {!isReadonly && (
+          <ResizeBar
+            onMouseDown={handleMouseDown}
+            className="opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100"
+          />
+        )}
+      </div>
     </NodeViewWrapper>
   )
 }
