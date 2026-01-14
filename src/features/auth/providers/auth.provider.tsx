@@ -5,11 +5,9 @@ import { type AuthStore, type AuthStoreApi, createAuthStore } from '@auth/stores
 import { createContext, type PropsWithChildren, useContext, useRef } from 'react'
 import { useStore } from 'zustand/react'
 
-interface Props extends User {}
-
 const AuthContext = createContext<AuthStoreApi | null>(null)
 
-export function AuthProvider({ children, ...props }: PropsWithChildren<Props>) {
+export function AuthProvider({ children, ...props }: PropsWithChildren<User>) {
   const storeRef = useRef<AuthStoreApi | null>(null)
   if (storeRef.current === null) {
     storeRef.current = createAuthStore(props)

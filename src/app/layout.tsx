@@ -27,7 +27,6 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
-        {/* TODO:- tbd is this the good place for this?*/}
         <AuthProvider {...user}>
           <AppProvider>{children}</AppProvider>
         </AuthProvider>

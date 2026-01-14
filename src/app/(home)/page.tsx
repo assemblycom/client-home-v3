@@ -1,6 +1,6 @@
+import { EditorWrapper } from '@editor/components/EditorWrapper'
 import { Sidebar } from '@editor/components/Sidebar'
 import { TopBar } from '@editor/components/TopBar'
-import { EditorWrapper } from '@/features/editor/components/EditorWrapper'
 
 export default function Home() {
   return (
