@@ -97,6 +97,10 @@ body {
     content: attr(data-placeholder);
   }
 
+  img {
+    @apply py-2;
+  }
+
   table {
     @apply overflow-hidden w-full table-fixed bg-white mt-1 mb-1 border-collapse;
 
