@@ -3,28 +3,7 @@
 @import "./assets/_variables/_colors.css";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --text-primary: #212b36;
-  --text-secondary: #6b6f76;
   --font-inter: "Inter", "Arial", "Helvetica", sans-serif;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-
-  --color-text-primary: var(--text-primary);
-  --color-text-secondary: var(--text-secondary);
-  --color-text-placeholder: #6b6f76;
-
-  --color-border-gray: #dfe1e4;
-  --color-border-popper: #ededf0;
-
-  --color-background-primary: #f8f9fb;
-  --color-background-secondary: #eff1f4;
-
-  --font-sans: var(--font-inter);
 }
 
 @layer components {

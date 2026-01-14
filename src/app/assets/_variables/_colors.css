@@ -1,4 +1,24 @@
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --text-primary: #212b36;
+  --text-secondary: #6b6f76;
+}
+
 @theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-placeholder: #6b6f76;
+
+  --color-border-gray: #dfe1e4;
+  --color-border-popper: #ededf0;
+
+  --color-background-primary: #f8f9fb;
+  --color-background-secondary: #eff1f4;
+
   --color-neutral-200: #edf2f6;
   --color-neutral-100: #f6f9fc;
 
