@@ -122,18 +122,19 @@ body {
   }
 }
 
-/* IMPORTANT: If changing resize bar styles, update ResizeBar.tsx separately. Can't share them under a single utitlity styling */
+@utility resize-bar {
+  @apply absolute transition-opacity duration-150 ease-out bg-text-placeholder rounded z-10 border border-gray-200;
+  @apply w-2 h-[50%] top-1/2 right-0 -translate-y-[50%] transform cursor-nesw-resize;
+}
+
 [data-resize-wrapper] {
   @apply relative;
 
-  [data-resize-handle] {
-    @apply absolute opacity-0 transition-opacity duration-150 ease-out bg-text-placeholder rounded z-10 border border-gray-200;
-  }
   &:hover [data-resize-handle] {
     @apply opacity-80;
   }
-  [data-resize-handle="top-right"] {
-    @apply w-2 h-[50%] top-1/2 right-[-4px] translate-y-[50%] transform cursor-nw-resize;
+  [data-resize-handle="bottom-right"] {
+    @apply resize-bar opacity-0;
   }
 }
 
