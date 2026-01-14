@@ -116,7 +116,7 @@ export const Embed = (props: EmbedProps) => {
         {!isReadonly && (
           <ResizeBar
             onMouseDown={handleMouseDown}
-            className="opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100"
+            className="opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-80"
           />
         )}
       </div>
