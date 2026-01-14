@@ -92,7 +92,7 @@ export const Embed = (props: EmbedProps) => {
 
   return (
     <NodeViewWrapper ref={parentRef}>
-      <div className="embed group relative inline-block">
+      <div className="embed group relative inline-block py-2">
         <div
           ref={containerRef}
           className={cn('embed__container', props.selected && 'outline-2 outline-border-gray outline-offset-3')}
