@@ -22,7 +22,6 @@ export const FileHandlerExt = FileHandler.configure({
     })
   },
   onPaste: (currentEditor, files, htmlContent) => {
-    console.log(files)
     files.forEach((file) => {
       if (htmlContent) {
         // if there is htmlContent, stop manual insertion & let other extensions handle insertion via inputRule
