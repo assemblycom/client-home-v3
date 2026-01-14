@@ -73,8 +73,6 @@ export function BubbleMenu({
       content: contentRootRef.current,
       popperOptions: { strategy: 'fixed' },
       duration: 0,
-      // Optional: prevents “one opens and another closes unexpectedly”
-      // because of focus/blur behavior in some setups.
       hideOnClick: false,
     })
 

@@ -53,7 +53,7 @@ export const Editor = ({ content, editable = true }: EditorProps) => {
 
   return editor ? (
     <div>
-      <BubbleMenu id="asdf" editor={editor} open={showEmbedInput}>
+      <BubbleMenu id="embed-bubble-menu" editor={editor} open={showEmbedInput}>
         <EmbedBubbleInput editor={editor} showEmbedInput={showEmbedInput} setShowEmbedInput={setShowEmbedInput} />
       </BubbleMenu>
       <EditorContent editor={editor} />
