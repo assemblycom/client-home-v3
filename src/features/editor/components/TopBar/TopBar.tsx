@@ -1,5 +1,6 @@
 'use client'
 
+import { DisplayModeTab } from '@editor/components/TopBar/DisplayModeTab'
 import { TabBtn } from '@editor/components/TopBar/TabBtn'
 import { useViewStore, ViewMode } from '@editor/stores/viewStore'
 import { useEffect, useEffectEvent, useMemo } from 'react'
@@ -37,6 +38,7 @@ export const TopBar = () => {
           handleClick={() => changeViewMode(ViewMode.PREVIEW)}
         />
       </div>
+      <div>{viewMode === ViewMode.PREVIEW && <DisplayModeTab />}</div>
     </nav>
   )
 }
