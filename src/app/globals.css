@@ -124,7 +124,7 @@ body {
 
 @utility resize-bar {
   @apply absolute transition-opacity duration-150 ease-out bg-text-placeholder rounded z-10 border border-gray-200;
-  @apply w-2 h-[50%] top-1/2 right-0 -translate-y-[50%] transform cursor-nesw-resize;
+  @apply w-2 h-[50%] top-1/2 right-0 -translate-y-[50%] transform cursor-nw-resize;
 }
 
 [data-resize-wrapper] {
