@@ -1,5 +1,9 @@
 @theme inline {
   --color-neutral-200: #edf2f6;
   --color-neutral-100: #f6f9fc;
+
+  --color-gray-200: #dfe1e4;
   --color-gray-300: #c9cbcd;
+
+  --color-primary: #212b36;
 }

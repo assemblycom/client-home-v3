@@ -20,14 +20,14 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
       "@app-bridge/*": ["./src/features/app-bridge/*"],
       "@auth/*": ["./src/features/auth/*"],
       "@assembly/*": ["./src/lib/assembly/*"],
       "@editor/*": ["./src/features/editor/*"],
       "@extensions/*": ["./src/features/editor/components/Editor/extensions/*"],
       "@media/*": ["./src/features/media/*"],
-      "@settings/*": ["./src/features/settings/*"]
+      "@settings/*": ["./src/features/settings/*"],
+      "@/*": ["./src/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".next/dev/types/**/*.ts", "**/*.mts"],
