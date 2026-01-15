@@ -1,6 +1,6 @@
 import { usePrimaryCta, useSecondaryCta } from '@app-bridge/hooks'
 import { useEditorStore } from '@editor/stores/editorStore'
-import { useSettings } from '@settings/hooks/useSettings'
+// import { useSettings } from '@settings/hooks/useSettings'
 
 export const useAppBridge = () => {
   const editor = useEditorStore((s) => s.editor)
