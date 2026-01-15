@@ -6,18 +6,21 @@ import { api } from '@/lib/core/axios.instance'
 
 export const useSettings = () => {
   const token = useAuthStore((s) => s.token)
+  const queryKey = 'settings'
 
   const settings = useQuery<SettingsWithActions>({
-    queryKey: ['settings'],
+    queryKey: [queryKey],
     queryFn: () =>
       api.get<{ data: SettingsWithActions }>(`${ROUTES.api.settings}/?token=${token}`).then((res) => res.data.data),
   })
 
   const updateSettingsMutation = useMutation({
     mutationFn: (settings: SettingsWithActions) => {
-      return api.post(`${ROUTES.api.settings}/?token=${token}`, settings)
+      return api
+        .patch<{ data: SettingsWithActions }>(`${ROUTES.api.settings}/?token=${token}`, settings)
+        .then((res) => res.data)
     },
   })
 
-  return { settings, updateSettingsMutation }
+  return { settings, updateSettingsMutation, queryKey }
 }

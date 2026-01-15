@@ -5,7 +5,7 @@ import { useAppBridge } from '@editor/hooks/useAppBridge'
 import { useEditorStore } from '@editor/stores/editorStore'
 import { EmbedBubbleInput } from '@extensions/Embed.ext/EmbedBubbleInput'
 import extensions from '@extensions/extensions'
-import { useSettings } from '@settings/hooks/useSettings'
+import { useSettings } from '@settings/hooks/useSettingsQuery'
 import { EditorContent, useEditor } from '@tiptap/react'
 import { useEffect } from 'react'
 
