@@ -1,10 +1,10 @@
 import 'copilot-design-system/dist/styles/main.css'
 import { authenticateHeaders } from '@auth/lib/authenticate'
 import { AuthProvider } from '@auth/providers/auth.provider'
+import { AppProvider } from '@common/providers/app.provider'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { headers } from 'next/headers'
-import { AppProvider } from './app-provider'
 import './globals.css'
 
 const inter = Inter({
@@ -24,6 +24,7 @@ export default async function RootLayout({
 }>) {
   const requestHeaders = await headers()
   const user = authenticateHeaders(requestHeaders)
+
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
