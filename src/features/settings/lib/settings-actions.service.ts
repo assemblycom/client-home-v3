@@ -1,10 +1,16 @@
-import type AssemblyClient from '@assembly/assembly-client'
+import AssemblyClient from '@assembly/assembly-client'
 import type { User } from '@auth/lib/user.entity'
 import type { ActionsRepository } from '@settings/lib/actions/actions.repository'
+import ActionsDrizzleRepository from '@settings/lib/actions/actions.repository'
 import { defaultContent } from '@settings/lib/constants'
 import type SettingsRepository from '@settings/lib/settings/settings.repository'
+import SettingsDrizzleRepository from '@settings/lib/settings/settings.repository'
 import type { SettingsWithActions } from '@settings/lib/settings-actions.entity'
-import type { SettingsActionsQueryRepository } from '@settings/lib/settings-actions.query.repository'
+import {
+  SettingsActionsDrizzleQueryRepository,
+  type SettingsActionsQueryRepository,
+} from '@settings/lib/settings-actions.query.repository'
+import db from '@/db'
 import type { UpdateSettingsWithActionDto } from '@/features/settings/lib/settings-actions.dto'
 import { SettingsUpdateSchema } from '@/features/settings/lib/types'
 import BaseService from '@/lib/core/base.service'
@@ -19,6 +25,26 @@ export default class SettingsActionsService extends BaseService {
     protected readonly actionsRepository: ActionsRepository,
   ) {
     super(user, assembly)
+  }
+
+  /**
+   * Scaffold a new SettingsActionsService with wired dependencies
+   * @param user
+   * @returns
+   */
+  static new(user: User) {
+    const assembly = new AssemblyClient(user.token)
+    const settingsRepository = new SettingsDrizzleRepository(db)
+    const actionsRepository = new ActionsDrizzleRepository(db)
+    const settingsActionsQueryRepository = new SettingsActionsDrizzleQueryRepository(db)
+
+    return new SettingsActionsService(
+      user,
+      assembly,
+      settingsActionsQueryRepository,
+      settingsRepository,
+      actionsRepository,
+    )
   }
 
   async getForWorkspace(): Promise<SettingsWithActions> {
