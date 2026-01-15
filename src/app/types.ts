@@ -3,7 +3,7 @@
  */
 export type APIResponse = {
   message?: string
-  data?: object
+  data?: object | string
   page?: number
   pageSize?: number
 }
