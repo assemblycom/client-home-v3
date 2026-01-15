@@ -23,6 +23,7 @@
       "@app-bridge/*": ["./src/features/app-bridge/*"],
       "@auth/*": ["./src/features/auth/*"],
       "@assembly/*": ["./src/lib/assembly/*"],
+      "@common/*": ["./src/lib/common/*"],
       "@editor/*": ["./src/features/editor/*"],
       "@extensions/*": ["./src/features/editor/components/Editor/extensions/*"],
       "@media/*": ["./src/features/media/*"],
