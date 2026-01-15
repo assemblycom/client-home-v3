@@ -11,7 +11,7 @@ export function EditorWrapper() {
   return (
     <div className="contents">
       <Activity mode={viewMode === ViewMode.EDITOR ? 'visible' : 'hidden'}>
-        <Editor content="" />
+        <Editor />
       </Activity>
 
       <Activity mode={viewMode === ViewMode.PREVIEW ? 'visible' : 'hidden'}>
