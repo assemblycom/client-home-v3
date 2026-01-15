@@ -1,38 +1,24 @@
 'use client'
 
-import { usePrimaryCta, useSecondaryCta } from '@app-bridge/hooks'
 import { BubbleMenu } from '@editor/components/Editor/BubbleMenu'
+import { useAppBridge } from '@editor/hooks/useAppBridge'
 import { useEditorStore } from '@editor/stores/editorStore'
 import { EmbedBubbleInput } from '@extensions/Embed.ext/EmbedBubbleInput'
 import extensions from '@extensions/extensions'
+import { useSettings } from '@settings/hooks/useSettings'
 import { EditorContent, useEditor } from '@tiptap/react'
 import { useEffect } from 'react'
 
 interface EditorProps {
-  content: string
   editable?: boolean
 }
 
-export const Editor = ({ content, editable = true }: EditorProps) => {
-  useSecondaryCta({
-    label: 'Cancel',
-    onClick: () => {
-      // Implement later when we do API implementation
-      console.info('Cancel')
-    },
-  })
-
-  usePrimaryCta({
-    label: 'Save Changes',
-    onClick: () => {
-      // Implement later when we do API implementation
-      console.info('Save Changes')
-    },
-  })
+export const Editor = ({ editable = true }: EditorProps) => {
+  const { settings } = useSettings()
 
   const editor = useEditor({
     extensions,
-    content,
+    content: settings.data?.content || '',
     editable,
     immediatelyRender: false, // Avoid SSR & hydration issues
     editorProps: {
@@ -50,6 +36,8 @@ export const Editor = ({ content, editable = true }: EditorProps) => {
     }
     return destroyEditor
   }, [editor, destroyEditor, setEditor])
+
+  useAppBridge()
 
   return editor ? (
     <div>
