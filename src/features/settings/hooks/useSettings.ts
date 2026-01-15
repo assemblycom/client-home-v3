@@ -12,6 +12,11 @@ export const useSettings = () => {
     queryKey: [queryKey],
     queryFn: () =>
       api.get<{ data: SettingsWithActions }>(`${ROUTES.api.settings}/?token=${token}`).then((res) => res.data.data),
+    refetchInterval: 0,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    retry: 3,
   })
 
   const updateSettingsMutation = useMutation({
