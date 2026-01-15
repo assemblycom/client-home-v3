@@ -4,7 +4,7 @@ import { useSettings } from '@settings/hooks/useSettings'
 
 export const useAppBridge = () => {
   const editor = useEditorStore((s) => s.editor)
-  const { updateSettingsMutation } = useSettings()
+  // const { updateSettingsMutation } = useSettings()
 
   useSecondaryCta({
     label: 'Cancel',
@@ -17,8 +17,12 @@ export const useAppBridge = () => {
   usePrimaryCta({
     label: 'Save Changes',
     onClick: () => {
-      // Implement later when we do API implementation
-      console.info('editor content', editor?.getHTML())
+      const content = editor?.getHTML()
+      if (!content) {
+        console.error('Could not parse content from editor')
+        return
+      }
+      // updateSettingsMutation.mutate({ content })
     },
   })
 }
