@@ -1,12 +1,12 @@
 import { useAuthStore } from '@auth/providers/auth.provider'
+import { Loader } from '@common/components/Loader'
+import { PreviewTopBar } from '@editor/components/Preview/PreviewTopBar'
 import { DisplayMode, useViewStore } from '@editor/stores/viewStore'
 import { useQuery } from '@tanstack/react-query'
 import { ROUTES } from '@/app/routes'
-import { Loader } from '@/features/common/components/Loader/Loader'
 import type { WorkspaceResponse } from '@/lib/assembly/types'
 import { api } from '@/lib/core/axios.instance'
 import { cn } from '@/utils/tailwind'
-import { PreviewTopBar } from './PreviewTopBar'
 
 export function Preview() {
   const workspaceId = useAuthStore((store) => store.workspaceId)
