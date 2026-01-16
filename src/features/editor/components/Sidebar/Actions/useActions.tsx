@@ -1,31 +1,39 @@
 import { ActionItemLabel } from '@editor/components/Sidebar/Actions/constant'
 import type { ActionItemIcon, ActionItemLabelType } from '@editor/components/Sidebar/Actions/type'
-import { useState } from 'react'
+import type { SettingsUpdateDto } from '@settings/lib/settings-actions.dto'
+import { useSettingsStore } from '@settings/providers/settings.provider'
+
+export const actionIcons: Record<ActionItemLabelType, ActionItemIcon> = {
+  [ActionItemLabel.INVOICE]: 'Billing',
+  [ActionItemLabel.MESSAGE]: 'Message',
+  [ActionItemLabel.CONTRACT]: 'Contract',
+  [ActionItemLabel.TASKS]: 'Tasks',
+  [ActionItemLabel.FORMS]: 'Form',
+}
+
+type ActionKey = keyof NonNullable<SettingsUpdateDto['actions']>
+
+export const actionKeys: Record<ActionItemLabelType, ActionKey> = {
+  [ActionItemLabel.INVOICE]: 'invoices',
+  [ActionItemLabel.MESSAGE]: 'messages',
+  [ActionItemLabel.CONTRACT]: 'contracts',
+  [ActionItemLabel.TASKS]: 'tasks',
+  [ActionItemLabel.FORMS]: 'forms',
+}
 
 export const useActions = () => {
-  const [checked, setChecked] = useState<Record<ActionItemLabelType, boolean>>({
-    [ActionItemLabel.INVOICE]: false,
-    [ActionItemLabel.MESSAGE]: false,
-    [ActionItemLabel.CONTRACT]: false,
-    [ActionItemLabel.TASKS]: false,
-    [ActionItemLabel.FORMS]: false,
-    [ActionItemLabel.FILES]: false,
-  })
+  const actions = useSettingsStore((s) => s.actions)
+  const setActions = useSettingsStore((s) => s.setActions)
 
-  const actionLabels: Record<ActionItemIcon, ActionItemLabelType> = {
-    Billing: ActionItemLabel.INVOICE,
-    DragDrop: ActionItemLabel.MESSAGE,
-    Contract: ActionItemLabel.CONTRACT,
-    Tasks: ActionItemLabel.TASKS,
-    Form: ActionItemLabel.FORMS,
-    Files: ActionItemLabel.FILES,
-  }
-
-  const actionItems = Object.entries(actionLabels).map(([k, v]) => ({
-    icon: k as ActionItemIcon,
-    label: v,
-    onChange: () => setChecked((prev) => ({ ...prev, [v]: !prev[v] })),
+  const actionItems = Object.keys(actionIcons).map((k) => ({
+    label: k,
+    icon: actionIcons[k as ActionItemLabelType],
+    checked: actions[actionKeys[k as ActionItemLabelType]] ?? false,
+    onChange: () => {
+      const key = actionKeys[k as ActionItemLabelType]
+      setActions({ [key]: !actions[key] })
+    },
   }))
 
-  return { actionItems, checked }
+  return { actionItems }
 }

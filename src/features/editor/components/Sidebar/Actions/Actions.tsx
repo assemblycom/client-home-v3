@@ -1,10 +1,10 @@
 'use client'
 
-import { ActionItem } from '@/features/editor/components/Sidebar/Actions/ActionItem'
-import { useActions } from '@/features/editor/components/Sidebar/Actions/useActions'
+import { ActionItem } from '@editor/components/Sidebar/Actions/ActionItem'
+import { useActions } from '@editor/components/Sidebar/Actions/useActions'
 
 export const Actions = () => {
-  const { actionItems, checked } = useActions()
+  const { actionItems } = useActions()
 
   return (
     <>
@@ -18,7 +18,7 @@ export const Actions = () => {
             icon={action.icon}
             label={action.label}
             onChange={action.onChange}
-            checked={checked[action.label]}
+            checked={action.checked}
           />
         ))}
       </div>

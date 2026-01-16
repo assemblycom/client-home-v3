@@ -4,5 +4,4 @@ export const ActionItemLabel = {
   CONTRACT: 'Contract',
   TASKS: 'Tasks',
   FORMS: 'Forms',
-  FILES: 'Files',
 } as const
