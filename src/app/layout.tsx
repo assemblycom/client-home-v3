@@ -6,6 +6,10 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { headers } from 'next/headers'
 import './globals.css'
+import SettingsActionsService from '@settings/lib/settings-actions.service'
+import { SettingsProvider } from '@settings/providers/settings.provider'
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
+import { getQueryClient } from '@/lib/core/query.utils'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -25,12 +29,23 @@ export default async function RootLayout({
   const requestHeaders = await headers()
   const user = authenticateHeaders(requestHeaders)
 
+  // Needed for both IU & client
+  const settingsService = SettingsActionsService.new(user)
+  const settings = await settingsService.getForWorkspace()
+
+  const queryClient = getQueryClient()
+  queryClient.setQueryData(['settings'], settings)
+
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
-        <AuthProvider {...user}>
-          <AppProvider>{children}</AppProvider>
-        </AuthProvider>
+        <AppProvider>
+          <HydrationBoundary state={dehydrate(queryClient)}>
+            <AuthProvider {...user}>
+              <SettingsProvider settings={settings}>{children}</SettingsProvider>
+            </AuthProvider>
+          </HydrationBoundary>
+        </AppProvider>
       </body>
     </html>
   )
