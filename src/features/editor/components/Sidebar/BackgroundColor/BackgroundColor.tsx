@@ -1,10 +1,18 @@
 'use client'
+import { useSettingsStore } from '@settings/providers/settings.provider'
 import Colorful from '@uiw/react-color-colorful'
 import { Popper } from '@/features/editor/components/Popper'
-import { useBackgroundColor } from '@/features/editor/components/Sidebar/BackgroundColor/useBackgroundColor'
+import { useBackgroundColorPopup } from '@/features/editor/components/Sidebar/BackgroundColor/useBackgroundColor'
 
 export const BackgroundColor = () => {
-  const { backgroundColor, setBackgroundColor, triggerRef, isOpen, setIsOpen, togglePopper } = useBackgroundColor()
+  const backgroundColor = useSettingsStore((s) => s.backgroundColor)
+  const setSettings = useSettingsStore((s) => s.setSettings)
+
+  const handleColorfulChange = (color: { hex: string }) => {
+    setSettings({ backgroundColor: color.hex })
+  }
+
+  const { triggerRef, isOpen, setIsOpen, togglePopper } = useBackgroundColorPopup()
 
   return (
     <div className="rounded-sm border border-border-gray">
@@ -25,13 +33,7 @@ export const BackgroundColor = () => {
           triggerRef={triggerRef}
           className="rounded-sm border border-border-gray bg-white p-4 shadow-lg"
         >
-          <Colorful
-            color={backgroundColor}
-            disableAlpha={true}
-            onChange={(color) => {
-              setBackgroundColor(color.hex)
-            }}
-          />
+          <Colorful color={backgroundColor} disableAlpha={true} onChange={handleColorfulChange} />
         </Popper>
         <span className="ml-3 text-sm text-text-primary uppercase leading-5 tracking-[-0.15px]">{backgroundColor}</span>
       </div>
