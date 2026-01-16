@@ -1,17 +1,17 @@
 import AssemblyClient from '@assembly/assembly-client'
 import type { User } from '@auth/lib/user.entity'
+import { defaultContent } from '@settings/constants'
 import type { ActionsRepository } from '@settings/lib/actions/actions.repository'
 import ActionsDrizzleRepository from '@settings/lib/actions/actions.repository'
-import { defaultContent } from '@settings/lib/constants'
 import type SettingsRepository from '@settings/lib/settings/settings.repository'
 import SettingsDrizzleRepository from '@settings/lib/settings/settings.repository'
+import type { SettingsUpdateDto } from '@settings/lib/settings-actions.dto'
 import type { SettingsWithActions } from '@settings/lib/settings-actions.entity'
 import {
   SettingsActionsDrizzleQueryRepository,
   type SettingsActionsQueryRepository,
 } from '@settings/lib/settings-actions.query.repository'
 import db from '@/db'
-import type { UpdateSettingsWithActionDto } from '@/features/settings/lib/settings-actions.dto'
 import { SettingsUpdateSchema } from '@/features/settings/lib/types'
 import BaseService from '@/lib/core/base.service'
 import DBService from '@/lib/core/db.service'
@@ -85,7 +85,7 @@ export default class SettingsActionsService extends BaseService {
     }
   }
 
-  async updateForWorkspace(payload: UpdateSettingsWithActionDto) {
+  async updateForWorkspace(payload: SettingsUpdateDto) {
     const settingsPayload = SettingsUpdateSchema.parse(payload) // parsed again just to retrieve necessary keys
     const actionsPayload = payload.actions || {}
     const settingsAndActions = await this.queryRepository.getOne(this.user.workspaceId)
