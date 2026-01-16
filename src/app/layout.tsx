@@ -6,6 +6,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { headers } from 'next/headers'
 import './globals.css'
+import { SETTINGS_QUERY_KEY } from '@settings/constants'
 import SettingsActionsService from '@settings/lib/settings-actions.service'
 import { SettingsProvider } from '@settings/providers/settings.provider'
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
@@ -34,7 +35,7 @@ export default async function RootLayout({
   const settings = await settingsService.getForWorkspace()
 
   const queryClient = getQueryClient()
-  queryClient.setQueryData(['settings'], settings)
+  queryClient.setQueryData([SETTINGS_QUERY_KEY], settings)
 
   return (
     <html lang="en">
