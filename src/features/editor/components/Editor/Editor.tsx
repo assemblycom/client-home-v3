@@ -1,24 +1,34 @@
 'use client'
 
 import { BubbleMenu } from '@editor/components/Editor/BubbleMenu'
-import { useAppBridge } from '@editor/hooks/useAppBridge'
+import { useAppControls } from '@editor/hooks/useAppControls'
 import { useEditorStore } from '@editor/stores/editorStore'
 import { EmbedBubbleInput } from '@extensions/Embed.ext/EmbedBubbleInput'
 import extensions from '@extensions/extensions'
-import { useSettings } from '@settings/hooks/useSettings'
-import { EditorContent, useEditor } from '@tiptap/react'
+import { useSettingsStore } from '@settings/providers/settings.provider'
+import { EditorContent, useEditor, useEditorState } from '@tiptap/react'
 import { useEffect } from 'react'
+import { useShallow } from 'zustand/shallow'
 
 interface EditorProps {
   editable?: boolean
 }
 
 export const Editor = ({ editable = true }: EditorProps) => {
-  const { settings } = useSettings()
+  const content = useSettingsStore((store) => store.content)
+  const setContent = useSettingsStore((store) => store.setContent)
+  const { setEditor, destroyEditor, showEmbedInput, setShowEmbedInput } = useEditorStore(
+    useShallow((s) => ({
+      setEditor: s.setEditor,
+      destroyEditor: s.destroyEditor,
+      showEmbedInput: s.showEmbedInput,
+      setShowEmbedInput: s.setShowEmbedInput,
+    })),
+  )
 
   const editor = useEditor({
     extensions,
-    content: settings.data?.content || '',
+    content,
     editable,
     immediatelyRender: false, // Avoid SSR & hydration issues
     editorProps: {
@@ -26,9 +36,14 @@ export const Editor = ({ editable = true }: EditorProps) => {
         class: 'bg-[#fff] text-custom-xs', // TODO: Replace later with settings background color
       },
     },
+    onUpdate({ editor }) {
+      setContent(editor.getHTML())
+    },
   })
 
-  const { setEditor, destroyEditor, showEmbedInput, setShowEmbedInput } = useEditorStore()
+  useEffect(() => {
+    editor?.commands.setContent(content)
+  }, [content, editor])
 
   useEffect(() => {
     if (editor) {
@@ -37,7 +52,7 @@ export const Editor = ({ editable = true }: EditorProps) => {
     return destroyEditor
   }, [editor, destroyEditor, setEditor])
 
-  useAppBridge()
+  useAppControls()
 
   return editor ? (
     <div>
