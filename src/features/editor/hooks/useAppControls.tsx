@@ -1,5 +1,5 @@
 import { usePrimaryCta, useSecondaryCta } from '@app-bridge/hooks'
-import { useSettingsMutation } from '@settings/hooks/useSettings'
+import { useSettingsMutation } from '@settings/hooks/useSettingsMutation'
 import type { SettingsUpdateDto } from '@settings/lib/settings-actions.dto'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import { useShallow } from 'zustand/shallow'
