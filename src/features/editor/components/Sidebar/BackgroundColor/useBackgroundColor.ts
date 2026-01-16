@@ -1,11 +1,10 @@
 import { useRef, useState } from 'react'
 
-export const useBackgroundColor = () => {
+export const useBackgroundColorPopup = () => {
   const triggerRef = useRef<HTMLDivElement>(null)
-  const [backgroundColor, setBackgroundColor] = useState('#ffffff')
   const [isOpen, setIsOpen] = useState(false)
 
   const togglePopper = () => setIsOpen((prev) => !prev)
 
-  return { backgroundColor, setBackgroundColor, triggerRef, isOpen, setIsOpen, togglePopper }
+  return { triggerRef, isOpen, setIsOpen, togglePopper }
 }
