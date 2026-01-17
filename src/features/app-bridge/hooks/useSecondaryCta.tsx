@@ -4,11 +4,13 @@ import { useEffect } from 'react'
 
 export const useSecondaryCta = (secondaryCta: Clickable, config?: Configurable) => {
   useEffect(() => {
+    const show = config?.show === undefined ? true : config.show // Show by default
+
     const payload: SecondaryCtaPayload = {
-      icon: secondaryCta.icon,
-      label: secondaryCta.label,
-      onClick: 'header.secondaryCta.onClick',
       type: 'header.secondaryCta',
+      icon: show ? secondaryCta.icon : undefined,
+      label: show ? secondaryCta.label : undefined,
+      onClick: show ? 'header.secondaryCta.onClick' : undefined,
     }
 
     handleParentPostMessage(payload, config?.portalUrl)
@@ -28,7 +30,7 @@ export const useSecondaryCta = (secondaryCta: Clickable, config?: Configurable) 
     return () => {
       removeEventListener('message', handleMessage)
     }
-  }, [secondaryCta, config?.portalUrl])
+  }, [secondaryCta, config?.portalUrl, config?.show])
 
   useEffect(() => {
     const handleUnload = () => {

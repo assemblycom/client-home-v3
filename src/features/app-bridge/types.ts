@@ -9,14 +9,14 @@ export enum Icons {
 
 export interface PrimaryCtaPayload {
   icon?: Icons
-  label: string
+  label?: string
   onClick?: string
   type: 'header.primaryCta'
 }
 
 export interface SecondaryCtaPayload {
   icon?: Icons
-  label: string
+  label?: string
   onClick?: string
   type: 'header.secondaryCta'
 }
@@ -32,7 +32,7 @@ export interface ActionsMenuPayload {
 }
 
 export interface Clickable {
-  label: string
+  label?: string
   onClick?: () => void
   icon?: Icons
   color?: string
@@ -40,4 +40,5 @@ export interface Clickable {
 
 export interface Configurable {
   portalUrl?: string
+  show?: boolean
 }

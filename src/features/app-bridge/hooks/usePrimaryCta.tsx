@@ -4,10 +4,12 @@ import { useEffect } from 'react'
 
 export const usePrimaryCta = (primaryCta: Clickable, config?: Configurable) => {
   useEffect(() => {
+    const show = config?.show === undefined ? true : config.show // Show by default
+
     const payload: PrimaryCtaPayload = {
-      icon: primaryCta.icon,
-      label: primaryCta.label,
-      onClick: 'header.primaryCta.onClick',
+      icon: show ? primaryCta.icon : undefined,
+      label: show ? primaryCta.label : undefined,
+      onClick: show ? 'header.primaryCta.onClick' : undefined,
       type: 'header.primaryCta',
     }
 
@@ -24,7 +26,7 @@ export const usePrimaryCta = (primaryCta: Clickable, config?: Configurable) => {
     return () => {
       removeEventListener('message', handleMessage)
     }
-  }, [primaryCta, config?.portalUrl])
+  }, [primaryCta, config?.portalUrl, config?.show])
 
   useEffect(() => {
     const handleUnload = () => {
