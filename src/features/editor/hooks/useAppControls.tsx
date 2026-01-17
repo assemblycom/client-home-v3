@@ -3,6 +3,7 @@ import { useSettingsMutation } from '@settings/hooks/useSettingsMutation'
 import type { SettingsUpdateDto } from '@settings/lib/settings-actions.dto'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import { useShallow } from 'zustand/shallow'
+import { areObjKeysEqual } from '@/utils/objects'
 
 export const useAppControls = () => {
   const updateSettingsMutation = useSettingsMutation()
@@ -24,15 +25,25 @@ export const useAppControls = () => {
     })),
   )
   const initialSettings = useSettingsStore((s) => s.initialSettings)
+  const show =
+    !areObjKeysEqual(settings, initialSettings, ['content', 'bannerImageId', 'backgroundColor']) ||
+    !areObjKeysEqual(actions, initialSettings.actions, ['tasks', 'invoices', 'messages', 'contracts', 'forms'])
+
   const setSettings = useSettingsStore((s) => s.setSettings)
 
-  useSecondaryCta({
-    label: 'Cancel',
-    onClick: () => setSettings({ ...initialSettings }),
-  })
+  useSecondaryCta(
+    {
+      label: 'Cancel',
+      onClick: () => setSettings({ ...initialSettings }),
+    },
+    { show },
+  )
 
-  usePrimaryCta({
-    label: 'Save Changes',
-    onClick: () => updateSettingsMutation.mutate({ ...settings, actions }),
-  })
+  usePrimaryCta(
+    {
+      label: 'Save Changes',
+      onClick: () => updateSettingsMutation.mutate({ ...settings, actions }),
+    },
+    { show },
+  )
 }
