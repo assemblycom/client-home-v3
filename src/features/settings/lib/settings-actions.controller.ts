@@ -2,12 +2,12 @@ import AssemblyClient from '@assembly/assembly-client'
 import { authenticateHeaders } from '@auth/lib/authenticate'
 import ActionsDrizzleRepository from '@settings/lib/actions/actions.repository'
 import SettingsDrizzleRepository from '@settings/lib/settings/settings.repository'
+import { SettingsUpdateDtoSchema } from '@settings/lib/settings-actions.dto'
 import { SettingsActionsDrizzleQueryRepository } from '@settings/lib/settings-actions.query.repository'
 import SettingsActionsService from '@settings/lib/settings-actions.service'
 import { type NextRequest, NextResponse } from 'next/server'
 import type { APIResponse } from '@/app/types'
 import db from '@/db'
-import { SettingsUpdateDtoSchema } from './settings-actions.dto'
 
 /**
  * Retrieves settings for the current workspace
