@@ -1,3 +1,5 @@
+import 'server-only'
+
 import AssemblyClient from '@assembly/assembly-client'
 import type { User } from '@auth/lib/user.entity'
 import { MediaFolders } from '@media/constants'

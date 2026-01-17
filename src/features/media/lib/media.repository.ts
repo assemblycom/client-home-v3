@@ -1,3 +1,5 @@
+import 'server-only'
+
 import type { BaseRepository } from '@/lib/core/base.repository'
 import BaseDrizzleRepository from '@/lib/core/base-drizzle.repository'
 

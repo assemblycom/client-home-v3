@@ -1,3 +1,5 @@
+import 'server-only'
+
 import { authenticateHeaders } from '@auth/lib/authenticate'
 import MediaService from '@media/lib/media.service'
 import { MediaUploadRequestDtoSchema } from '@media/media.dto'
