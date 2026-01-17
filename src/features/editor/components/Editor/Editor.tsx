@@ -6,7 +6,7 @@ import { useEditorStore } from '@editor/stores/editorStore'
 import { EmbedBubbleInput } from '@extensions/Embed.ext/EmbedBubbleInput'
 import extensions from '@extensions/extensions'
 import { useSettingsStore } from '@settings/providers/settings.provider'
-import { EditorContent, useEditor, useEditorState } from '@tiptap/react'
+import { EditorContent, useEditor } from '@tiptap/react'
 import { useEffect } from 'react'
 import { useShallow } from 'zustand/shallow'
 
