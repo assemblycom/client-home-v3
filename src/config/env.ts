@@ -9,7 +9,7 @@ const EnvSchema = z.object({
 
   DATABASE_URL: z.url(),
   SUPABASE_URL: z.url(),
-  SUPABASE_PUBLISHABLE_KEY: z.string().min(1),
+  SUPABASE_SECRET_KEY: z.string().min(1),
   SUPABASE_BUCKET_NAME: z.string().min(1),
   SUPABASE_SIGNED_URL_EXPIRY: z.number().optional().default(300),
 })
