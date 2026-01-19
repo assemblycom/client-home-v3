@@ -35,16 +35,13 @@ export const uploadFileToSupabase = async (file: File, token: string): Promise<s
 export const replaceEditorImageSrcByUploadId = (editor: Editor, uploadId: string, newSrc: string) => {
   const { state, view } = editor
 
-  let tr = state.tr
+  const tr = state.tr
   let found = false
 
   state.doc.descendants((node, pos) => {
-    if (node.type.name === 'image' && node.attrs['data-upload-id'] === uploadId) {
-      tr = tr.setNodeMarkup(pos, undefined, {
-        ...node.attrs,
-        src: newSrc,
-        'data-upload-id': null, // cleanup attr
-      })
+    if (node.type.name === 'image' && node.attrs.title === uploadId) {
+      tr.deleteRange(pos, pos + 1)
+      tr.replaceWith(pos, pos, editor.schema.node('image', { src: newSrc, title: null }))
       found = true
       return false // stop traversal
     }

@@ -11,6 +11,11 @@ declare module '@tiptap/core' {
       getToken: () => string | null
     }
   }
+  interface Storage {
+    token: {
+      token: string | null
+    }
+  }
 }
 
 export const TokenStorageExt = Extension.create<TokenExtensionOptions>({
@@ -34,7 +39,6 @@ export const TokenStorageExt = Extension.create<TokenExtensionOptions>({
       setToken:
         (token) =>
         ({ editor }) => {
-          // @ts-expect-error no string typing for storage for now
           editor.storage.token.token = token
           return true
         },
@@ -42,7 +46,6 @@ export const TokenStorageExt = Extension.create<TokenExtensionOptions>({
       getToken:
         () =>
         ({ editor }: { editor: Editor }) => {
-          // @ts-expect-error no string typing for storage for now
           return editor.storage.token.token
         },
     }
