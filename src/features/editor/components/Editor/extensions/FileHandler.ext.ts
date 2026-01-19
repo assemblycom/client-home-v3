@@ -17,45 +17,11 @@ export const FileHandlerExt = FileHandler.configure({
             type: 'image',
             attrs: {
               src: fileReader.result,
-              'data-upload-id': randId,
+              title: randId,
             },
           })
           .focus()
           .run()
-      }
-    })
-  },
-  onPaste: (currentEditor, files, htmlContent) => {
-    files.forEach((file) => {
-      if (htmlContent) {
-        // if there is htmlContent, stop manual insertion & let other extensions handle insertion via inputRule
-        return
-      }
-
-      const fileReader = new FileReader()
-
-      fileReader.readAsDataURL(file)
-      fileReader.onload = async () => {
-        const randId = crypto.randomUUID()
-        // Temporarily show image from blob data url
-
-        currentEditor
-          .chain()
-          .focus()
-          .insertContentAt(currentEditor.state.selection.anchor, {
-            type: 'image',
-            attrs: {
-              src: fileReader.result,
-              'data-upload-id': randId,
-            },
-          })
-          .focus()
-          .run()
-
-        // @ts-expect-error no string typing for storage for now
-        const token = currentEditor.storage.token.token
-        const signedUrl = await uploadFileToSupabase(file, token)
-        replaceEditorImageSrcByUploadId(currentEditor, randId, signedUrl)
       }
     })
   },
