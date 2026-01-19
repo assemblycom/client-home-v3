@@ -5,9 +5,7 @@ export const ROUTES = Object.freeze({
     health: '/api/health',
     settings: '/api/settings',
     workspace: '/api/workspace',
-    media: {
-      upload: '/api/media/upload',
-    },
+    media: '/api/media',
   },
 })
 
@@ -34,8 +32,8 @@ export const authorizedRoutes: Record<string, RouteRule[]> = {
       methods: ['GET', 'PATCH'],
     },
     {
-      path: ROUTES.api.media.upload,
-      methods: ['POST'],
+      path: ROUTES.api.media,
+      methods: ['GET', 'POST'],
     },
   ],
   clientUsers: [
