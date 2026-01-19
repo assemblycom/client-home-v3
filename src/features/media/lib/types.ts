@@ -1,6 +1,6 @@
+import { media } from '@media/lib/media.schema'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import type z from 'zod'
-import { media } from './media.schema'
 
 export const MediaSchema = createSelectSchema(media)
 
