@@ -1,3 +1,4 @@
+import { replaceEditorImageSrcByUploadId, uploadFileToSupabase } from '@editor/client.utils'
 import FileHandler from '@tiptap/extension-file-handler'
 
 export const FileHandlerExt = FileHandler.configure({
@@ -8,12 +9,15 @@ export const FileHandlerExt = FileHandler.configure({
 
       fileReader.readAsDataURL(file)
       fileReader.onload = () => {
+        const randId = crypto.randomUUID()
+        // Temporarily show image from blob data url
         currentEditor
           .chain()
           .insertContentAt(pos, {
             type: 'image',
             attrs: {
               src: fileReader.result,
+              'data-upload-id': randId,
             },
           })
           .focus()
@@ -31,7 +35,10 @@ export const FileHandlerExt = FileHandler.configure({
       const fileReader = new FileReader()
 
       fileReader.readAsDataURL(file)
-      fileReader.onload = () => {
+      fileReader.onload = async () => {
+        const randId = crypto.randomUUID()
+        // Temporarily show image from blob data url
+
         currentEditor
           .chain()
           .focus()
@@ -39,10 +46,16 @@ export const FileHandlerExt = FileHandler.configure({
             type: 'image',
             attrs: {
               src: fileReader.result,
+              'data-upload-id': randId,
             },
           })
           .focus()
           .run()
+
+        // @ts-expect-error no string typing for storage for now
+        const token = currentEditor.storage.token.token
+        const signedUrl = await uploadFileToSupabase(file, token)
+        replaceEditorImageSrcByUploadId(currentEditor, randId, signedUrl)
       }
     })
   },
