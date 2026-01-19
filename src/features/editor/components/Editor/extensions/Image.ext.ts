@@ -7,4 +7,5 @@ export const ImageExt = Image.configure({
     minHeight: 50,
     minWidth: 50,
   },
+  allowBase64: true,
 })
