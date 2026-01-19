@@ -1,4 +1,4 @@
-import { replaceEditorImageSrcByUploadId, uploadFileToSupabase } from '@editor/client.utils'
+// import { replaceEditorImageSrcByUploadId, uploadFileToSupabase } from '@editor/client.utils'
 import FileHandler from '@tiptap/extension-file-handler'
 
 export const FileHandlerExt = FileHandler.configure({
