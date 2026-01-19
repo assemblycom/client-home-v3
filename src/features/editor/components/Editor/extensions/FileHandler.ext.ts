@@ -25,8 +25,6 @@ export const FileHandlerExt = FileHandler.configure({
     files.forEach((file) => {
       if (htmlContent) {
         // if there is htmlContent, stop manual insertion & let other extensions handle insertion via inputRule
-        // you could extract the pasted file from this url string and upload it to a server for example
-        console.info(htmlContent)
         return
       }
 
@@ -36,6 +34,7 @@ export const FileHandlerExt = FileHandler.configure({
       fileReader.onload = () => {
         currentEditor
           .chain()
+          .focus()
           .insertContentAt(currentEditor.state.selection.anchor, {
             type: 'image',
             attrs: {
