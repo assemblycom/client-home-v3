@@ -1,5 +1,6 @@
 'use client'
 
+import { useAuthStore } from '@auth/providers/auth.provider'
 import { BubbleMenu } from '@editor/components/Editor/BubbleMenu'
 import { useAppControls } from '@editor/hooks/useAppControls'
 import { useEditorStore } from '@editor/stores/editorStore'
@@ -16,6 +17,7 @@ interface EditorProps {
 
 export const Editor = ({ editable = true }: EditorProps) => {
   const content = useSettingsStore((store) => store.content)
+  const token = useAuthStore((store) => store.token)
   const setContent = useSettingsStore((store) => store.setContent)
   const { setEditor, destroyEditor, showEmbedInput, setShowEmbedInput } = useEditorStore(
     useShallow((s) => ({
@@ -35,6 +37,10 @@ export const Editor = ({ editable = true }: EditorProps) => {
       attributes: {
         class: 'bg-[#fff] text-custom-xs', // TODO: Replace later with settings background color
       },
+    },
+    onCreate({ editor }) {
+      // @ts-expect-error storage is not strictly typed right now
+      editor.storage.token.token = token
     },
     onUpdate({ editor }) {
       setContent(editor.getHTML())
