@@ -1,7 +1,7 @@
 'use client'
 
 import { useAuthStore } from '@auth/providers/auth.provider'
-import { replaceEditorImageSrcByUploadId, uploadFileToSupabase } from '@editor/client.utils'
+import { uploadFileToSupabase } from '@editor/client.utils'
 import { BubbleMenu } from '@editor/components/Editor/BubbleMenu'
 import { useAppControls } from '@editor/hooks/useAppControls'
 import { useEditorStore } from '@editor/stores/editorStore'
@@ -9,7 +9,7 @@ import { EmbedBubbleInput } from '@extensions/Embed.ext/EmbedBubbleInput'
 import extensions from '@extensions/extensions'
 import { FileHandlerExt } from '@extensions/FileHandler.ext'
 import { useSettingsStore } from '@settings/providers/settings.provider'
-import { EditorContent, useEditor, useEditorState } from '@tiptap/react'
+import { EditorContent, useEditor } from '@tiptap/react'
 import { useEffect } from 'react'
 import { useShallow } from 'zustand/shallow'
 
@@ -18,9 +18,10 @@ interface EditorProps {
 }
 
 export const Editor = ({ editable = true }: EditorProps) => {
-  const content = useSettingsStore((store) => store.content)
   const token = useAuthStore((store) => store.token)
+  const content = useSettingsStore((store) => store.content)
   const setContent = useSettingsStore((store) => store.setContent)
+  const backgroundColor = useSettingsStore((store) => store.backgroundColor)
   const { setEditor, destroyEditor, showEmbedInput, setShowEmbedInput } = useEditorStore(
     useShallow((s) => ({
       setEditor: s.setEditor,
@@ -78,7 +79,7 @@ export const Editor = ({ editable = true }: EditorProps) => {
     immediatelyRender: false, // Avoid SSR & hydration issues
     editorProps: {
       attributes: {
-        class: 'bg-[#fff] text-custom-xs', // TODO: Replace later with settings background color
+        class: `bg-[${backgroundColor}] text-custom-xs`, // TODO: Replace later with settings background color
       },
     },
     onCreate({ editor }) {
@@ -92,6 +93,12 @@ export const Editor = ({ editable = true }: EditorProps) => {
   useEffect(() => {
     editor?.commands.setContent(content)
   }, [content, editor])
+
+  useEffect(() => {
+    if (!editor) return
+
+    editor.view.dom.style.backgroundColor = backgroundColor
+  }, [backgroundColor, editor])
 
   useEffect(() => {
     if (editor) {
