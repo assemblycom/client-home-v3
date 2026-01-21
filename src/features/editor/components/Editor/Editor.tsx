@@ -36,7 +36,6 @@ export const Editor = ({ editable = true }: EditorProps) => {
     content,
     editable,
     immediatelyRender: false, // Avoid SSR & hydration issues
-    shouldRerenderOnTransaction: true,
     editorProps: {
       attributes: {
         class: `bg-[${backgroundColor}] text-custom-xs`, // TODO: Replace later with settings background color
