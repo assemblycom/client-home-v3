@@ -1,9 +1,9 @@
 'use client'
 
 import { useAuthStore } from '@auth/providers/auth.provider'
-import { uploadFileToSupabase } from '@editor/client.utils'
 import { BubbleMenu } from '@editor/components/Editor/BubbleMenu'
 import { useAppControls } from '@editor/hooks/useAppControls'
+import { useFileHandlers } from '@editor/hooks/useFileHandlers'
 import { useEditorStore } from '@editor/stores/editorStore'
 import { EmbedBubbleInput } from '@extensions/Embed.ext/EmbedBubbleInput'
 import extensions from '@extensions/extensions'
@@ -20,7 +20,6 @@ interface EditorProps {
 export const Editor = ({ editable = true }: EditorProps) => {
   const token = useAuthStore((store) => store.token)
   const content = useSettingsStore((store) => store.content)
-  const setContent = useSettingsStore((store) => store.setContent)
   const backgroundColor = useSettingsStore((store) => store.backgroundColor)
   const { setEditor, destroyEditor, showEmbedInput, setShowEmbedInput } = useEditorStore(
     useShallow((s) => ({
@@ -30,53 +29,14 @@ export const Editor = ({ editable = true }: EditorProps) => {
       setShowEmbedInput: s.setShowEmbedInput,
     })),
   )
+  const handleFile = useFileHandlers()
 
   const editor = useEditor({
-    extensions: [
-      ...extensions,
-      FileHandlerExt.configure({
-        onPaste: (currentEditor, files, htmlContent) => {
-          files.forEach((file) => {
-            if (htmlContent) {
-              // if there is htmlContent, stop manual insertion & let other extensions handle insertion via inputRule
-              return
-            }
-
-            const fileReader = new FileReader()
-
-            fileReader.readAsDataURL(file)
-            fileReader.onload = async () => {
-              const randId = crypto.randomUUID()
-
-              currentEditor
-                .chain()
-                .focus()
-                .insertContentAt(currentEditor.state.selection.anchor, {
-                  type: 'image',
-                  attrs: {
-                    src: fileReader.result,
-                    title: randId,
-                  },
-                })
-                .focus()
-                .run()
-              setContent(currentEditor.getHTML())
-              const token = currentEditor.storage.token.token
-              if (!token) {
-                console.error('Could not upload to supabase due to missing token')
-                return // Keep the blob image for now
-              }
-
-              const signedUrl = await uploadFileToSupabase(file, token)
-              setContent(currentEditor.getHTML().replaceAll(fileReader.result as string, signedUrl))
-            }
-          })
-        },
-      }),
-    ],
+    extensions: [...extensions, FileHandlerExt.configure({ onPaste: handleFile })],
     content,
     editable,
     immediatelyRender: false, // Avoid SSR & hydration issues
+    shouldRerenderOnTransaction: true,
     editorProps: {
       attributes: {
         class: `bg-[${backgroundColor}] text-custom-xs`, // TODO: Replace later with settings background color
@@ -85,14 +45,7 @@ export const Editor = ({ editable = true }: EditorProps) => {
     onCreate({ editor }) {
       editor.storage.token.token = token
     },
-    onUpdate({ editor }) {
-      setContent(editor.getHTML())
-    },
   })
-
-  useEffect(() => {
-    editor?.commands.setContent(content)
-  }, [content, editor])
 
   useEffect(() => {
     if (!editor) return
