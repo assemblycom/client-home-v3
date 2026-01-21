@@ -1,4 +1,5 @@
 import { useAuthStore } from '@auth/providers/auth.provider'
+import { useEditorStore } from '@editor/stores/editorStore'
 import { SETTINGS_QUERY_KEY } from '@settings/constants'
 import type { SettingsResponseDto, SettingsUpdateDto } from '@settings/lib/settings-actions.dto'
 import { useSettingsStore } from '@settings/providers/settings.provider'
@@ -10,6 +11,7 @@ import { getQueryClient } from '@/lib/core/query.utils'
 export const useSettingsMutation = () => {
   const token = useAuthStore((s) => s.token)
 
+  const editor = useEditorStore((s) => s.editor)
   const setSettings = useSettingsStore((s) => s.setSettings)
   const setInitialSettings = useSettingsStore((s) => s.setInitialSettings)
 
@@ -23,6 +25,7 @@ export const useSettingsMutation = () => {
       const queryClient = getQueryClient()
       queryClient.setQueryData([SETTINGS_QUERY_KEY], data.data)
 
+      editor?.commands.setContent(data.data.content)
       setSettings({ ...data.data })
       setInitialSettings({ ...data.data })
     },
