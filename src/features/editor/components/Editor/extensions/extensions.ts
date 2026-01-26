@@ -21,7 +21,6 @@ const extensions: Array<Extension | Node> = [
   TableExt,
   PlaceholderExt,
   EmbedExt,
-  ImageExt,
   FileHandlerExt,
   DropcursorExt,
   SlashCommandsExt,
