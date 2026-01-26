@@ -39,7 +39,7 @@ export const Editor = ({ editable = true }: EditorProps) => {
     immediatelyRender: false, // Avoid SSR & hydration issues
     editorProps: {
       attributes: {
-        class: `bg-[${backgroundColor}] text-custom-xs`, // TODO: Replace later with settings background color
+        class: `bg-[${backgroundColor}] text-custom-xs`,
       },
     },
     onCreate({ editor }) {
