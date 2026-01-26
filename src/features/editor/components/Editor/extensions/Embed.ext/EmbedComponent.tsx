@@ -88,8 +88,6 @@ export const Embed = (props: EmbedProps) => {
     return match ? match[1] : inputString
   }
 
-  const isReadonly = false
-
   return (
     <NodeViewWrapper ref={parentRef}>
       <div className="embed group relative inline-block py-2">
@@ -113,7 +111,9 @@ export const Embed = (props: EmbedProps) => {
           />
         </div>
 
-        {!isReadonly && <ResizeBar onMouseDown={handleMouseDown} className="opacity-0 group-hover:opacity-80" />}
+        {props.editor.isEditable && (
+          <ResizeBar onMouseDown={handleMouseDown} className="opacity-0 group-hover:opacity-80" />
+        )}
       </div>
     </NodeViewWrapper>
   )
