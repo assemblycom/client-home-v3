@@ -8,6 +8,7 @@ import { useEditorStore } from '@editor/stores/editorStore'
 import { EmbedBubbleInput } from '@extensions/Embed.ext/EmbedBubbleInput'
 import extensions from '@extensions/extensions'
 import { FileHandlerExt } from '@extensions/FileHandler.ext'
+import { ImageExt } from '@extensions/Image.ext'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import { EditorContent, useEditor } from '@tiptap/react'
 import { useEffect } from 'react'
@@ -32,7 +33,7 @@ export const Editor = ({ editable = true }: EditorProps) => {
   const handleFile = useFileHandlers()
 
   const editor = useEditor({
-    extensions: [...extensions, FileHandlerExt.configure({ onPaste: handleFile })],
+    extensions: [...extensions, ImageExt, FileHandlerExt.configure({ onPaste: handleFile })],
     content,
     editable,
     immediatelyRender: false, // Avoid SSR & hydration issues
