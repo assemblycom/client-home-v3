@@ -22,7 +22,7 @@ export const BackgroundColor = () => {
          */}
         <div
           ref={triggerRef}
-          className="h-6 w-6 rounded-sm border border-border-gray"
+          className="tiptap-wrapper h-6 w-6 rounded-sm border border-border-gray"
           style={{ backgroundColor }}
           onClick={togglePopper}
           onKeyDown={togglePopper}

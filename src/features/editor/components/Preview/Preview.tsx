@@ -45,7 +45,7 @@ export function Preview({ token, content, backgroundColor }: PreviewProps) {
             <p className="mt-1 text-red-500 text-sm">Please try again later or check your connection.</p>
           </div>
         ) : (
-          <div className="w-full overflow-auto" style={{ backgroundColor }}>
+          <div className="tiptap-wrapper w-full overflow-auto" style={{ backgroundColor }}>
             <ReadonlyEditor content={content} token={token} />
           </div>
         )}
