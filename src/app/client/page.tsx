@@ -1,9 +1,9 @@
-import { ClientPreview } from '@editor/components/Editor/ClientPreview'
+import { ClientEditorWrapper } from '@editor/components/ClientEditorWrapper'
 
 export default function ClientPage() {
   return (
     <div className="flex h-screen w-screen">
-      <ClientPreview />
+      <ClientEditorWrapper />
     </div>
   )
 }
