@@ -19,7 +19,9 @@ export function EditorWrapper() {
   return (
     <div className="contents">
       <Activity mode={viewMode === ViewMode.EDITOR ? 'visible' : 'hidden'}>
-        <Editor token={token} content={content} backgroundColor={backgroundColor} />
+        <div className="tiptap-wrapper">
+          <Editor token={token} content={content} backgroundColor={backgroundColor} />
+        </div>
       </Activity>
 
       <Activity mode={viewMode === ViewMode.PREVIEW ? 'visible' : 'hidden'}>

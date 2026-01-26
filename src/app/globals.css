@@ -68,8 +68,12 @@ body {
   }
 }
 
+.tiptap-wrapper {
+  @apply rounded-xl border border-border-gray;
+}
+
 .tiptap {
-  @apply px-6 py-5 text-text-primary min-h-[calc(100vh-116px)] rounded;
+  @apply px-6 py-5 text-text-primary min-h-[calc(100vh-116px)] rounded-xl;
 
   h1 {
     @apply text-xl leading-7 font-medium;
