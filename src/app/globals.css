@@ -69,7 +69,7 @@ body {
 }
 
 .tiptap {
-  @apply px-6 py-5 text-text-primary min-h-[calc(100vh-116px)];
+  @apply px-6 py-5 text-text-primary min-h-[calc(100vh-116px)] rounded;
 
   h1 {
     @apply text-xl leading-7 font-medium;
@@ -119,7 +119,7 @@ body {
   }
 
   .callout {
-    @apply my-5 bg-background-primary p-3;
+    @apply my-5 bg-background-primary p-3 rounded;
     .callout__content {
       @apply font-medium text-sm leading-5.5;
     }
