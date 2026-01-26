@@ -1,5 +1,6 @@
 import { useAuthStore } from '@auth/providers/auth.provider'
 import { Loader } from '@common/components/Loader'
+import { ReadonlyEditor } from '@editor/components/Editor/ReadonlyEditor'
 import { PreviewTopBar } from '@editor/components/Preview/PreviewTopBar'
 import { DisplayMode, useViewStore } from '@editor/stores/viewStore'
 import { useQuery } from '@tanstack/react-query'
@@ -8,9 +9,14 @@ import type { WorkspaceResponse } from '@/lib/assembly/types'
 import { api } from '@/lib/core/axios.instance'
 import { cn } from '@/utils/tailwind'
 
-export function Preview() {
+interface PreviewProps {
+  token: string
+  content: string
+  backgroundColor: string
+}
+
+export function Preview({ token, content, backgroundColor }: PreviewProps) {
   const workspaceId = useAuthStore((store) => store.workspaceId)
-  const token = useAuthStore((store) => store.token)
   const displayMode = useViewStore((store) => store.displayMode)
 
   const { data, isLoading, error } = useQuery({
@@ -39,7 +45,9 @@ export function Preview() {
             <p className="mt-1 text-red-500 text-sm">Please try again later or check your connection.</p>
           </div>
         ) : (
-          <div className="flex flex-col items-center gap-4 text-center"></div>
+          <div className="w-full overflow-auto" style={{ backgroundColor }}>
+            <ReadonlyEditor content={content} token={token} />
+          </div>
         )}
       </div>
     </div>
