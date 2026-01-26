@@ -1,27 +1,23 @@
 'use client'
 
-import { useAuthStore } from '@auth/providers/auth.provider'
 import { BubbleMenu } from '@editor/components/Editor/BubbleMenu'
-import { useAppControls } from '@editor/hooks/useAppControls'
 import { useFileHandlers } from '@editor/hooks/useFileHandlers'
 import { useEditorStore } from '@editor/stores/editorStore'
 import { EmbedBubbleInput } from '@extensions/Embed.ext/EmbedBubbleInput'
 import extensions from '@extensions/extensions'
 import { FileHandlerExt } from '@extensions/FileHandler.ext'
 import { ImageExt } from '@extensions/Image.ext'
-import { useSettingsStore } from '@settings/providers/settings.provider'
 import { EditorContent, useEditor } from '@tiptap/react'
 import { useEffect } from 'react'
 import { useShallow } from 'zustand/shallow'
 
 interface EditorProps {
-  editable?: boolean
+  token: string
+  content: string
+  backgroundColor: string
 }
 
-export const Editor = ({ editable = true }: EditorProps) => {
-  const token = useAuthStore((store) => store.token)
-  const content = useSettingsStore((store) => store.content)
-  const backgroundColor = useSettingsStore((store) => store.backgroundColor)
+export const Editor = ({ token, content, backgroundColor }: EditorProps) => {
   const { setEditor, destroyEditor, showEmbedInput, setShowEmbedInput } = useEditorStore(
     useShallow((s) => ({
       setEditor: s.setEditor,
@@ -35,13 +31,8 @@ export const Editor = ({ editable = true }: EditorProps) => {
   const editor = useEditor({
     extensions: [...extensions, ImageExt, FileHandlerExt.configure({ onPaste: handleFile })],
     content,
-    editable,
     immediatelyRender: false, // Avoid SSR & hydration issues
-    editorProps: {
-      attributes: {
-        class: `bg-[${backgroundColor}] text-custom-xs`,
-      },
-    },
+    editorProps: { attributes: { class: `bg-[${backgroundColor}] text-custom-xs` } },
     onCreate({ editor }) {
       editor.storage.token.token = token
     },
@@ -59,8 +50,6 @@ export const Editor = ({ editable = true }: EditorProps) => {
     }
     return destroyEditor
   }, [editor, destroyEditor, setEditor])
-
-  useAppControls()
 
   return editor ? (
     <div>
