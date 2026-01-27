@@ -12,7 +12,7 @@ export const UsersDtoSchema = z.object({
       name: z.string(),
       customFields: z.object().optional(),
     })
-    .optional(),
+    .nullable(),
 })
 
 export type UsersDto = z.infer<typeof UsersDtoSchema>
