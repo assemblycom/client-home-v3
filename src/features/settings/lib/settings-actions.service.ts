@@ -18,11 +18,11 @@ import DBService from '@/lib/core/db.service'
 
 export default class SettingsActionsService extends BaseService {
   constructor(
-    protected readonly user: User,
-    protected readonly assembly: AssemblyClient,
-    protected readonly queryRepository: SettingsActionsQueryRepository,
-    protected readonly settingsRepository: SettingsRepository,
-    protected readonly actionsRepository: ActionsRepository,
+    readonly user: User,
+    readonly assembly: AssemblyClient,
+    private readonly queryRepository: SettingsActionsQueryRepository,
+    private readonly settingsRepository: SettingsRepository,
+    private readonly actionsRepository: ActionsRepository,
   ) {
     super(user, assembly)
   }
