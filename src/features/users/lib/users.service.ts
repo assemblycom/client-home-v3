@@ -60,10 +60,12 @@ export default class UsersService extends BaseService {
       lastName: client.familyName,
       email: client.email,
       customFields: client.customFields,
-      company: company && {
-        name: company.name,
-        customFields: company.customFields || {},
-      },
+      company: company
+        ? {
+            name: company.name,
+            customFields: company.customFields || {},
+          }
+        : null,
     }
   }
 }
