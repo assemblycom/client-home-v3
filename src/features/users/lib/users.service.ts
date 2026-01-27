@@ -46,7 +46,11 @@ export default class UsersService extends BaseService {
       }
     }
 
-    return flattenedClients
+    return flattenedClients.sort((a, b) => {
+      const aName = `${a.firstName} ${a.lastName || ''}`
+      const bName = `${b.firstName} ${b.lastName || ''}`
+      return aName.localeCompare(bName)
+    })
   }
 
   private getParsedClientData(client: ClientResponse, company?: CompanyResponse): UsersDto {
