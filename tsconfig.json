@@ -28,6 +28,7 @@
       "@editor/*": ["./src/features/editor/*"],
       "@media/*": ["./src/features/media/*"],
       "@settings/*": ["./src/features/settings/*"],
+      "@users/*": ["./src/features/users/*"],
       "@/*": ["./src/*"]
     }
   },
