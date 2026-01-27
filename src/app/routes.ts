@@ -6,6 +6,7 @@ export const ROUTES = Object.freeze({
     settings: '/api/settings',
     workspace: '/api/workspace',
     media: '/api/media',
+    users: '/api/users',
   },
 })
 
@@ -24,18 +25,7 @@ export type RouteRule =
  */
 export const authorizedRoutes: Record<string, RouteRule[]> = {
   public: [ROUTES.api.health],
-  internalUsers: [
-    ROUTES.home,
-    ROUTES.api.workspace,
-    {
-      path: ROUTES.api.settings,
-      methods: ['GET', 'PATCH'],
-    },
-    {
-      path: ROUTES.api.media,
-      methods: ['GET', 'POST'],
-    },
-  ],
+  internalUsers: [ROUTES.home, ROUTES.api.workspace, ROUTES.api.settings, ROUTES.api.media, ROUTES.api.users],
   clientUsers: [
     ROUTES.client,
     {
