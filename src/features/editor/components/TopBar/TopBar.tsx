@@ -8,7 +8,7 @@ import { debounce } from '@/utils/debounce'
 
 export const TopBar = () => {
   const viewMode = useViewStore((store) => store.viewMode)
-  const changeView = useViewStore((store) => store.changeView)
+  const changeView = useViewStore((store) => store.updateView)
 
   const changeViewInStore = useEffectEvent((viewMode: ViewMode) => changeView({ viewMode }))
 
