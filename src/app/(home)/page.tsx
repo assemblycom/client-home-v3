@@ -6,6 +6,7 @@ import { UsersFetcher } from '@users/components/UsersFetcher'
 import { headers } from 'next/headers'
 import { Suspense } from 'react'
 import { AuthenticatedAPIHeaders } from '@/app/types'
+import { WorkspaceFetcher } from '@/features/workspace/components/WorkspaceFetcher'
 
 export default async function Home() {
   const appHeaders = await headers()
@@ -16,6 +17,9 @@ export default async function Home() {
     <>
       <Suspense>
         <UsersFetcher token={token} />
+      </Suspense>
+      <Suspense>
+        <WorkspaceFetcher token={token} />
       </Suspense>
 
       <div className="flex h-screen w-screen">

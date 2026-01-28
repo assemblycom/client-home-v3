@@ -2,7 +2,7 @@ import type { UsersDto } from '@users/users.dto'
 import { create } from 'zustand'
 
 interface UsersState {
-  users?: UsersDto[]
+  users: UsersDto[]
 }
 
 interface UsersActions {
@@ -10,7 +10,7 @@ interface UsersActions {
 }
 
 const initialState: UsersState = {
-  users: undefined,
+  users: [],
 }
 
 export const useUsersStore = create<UsersState & UsersActions>()((set) => ({

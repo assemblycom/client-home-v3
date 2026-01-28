@@ -4,7 +4,7 @@ import { cn } from '@/utils/tailwind'
 
 export function DisplayModeTab() {
   const displayMode = useViewStore((store) => store.displayMode)
-  const changeView = useViewStore((store) => store.changeView)
+  const changeView = useViewStore((store) => store.updateView)
 
   const onClick = (displayMode: DisplayMode) => {
     changeView({

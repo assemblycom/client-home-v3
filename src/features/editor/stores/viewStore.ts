@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import type { WorkspaceResponse } from '@/lib/assembly/types'
 
 export enum ViewMode {
   EDITOR = 'editor',
@@ -12,24 +13,34 @@ export enum DisplayMode {
 
 interface ViewStoreState {
   viewMode: ViewMode
+  activeClientId: string | null
+  activeCompanyId: string | null
   displayMode: DisplayMode
+  workspace: WorkspaceResponse | null
 }
 
 interface ViewStoreAction {
   reset: () => void
-  changeView: (data: Partial<ViewStoreState>) => void
+  updateView: (data: Partial<ViewStoreState>) => void
+  setWorkspace: (workspace: WorkspaceResponse) => void
 }
 
 const defaultState = {
   viewMode: ViewMode.EDITOR,
+  activeClientId: null,
+  activeCompanyId: null,
   displayMode: DisplayMode.DESKTOP,
+  workspace: null,
 } as const satisfies Partial<ViewStoreState>
 
 type ViewStore = ViewStoreState & ViewStoreAction
 
 export const useViewStore = create<ViewStore>()((set) => ({
   ...defaultState,
-  changeView: (data: Partial<ViewStoreState>) => set(data),
+  updateView: (data: Partial<ViewStoreState>) => set(data),
+  setClientId: (id: string) => set({ activeClientId: id }),
+  setCompanyId: (id: string) => set({ activeCompanyId: id }),
+  setWorkspace: (workspace: WorkspaceResponse) => set({ workspace }),
   reset: () => set(defaultState),
 }))
 
