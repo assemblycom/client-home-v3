@@ -6,6 +6,7 @@ const EnvSchema = z.object({
   ASSEMBLY_API_KEY: z.string().min(1),
 
   VERCEL_ENV: z.enum(['production', 'preview', 'development']).optional(), // NOTE: We can add other custom environments here
+  VERCEL_URL: z.url(),
 
   DATABASE_URL: z.url(),
   SUPABASE_URL: z.url(),
@@ -14,4 +15,7 @@ const EnvSchema = z.object({
   SUPABASE_SIGNED_URL_EXPIRY: z.number().optional().default(300),
 })
 
-export default EnvSchema.parse(process.env)
+export default EnvSchema.parse({
+  ...process.env,
+  VERCEL_URL: `${['production', 'preview'].includes(process.env.VERCEL_ENV || '') ? 'https://' : 'http://'}localhost:3000`,
+})
