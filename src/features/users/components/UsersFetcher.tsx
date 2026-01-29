@@ -8,7 +8,7 @@ interface UsersFetcherProps {
 }
 
 export const UsersFetcher = async ({ token }: UsersFetcherProps) => {
-  const users = await api.get<{ data: UsersDto[] }>(`${env.VERCEL_URL}/api/users?token=${token}`)
+  const users = await api.get<{ data: UsersDto }>(`${env.VERCEL_URL}/api/users?token=${token}`)
 
   return <UsersSetter users={users.data.data} />
 }
