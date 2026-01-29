@@ -1,27 +1,31 @@
-import type { UsersDto } from '@users/users.dto'
+import type { ClientsDto, CompaniesDto } from '@users/users.dto'
 import { create } from 'zustand'
 
 interface UsersState {
   previewClientId: string | null
   previewCompanyId: string | null
-  users: UsersDto[]
+  clients: ClientsDto[]
+  companies: CompaniesDto[]
 }
 
 interface UsersActions {
-  setUsers: (users: UsersDto[]) => void
+  setClients: (clients: ClientsDto[]) => void
+  setCompanies: (companies: CompaniesDto[]) => void
   setPreviewClientId: (clientId: string) => void
   setPreviewCompanyId: (companyId: string) => void
 }
 
 const initialState: UsersState = {
-  users: [],
+  clients: [],
+  companies: [],
   previewClientId: null,
   previewCompanyId: null,
 }
 
 export const useUsersStore = create<UsersState & UsersActions>()((set) => ({
   ...initialState,
-  setUsers: (users: UsersDto[]) => set({ users }),
+  setClients: (clients: ClientsDto[]) => set({ clients }),
+  setCompanies: (companies: CompaniesDto[]) => set({ companies }),
   setPreviewClientId: (clientId: string) => set({ previewClientId: clientId }),
   setPreviewCompanyId: (companyId: string) => set({ previewCompanyId: companyId }),
 }))
