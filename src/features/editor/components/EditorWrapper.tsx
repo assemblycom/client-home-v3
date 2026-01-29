@@ -7,6 +7,7 @@ import { useAppControls } from '@editor/hooks/useAppControls'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import { Activity } from 'react'
 import { useViewStore, ViewMode } from '@/features/editor/stores/viewStore'
+import { getActivityMode } from '@/utils/activity'
 
 export function EditorWrapper() {
   const viewMode = useViewStore((store) => store.viewMode)
@@ -18,13 +19,13 @@ export function EditorWrapper() {
 
   return (
     <div className="contents">
-      <Activity mode={viewMode === ViewMode.EDITOR ? 'visible' : 'hidden'}>
+      <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
         <div className="tiptap-wrapper">
           <Editor token={token} content={content} backgroundColor={backgroundColor} />
         </div>
       </Activity>
 
-      <Activity mode={viewMode === ViewMode.PREVIEW ? 'visible' : 'hidden'}>
+      <Activity mode={getActivityMode(viewMode === ViewMode.PREVIEW)}>
         <Preview content={content} token={token} backgroundColor={backgroundColor} />
       </Activity>
     </div>
