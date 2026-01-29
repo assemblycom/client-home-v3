@@ -10,7 +10,6 @@ export const PreviewSidebar = () => {
   // const companyId = useUsersStore((store) => store.previewCompanyId)
   const clientId = clients[0].id
   const companyId = clients[0].company?.id
-  console.log('ccc', clients[0])
 
   const client = useMemo(
     // biome-ignore lint/suspicious/noDoubleEquals: comparing null with undefined
