@@ -19,7 +19,7 @@ interface ViewStoreState {
 
 interface ViewStoreAction {
   reset: () => void
-  updateView: (data: Partial<ViewStoreState>) => void
+  changeView: (data: Partial<ViewStoreState>) => void
   setWorkspace: (workspace: WorkspaceResponse) => void
 }
 
@@ -33,7 +33,7 @@ type ViewStore = ViewStoreState & ViewStoreAction
 
 export const useViewStore = create<ViewStore>()((set) => ({
   ...defaultState,
-  updateView: (data: Partial<ViewStoreState>) => set(data),
+  changeView: (data: Partial<ViewStoreState>) => set(data),
   setWorkspace: (workspace: WorkspaceResponse) => set({ workspace }),
   reset: () => set(defaultState),
 }))
