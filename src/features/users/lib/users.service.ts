@@ -62,6 +62,7 @@ export default class UsersService extends BaseService {
       customFields: client.customFields,
       company: company
         ? {
+            id: company.id,
             name: company.name,
             customFields: company.customFields || {},
           }
