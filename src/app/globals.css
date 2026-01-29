@@ -10,6 +10,12 @@
   .text-custom-xs {
     @apply text-xs leading-5 font-normal;
   }
+  .text-custom-sm {
+    @apply text-sm font-normal leading-5.5;
+  }
+  .text-custom-md {
+    @apply text-[16px] leading-6 font-medium;
+  }
   .text-custom-xl {
     @apply text-xl leading-6 font-normal tracking-[-0.1px] text-text-primary;
   }
