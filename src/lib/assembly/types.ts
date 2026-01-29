@@ -49,6 +49,7 @@ export const ClientResponseSchema = z.object({
   email: z.string(),
   companyIds: z.array(z.uuid()).optional(),
   avatarImageUrl: z.string().nullable(),
+  fallbackColor: z.string().nullable(),
   customFields: z.object().optional(),
   createdAt: z.iso.datetime(),
 })
@@ -65,7 +66,7 @@ export const CompanyResponseSchema = z.object({
   id: z.string(),
   name: z.string(),
   iconImageUrl: z.string().nullable(),
-  fallbackColor: z.string().nullish(),
+  fallbackColor: z.string().nullable(),
   isPlaceholder: z.boolean(),
   customFields: z.object().optional(),
   createdAt: z.iso.datetime(),
