@@ -5,28 +5,21 @@ import type { UsersDto } from '@users/users.dto'
 import { useEffect } from 'react'
 
 interface UsersSetterProps {
-  users: UsersDto[]
+  users: UsersDto
 }
 
 export const UsersSetter = ({ users }: UsersSetterProps) => {
-  const prevUsers = useUsersStore((state) => state.users)
-  const setUsers = useUsersStore((state) => state.setUsers)
+  const prevClients = useUsersStore((state) => state.clients)
+  const prevCompanies = useUsersStore((state) => state.companies)
+  const setClients = useUsersStore((state) => state.setClients)
+  const setCompanies = useUsersStore((state) => state.setCompanies)
 
   useEffect(() => {
-    if (!users.length || prevUsers.length > 0) return
+    if (!users.clients.length || prevClients.length > 0 || prevCompanies.length > 0) return
 
-    // NOTE: Might be unnecessary. keeping this just in case.
-    // Prevent infinite re-render by comparing if new users have been added or removed
-    // if (
-    //   getSymmetricDifference(
-    //     prevUsers.map((u) => u.id),
-    //     users.map((u) => u.id),
-    //   ).length === 0
-    // )
-    //   return
-
-    setUsers(users)
-  }, [users, setUsers, prevUsers])
+    setClients(users.clients)
+    setCompanies(users.companies)
+  }, [users, setClients, setCompanies, prevClients, prevCompanies])
 
   return null
 }
