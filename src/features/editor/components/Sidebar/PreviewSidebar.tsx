@@ -30,9 +30,8 @@ export const PreviewSidebar = () => {
           <PreviewProperty label="Address" value={client?.customFields?.address?.addressLine1} />
         </div>
       </div>
-      <div>
-        <div className="items-center px-6 py-3">Company Details</div>
-      </div>
+      {/* TODO: Hide until we implement custom fields properly */}
+      <div>{/* <div className="items-center px-6 py-3">Company Details</div> */}</div>
     </div>
   )
 }
