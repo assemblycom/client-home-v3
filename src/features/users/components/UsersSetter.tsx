@@ -3,7 +3,6 @@
 import { useUsersStore } from '@users/stores/usersStore'
 import type { UsersDto } from '@users/users.dto'
 import { useEffect } from 'react'
-import { getArraySymmetricDifference as getSymmetricDifference } from '@/utils/array'
 
 interface UsersSetterProps {
   users: UsersDto[]
