@@ -5,12 +5,13 @@ export const UsersDtoSchema = z.object({
   firstName: z.string(),
   lastName: z.string().optional(),
   email: z.email(),
-  customFields: z.object().optional(),
+  customFields: z.record(z.string(), z.any()).optional(),
 
   company: z
     .object({
+      id: z.uuid(),
       name: z.string(),
-      customFields: z.object().optional(),
+      customFields: z.record(z.string(), z.any()).optional(),
     })
     .nullable(),
 })
