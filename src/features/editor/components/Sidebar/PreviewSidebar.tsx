@@ -1,22 +1,11 @@
 'use client'
 
 import { useUsersStore } from '@users/stores/usersStore'
-import { useMemo } from 'react'
 import { PreviewProperty } from './PreviewProperty'
 
 export const PreviewSidebar = () => {
-  const clients = useUsersStore((store) => store.clients)
-  const companies = useUsersStore((store) => store.companies)
-  // const clientId = useUsersStore((store) => store.previewClientId)
-  // const companyId = useUsersStore((store) => store.previewCompanyId)
-  const clientId = clients[0].id
-  const companyId = clients[0].companyId
-
-  const client = useMemo(
-    // biome-ignore lint/suspicious/noDoubleEquals: comparing null with undefined
-    () => clients.find((client) => client.id === clientId && client.companyId == companyId),
-    [clients, clientId, companyId],
-  )
+  const client = useUsersStore((store) => store.previewClient)
+  const company = useUsersStore((store) => store.previewCompany)
 
   return (
     <div>
@@ -26,7 +15,7 @@ export const PreviewSidebar = () => {
           <PreviewProperty label="First name" value={client?.firstName} />
           <PreviewProperty label="Last name" value={client?.lastName} />
           <PreviewProperty label="Email" value={client?.email} />
-          <PreviewProperty label="Company" value={companies.find((company) => company.id === companyId)?.name} />
+          <PreviewProperty label="Company" value={company?.name} />
           <PreviewProperty label="Address" value={client?.customFields?.address?.addressLine1} />
         </div>
       </div>
