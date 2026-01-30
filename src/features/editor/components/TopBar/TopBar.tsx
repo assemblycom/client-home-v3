@@ -35,8 +35,8 @@ export const TopBar = () => {
             handleClick={() => changeViewModeDebounced(ViewMode.PREVIEW)}
           />
         </div>
-        <div className="h-5 w-px bg-border-gray" />
         <Activity mode={getActivityMode(viewMode === ViewMode.PREVIEW)}>
+          <div className="h-5 w-px bg-border-gray" />
           <ClientSelector />
         </Activity>
       </div>
