@@ -6,6 +6,8 @@ interface UsersState {
   previewCompanyId: string | null
   clients: ClientsDto[]
   companies: CompaniesDto[]
+  previewClient: ClientsDto | null
+  previewCompany: CompaniesDto | null
 }
 
 interface UsersActions {
@@ -20,12 +22,26 @@ const initialState: UsersState = {
   companies: [],
   previewClientId: null,
   previewCompanyId: null,
+  previewClient: null,
+  previewCompany: null,
 }
 
 export const useUsersStore = create<UsersState & UsersActions>()((set) => ({
   ...initialState,
-  setClients: (clients: ClientsDto[]) => set({ clients }),
+  setClients: (clients: ClientsDto[]) => {
+    set({ clients, previewClient: clients[0], previewClientId: clients[0].id })
+  },
   setCompanies: (companies: CompaniesDto[]) => set({ companies }),
-  setPreviewClientId: (clientId: string) => set({ previewClientId: clientId }),
-  setPreviewCompanyId: (companyId: string) => set({ previewCompanyId: companyId }),
+  setPreviewClientId: (previewClientId: string) => {
+    set((state) => ({
+      previewClientId,
+      previewClient: state.clients.find((client) => client.id === previewClientId) || null,
+    }))
+  },
+  setPreviewCompanyId: (previewCompanyId: string) => {
+    set((state) => ({
+      previewCompanyId,
+      previewCompany: state.companies.find((company) => company.id === previewCompanyId) || null,
+    }))
+  },
 }))
