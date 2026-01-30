@@ -25,6 +25,18 @@ body {
   @apply bg-background text-foreground box-border;
 }
 
+.topbar-selector {
+  > div:nth-child(3) {
+    @apply py-[2px] px-2 text-[13px] min-w-50;
+  }
+  > div:nth-child(4) {
+    @apply bg-white;
+    > div {
+      @apply border-none;
+    }
+  }
+}
+
 /* react color pickup */
 .w-color-saturation {
   border: 1px solid var(--color-border-gray) !important;
