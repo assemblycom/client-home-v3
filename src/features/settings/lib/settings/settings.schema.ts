@@ -8,6 +8,9 @@ export const settings = pgTable(
     id,
     workspaceId,
 
+    // Subheading text section
+    subheading: text().notNull().default("<p>Here's what needs your attention today</p>"),
+
     // Editor content
     content: text().notNull(),
 
