@@ -8,6 +8,13 @@
       "when": 1766719188335,
       "tag": "20251226031948_init",
       "breakpoints": false
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1770031229039,
+      "tag": "20260202112029_add-subheading-to-settings",
+      "breakpoints": false
     }
   ]
 }

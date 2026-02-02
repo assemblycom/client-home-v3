@@ -1,0 +1,1 @@
+ALTER TABLE "settings" ADD COLUMN "subheading" text DEFAULT '<p>Here''s what needs your attention today</p>' NOT NULL;
