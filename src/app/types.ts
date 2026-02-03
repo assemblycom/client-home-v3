@@ -15,3 +15,7 @@ export enum AuthenticatedAPIHeaders {
   COMPANY_ID = 'x-company-id',
   WORKSPACE_ID = 'x-workspace-id',
 }
+
+export interface PropsWithClassname {
+  className?: string
+}
