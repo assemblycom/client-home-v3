@@ -2,13 +2,13 @@
 
 import { Icon } from 'copilot-design-system'
 import type { ReactNode } from 'react'
+import type { PropsWithClassname } from '@/app/types'
 import { useAccordion } from '@/features/editor/components/Sidebar/Accordion/useAccordion'
 import { cn } from '@/utils/tailwind'
 
-export type AccordionProps = {
+export type AccordionProps = PropsWithClassname & {
   title: string
   content: ReactNode
-  className?: string
 }
 
 export const Accordion = ({ title, content, className }: AccordionProps) => {
