@@ -22,14 +22,14 @@ export default async function Home() {
         <WorkspaceFetcher token={token} />
       </Suspense>
 
-      <div className="flex h-screen w-screen">
-        <div className="flex-1">
+      <div className="flex h-screen w-screen max-w-screen">
+        <div className="flex-1 overflow-scroll">
           <TopBar />
-          <div className="h-[calc(100vh-64px)] overflow-y-scroll bg-background-primary px-6 py-6.5">
+          <div className="h-[calc(100vh-64px)] w-full overflow-x-hidden overflow-y-scroll bg-background-primary px-6 py-6.5">
             <EditorWrapper />
           </div>
         </div>
-        <Sidebar className="w-1/3 max-w-[394]" />
+        <Sidebar className="w-[394px] shrink-0" />
       </div>
     </>
   )
