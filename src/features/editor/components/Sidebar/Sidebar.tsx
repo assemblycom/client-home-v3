@@ -8,13 +8,12 @@ import { DynamicFields } from '@editor/components/Sidebar/DynamicFields'
 import { Segment } from '@editor/components/Sidebar/Segment'
 import { useViewStore, ViewMode } from '@editor/stores/viewStore'
 import { Activity } from 'react'
+import type { PropsWithClassname } from '@/app/types'
 import { getActivityMode } from '@/utils/activity'
 import { cn } from '@/utils/tailwind'
 import { PreviewSidebar } from './PreviewSidebar'
 
-interface SidebarProps {
-  className?: string
-}
+interface SidebarProps extends PropsWithClassname {}
 
 const AccordionItems = [
   {
