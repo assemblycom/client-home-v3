@@ -85,6 +85,8 @@ Custom error classes in `src/errors/`: APIError, NotFoundError, UnauthorizedErro
 
 ### Backend-specific guidelines
 
+- All code that is feature specific belongs inside a `feature/` folder.
+- Code that must be shared between features belongs inside the `src/lib` folder.
 - The backend specific code in `lib/` uses a minimal dependency injection pattern and a minimal implementation of CLEAN architecture (only entity, repository, schema, dto, controller - all under the same folder).
 - Inside `lib/`, there must be folder, each revolving around a particular resource in the feature. E.g. `features/settings/lib/` contains two folders `settings/` and `actions/`, each which revolve around a particular entity / resource.
 - All services must expose a static method "new" which bootstraps the service and its dependencies.
