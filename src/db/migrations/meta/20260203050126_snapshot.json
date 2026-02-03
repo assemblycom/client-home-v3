@@ -1,5 +1,5 @@
 {
-  "id": "e5177ff5-0f16-4d97-96e4-d204c98b092a",
+  "id": "1c5ec19a-50e0-4c4f-a6f2-2426f9570fd5",
   "prevId": "f429f12d-e880-4b8a-a590-71bc8efdf953",
   "version": "7",
   "dialect": "postgresql",
@@ -231,7 +231,7 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "default": "'<p>Here''s what needs your attention today</p>'"
+          "default": "'Here''s what needs your attention today'"
         },
         "content": {
           "name": "content",
