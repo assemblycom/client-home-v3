@@ -3,6 +3,8 @@ import { ReadonlyEditor } from '@editor/components/Editor/ReadonlyEditor'
 import { PreviewTopBar } from '@editor/components/Preview/PreviewTopBar'
 import { DisplayMode, useViewStore } from '@editor/stores/viewStore'
 import { cn } from '@/utils/tailwind'
+import { Heading } from '../Heading'
+import { Subheading } from '../Subheading'
 
 interface PreviewProps {
   token: string
@@ -30,6 +32,9 @@ export function Preview({ token, content, backgroundColor }: PreviewProps) {
           <Loader />
         ) : (
           <div className="tiptap-wrapper w-full overflow-auto" style={{ backgroundColor }}>
+            <Heading />
+            <Subheading readonly />
+
             <ReadonlyEditor content={content} token={token} />
           </div>
         )}
