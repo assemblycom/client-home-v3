@@ -7,6 +7,7 @@ interface SettingsState extends SettingsResponseDto {
 
 interface SettingsAction {
   setContent: (content: string) => void
+  setSubheading: (subheading: string) => void
   setActions: (actions: SettingsResponseDto['actions']) => void
   setSettings: (settings: Partial<SettingsResponseDto>) => void
   setInitialSettings: (settings: SettingsResponseDto) => void
@@ -20,6 +21,7 @@ export const createSettingsStore = (settings: SettingsResponseDto) =>
     initialSettings: settings,
 
     setContent: (content: string) => set((s) => ({ ...s, content })),
+    setSubheading: (subheading: string) => set((s) => ({ ...s, subheading })),
     setActions: (actions: SettingsResponseDto['actions']) =>
       set((s) => ({ ...s, actions: { ...s.actions, ...actions } })),
     setSettings: (newSettings: Partial<SettingsResponseDto>) => set((s) => ({ ...s, ...newSettings })),

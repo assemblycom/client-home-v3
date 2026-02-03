@@ -11,12 +11,13 @@ export const useAppControls = () => {
 
   const updateSettingsMutation = useSettingsMutation()
 
+  const subheading = useSettingsStore((s) => s.subheading)
   const bannerImageId = useSettingsStore((s) => s.bannerImageId)
   const backgroundColor = useSettingsStore((s) => s.backgroundColor)
   const setSettings = useSettingsStore((s) => s.setSettings)
 
   const content = editor?.getHTML()
-  const settings: SettingsUpdateDto = { content, bannerImageId, backgroundColor }
+  const settings: SettingsUpdateDto = { content, subheading, bannerImageId, backgroundColor }
 
   const actions: SettingsUpdateDto['actions'] = useSettingsStore(
     useShallow((s) => ({
@@ -29,7 +30,7 @@ export const useAppControls = () => {
   )
   const initialSettings = useSettingsStore((s) => s.initialSettings)
   const show =
-    !areObjKeysEqual(settings, initialSettings, ['content', 'bannerImageId', 'backgroundColor']) ||
+    !areObjKeysEqual(settings, initialSettings, ['content', 'subheading', 'bannerImageId', 'backgroundColor']) ||
     !areObjKeysEqual(actions, initialSettings.actions, ['tasks', 'invoices', 'messages', 'contracts', 'forms'])
 
   useSecondaryCta(
