@@ -2,13 +2,14 @@
 
 import { useAuthStore } from '@auth/providers/auth.provider'
 import { Editor } from '@editor/components/Editor'
+import { Heading } from '@editor/components/Heading'
 import { Preview } from '@editor/components/Preview'
+import { Subheading } from '@editor/components/Subheading'
 import { useAppControls } from '@editor/hooks/useAppControls'
 import { useSettingsStore } from '@settings/providers/settings.provider'
-import { Activity, useMemo } from 'react'
+import { Activity } from 'react'
 import { useViewStore, ViewMode } from '@/features/editor/stores/viewStore'
 import { getActivityMode } from '@/utils/activity'
-import { getTimeOfDay } from '@/utils/date'
 
 export function EditorWrapper() {
   const viewMode = useViewStore((store) => store.viewMode)
@@ -16,19 +17,14 @@ export function EditorWrapper() {
   const content = useSettingsStore((store) => store.content)
   const backgroundColor = useSettingsStore((store) => store.backgroundColor)
 
-  const greeting = useMemo(() => getTimeOfDay().charAt(0).toUpperCase() + getTimeOfDay().slice(1), [])
-
   useAppControls()
 
   return (
     <div className="contents">
       <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
         <div className="tiptap-wrapper" style={{ backgroundColor }}>
-          <div className="flex ps-6 pt-5 font-medium text-custom-xl leading-7">
-            <div>Good {greeting},&nbsp;</div>
-            {/* Static placeholder for now */}
-            <div>User</div>
-          </div>
+          <Heading />
+          <Subheading />
           <Editor token={token} content={content} backgroundColor={backgroundColor} />
         </div>
       </Activity>
