@@ -6,7 +6,7 @@
   --font-inter: "Inter", "Arial", "Helvetica", sans-serif;
 }
 
-@layer components {
+@layer base {
   .text-custom-xs {
     @apply text-xs leading-5 font-normal;
   }
