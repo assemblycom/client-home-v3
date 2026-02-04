@@ -30,19 +30,11 @@ export default class UsersService extends BaseService {
 
     // NOTE: Do not check for !companies || !companies.data since companies can be disabled in workspace
 
-    const flattenedClients: ClientsDto[] = []
-    for (const client of clients.data) {
-      const companyCount = client.companyIds?.length || 0
-      if (companyCount > 1) {
-        // biome-ignore lint/style/noNonNullAssertion: companyIds must exist when companyCount > 1
-        for (const companyId of client.companyIds!) {
-          flattenedClients.push(this.getParsedClientData(client, companyId))
-        }
-      } else {
-        const companyId = client.companyIds?.[0]
-        flattenedClients.push(this.getParsedClientData(client, companyId))
-      }
-    }
+    const flattenedClients = clients.data.flatMap((client) => {
+      const companyIds = client.companyIds ?? [undefined]
+
+      return companyIds.map((companyId) => this.getParsedClientData(client, companyId))
+    })
 
     return UsersDtoSchema.parse({
       clients: flattenedClients.sort((a, b) => {
