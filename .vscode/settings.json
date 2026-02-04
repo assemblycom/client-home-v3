@@ -1,4 +1,9 @@
 {
   "tailwindCSS.experimental.configFile": "src/app/globals.css",
-  "tailwindCSS.classFunctions": ["cn"]
+  "tailwindCSS.classFunctions": ["cn"],
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "never",
+    "source.organizeImports.biome": "explicit",
+    "source.fixAll.biome": "explicit"
+  }
 }

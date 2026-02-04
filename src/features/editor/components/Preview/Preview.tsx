@@ -2,6 +2,7 @@ import { Loader } from '@common/components/Loader'
 import { ReadonlyEditor } from '@editor/components/Editor/ReadonlyEditor'
 import { PreviewTopBar } from '@editor/components/Preview/PreviewTopBar'
 import { DisplayMode, useViewStore } from '@editor/stores/viewStore'
+import { ActionsCard } from '@/features/action-items/components/actions-card'
 import { cn } from '@/utils/tailwind'
 import { Heading } from '../Heading'
 import { Subheading } from '../Subheading'
@@ -31,9 +32,10 @@ export function Preview({ token, content, backgroundColor }: PreviewProps) {
         {!workspace ? (
           <Loader />
         ) : (
-          <div className="tiptap-wrapper w-full overflow-auto" style={{ backgroundColor }}>
+          <div className="tiptap-wrapper @container w-full overflow-auto" style={{ backgroundColor }}>
             <Heading />
             <Subheading readonly />
+            <ActionsCard />
 
             <ReadonlyEditor content={content} token={token} />
           </div>
