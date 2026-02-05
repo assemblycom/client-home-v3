@@ -21,7 +21,7 @@ export const TopBar = () => {
   }, [changeViewModeDebounced])
 
   return (
-    <nav className="flex min-h-8 w-full cursor-default items-center justify-between border-border-gray border-b px-5 py-3">
+    <nav className="flex min-h-8 w-full shrink-0 cursor-default items-center justify-between border-border-gray border-b px-5 py-3">
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-2 rounded-sm p-1 outline outline-border-gray">
           <TabBtn
