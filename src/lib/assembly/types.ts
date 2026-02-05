@@ -115,3 +115,20 @@ export const InternalUsersResponseSchema = z.object({
   data: z.array(InternalUserResponseSchema),
 })
 export type InternalUsersResponse = z.infer<typeof InternalUsersResponseSchema>
+
+// export const NotificationsResponseSchema = z.object({
+//   id: z.string(), // Beware, don't set this to uuid because
+//   recipientClientId: z.uuid(),
+//   recipientCompanyId: z.uuid().nullish(),
+// })
+export const NotificationsResponseSchema = z.object({
+  data: z
+    .object({
+      id: z.string(),
+      recipientClientId: z.uuid(),
+      recipientCompanyId: z.uuid().nullish(),
+      event: z.string(),
+    })
+    .array(),
+})
+export type NotificationsResponse = z.infer<typeof NotificationsResponseSchema>
