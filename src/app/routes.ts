@@ -7,6 +7,7 @@ export const ROUTES = Object.freeze({
     workspace: '/api/workspace',
     media: '/api/media',
     users: '/api/users',
+    notificationCounts: '/api/users/:id/notification-counts',
   },
 })
 
@@ -25,12 +26,21 @@ export type RouteRule =
  */
 export const authorizedRoutes: Record<string, RouteRule[]> = {
   public: [ROUTES.api.health],
-  internalUsers: [ROUTES.home, ROUTES.api.workspace, ROUTES.api.settings, ROUTES.api.media, ROUTES.api.users],
+  internalUsers: [
+    ROUTES.home,
+    ROUTES.api.workspace,
+    ROUTES.api.settings,
+    ROUTES.api.media,
+    ROUTES.api.users,
+    ROUTES.api.notificationCounts,
+  ],
   clientUsers: [
     ROUTES.client,
     {
       path: ROUTES.api.settings,
       methods: ['GET'],
     },
+    // We have to implement further policy level auth so that client can only access its own notification counts
+    ROUTES.api.notificationCounts,
   ],
 }
