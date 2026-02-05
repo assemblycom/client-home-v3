@@ -7,11 +7,11 @@ import APIError from '@/errors/api.error'
 import BaseService from '@/lib/core/base.service'
 
 export default class NotificationsCountService extends BaseService {
-  private readonly eventMap: Partial<Record<NotificationEvent, keyof NotificationCountsDto>> = Object.freeze({
+  private readonly eventMap = Object.freeze({
     [NotificationEvent.FORMS]: 'forms',
     [NotificationEvent.INVOICES]: 'invoices',
     [NotificationEvent.CONTRACTS]: 'contracts',
-  } as const)
+  } as const satisfies Partial<Record<NotificationEvent, keyof NotificationCountsDto>>)
 
   constructor(
     readonly user: User,
@@ -37,8 +37,6 @@ export default class NotificationsCountService extends BaseService {
       tasks: 0,
       messages: 0,
     }
-
-    this.eventMap['forms' as NotificationEvent] = 'invoices'
 
     notifications.data.forEach(({ event }) => {
       const key = this.eventMap[event as NotificationEvent]
