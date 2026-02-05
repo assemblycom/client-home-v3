@@ -1,9 +1,9 @@
 import { authenticateHeaders } from '@auth/lib/authenticate'
+import NotificationsCountService from '@notification-counts/lib/notification-counts.service'
 import { HttpStatusCode } from 'axios'
 import { type NextRequest, NextResponse } from 'next/server'
 import type { APIResponse } from '@/app/types'
 import APIError from '@/errors/api.error'
-import NotificationsCountService from './notification-counts.service'
 
 export const getAllUserNotificationCounts = async (
   req: NextRequest,
