@@ -27,7 +27,6 @@ import { copilotApi } from 'copilot-node-sdk'
 import env from '@/config/env'
 import logger from '@/lib/logger'
 import { withRetry } from '@/lib/with-retry'
-import { MAX_FETCH_ASSEMBLY_RESOURCES } from './constants'
 import { AssemblyInvalidTokenError } from './errors'
 
 export default class AssemblyClient {
