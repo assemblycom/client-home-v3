@@ -30,7 +30,7 @@ export const ActionsCard = ({ readonly }: Props) => {
   }
 
   return (
-    <div className="relative rounded-2xl border border-background-primary bg-gray-100 p-8 shadow-sm transition-all duration-500">
+    <div className="relative rounded-2xl border border-background-primary bg-gray-100 p-6 shadow-sm transition-all duration-500">
       <div className="mb-4">
         <h1 className="mb-2 text-heading-xl">Your Actions</h1>
         <div className="text-body-md text-text-secondary">
@@ -47,7 +47,7 @@ export const ActionsCard = ({ readonly }: Props) => {
 
       <div
         className={cn(
-          'grid grid-cols-2 gap-4',
+          'grid @uxs:grid-cols-2 grid-cols-1 gap-4',
           enabledActions.length > 2 ? '@lg:grid-cols-3' : '@lg:grid-cols-2',
           enabledActions.length > 3 ? '@xl:grid-cols-4' : '',
         )}

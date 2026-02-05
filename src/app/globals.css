@@ -8,13 +8,15 @@
 }
 
 @theme {
-  --breakpoint-xs: 30rem;
-  --breakpoint-sm: 40rem;
-  --breakpoint-md: 48rem;
-  --breakpoint-lg: 64rem;
-  --breakpoint-xl: 80rem;
-  --breakpoint-2xl: 96rem;
+  --breakpoint-uxs: 20rem; /* 320 px */
+  --breakpoint-xs: 30rem; /* 480 px */
+  --breakpoint-sm: 40rem; /* 640 px */
+  --breakpoint-md: 48rem; /* 768 px */
+  --breakpoint-lg: 64rem; /* 1024 px */
+  --breakpoint-xl: 80rem; /* 1280 px */
+  --breakpoint-2xl: 96rem; /* 1536 px */
 
+  --container-uxs: 20rem;
   --container-xs: 30rem;
   --container-sm: 40rem;
   --container-md: 48rem;
@@ -104,7 +106,9 @@ body {
 }
 
 .tiptap-wrapper {
-  @apply rounded-xl border border-border-gray px-6 py-5;
+  @layer base {
+    @apply rounded-xl border border-border-gray px-6 py-5;
+  }
 }
 
 .tiptap {

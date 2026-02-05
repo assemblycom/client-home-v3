@@ -18,7 +18,7 @@ export const ActionItem = ({ action, isLoading, mode, className, portalUrl }: Pr
       className={cn(
         'flex flex-col gap-3 rounded-lg border border-border-gray bg-white p-5 lg:min-w-56',
         isLoading
-          ? 'animate-pulse md:min-w-56'
+          ? '@md:min-w-56 animate-pulse'
           : 'group cursor-pointer transition-all duration-300 hover:border-gray-300 hover:shadow-md',
         className,
       )}

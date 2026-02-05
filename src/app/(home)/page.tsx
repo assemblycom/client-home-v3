@@ -23,9 +23,9 @@ export default async function Home() {
       </Suspense>
 
       <div className="flex h-screen w-screen max-w-screen">
-        <div className="flex h-screen flex-1 flex-col overflow-hidden">
+        <div className="@container flex h-screen flex-1 flex-col overflow-hidden">
           <TopBar />
-          <div className="w-full grow overflow-x-hidden overflow-y-scroll bg-background-primary px-6 py-6.5">
+          <div className="w-full grow overflow-x-hidden overflow-y-scroll bg-background-primary @md:px-6 @md:pt-6.5 pb-6.5">
             <EditorWrapper />
           </div>
         </div>

@@ -12,7 +12,7 @@ export function DisplayModeTab() {
     })
   }
   return (
-    <div className="flex flex-items-center gap-2 rounded-sm border border-gray-200 p-1 text-primary">
+    <div className="box-content flex flex-items-center gap-2 rounded-sm border border-gray-200 p-1 text-primary">
       <button
         type="button"
         onClick={() => onClick(DisplayMode.DESKTOP)}

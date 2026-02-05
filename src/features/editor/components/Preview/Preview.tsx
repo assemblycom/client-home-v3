@@ -20,7 +20,7 @@ export function Preview({ token, content, backgroundColor }: PreviewProps) {
   return (
     <div
       className={cn(
-        'mx-auto flex h-full flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm',
+        'mx-auto flex h-full flex-col overflow-hidden rounded-lg @max-md:rounded-t-none border border-gray-200 bg-white shadow-sm',
         {
           'max-w-sm': displayMode === DisplayMode.MOBILE,
         },

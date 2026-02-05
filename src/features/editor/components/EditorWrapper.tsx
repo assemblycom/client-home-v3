@@ -23,7 +23,7 @@ export function EditorWrapper() {
   return (
     <div className="contents">
       <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
-        <div className="tiptap-wrapper @container max-w-full" style={{ backgroundColor }}>
+        <div className="tiptap-wrapper @container max-w-full @max-md:rounded-t-none" style={{ backgroundColor }}>
           <Heading />
           <Subheading />
           <ActionsCard />
