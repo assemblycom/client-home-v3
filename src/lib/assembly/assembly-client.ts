@@ -15,6 +15,8 @@ import {
   InternalUserResponseSchema,
   type InternalUsersResponse,
   InternalUsersResponseSchema,
+  type NotificationsResponse,
+  NotificationsResponseSchema,
   type Token,
   TokenSchema,
   type WorkspaceResponse,
@@ -25,6 +27,7 @@ import { copilotApi } from 'copilot-node-sdk'
 import env from '@/config/env'
 import logger from '@/lib/logger'
 import { withRetry } from '@/lib/with-retry'
+import { MAX_FETCH_ASSEMBLY_RESOURCES } from './constants'
 import { AssemblyInvalidTokenError } from './errors'
 
 export default class AssemblyClient {
@@ -119,6 +122,13 @@ export default class AssemblyClient {
     return InternalUserResponseSchema.parse(await this.assembly.retrieveInternalUser({ id }))
   }
 
+  async _getNotifications(
+    { includeRead, recipientClientId }: Parameters<SDK['listNotifications']>[0] = { includeRead: false },
+  ): Promise<NotificationsResponse> {
+    logger.info('AssemblyClient#_getNotifications', { includeRead, recipientClientId })
+    return NotificationsResponseSchema.parse(await this.assembly.listNotifications({ includeRead, recipientClientId }))
+  }
+
   private wrapWithRetry<Args extends unknown[], R>(fn: (...args: Args) => Promise<R>): (...args: Args) => Promise<R> {
     return (...args: Args): Promise<R> => withRetry(fn.bind(this), args)
   }
@@ -137,4 +147,5 @@ export default class AssemblyClient {
   getCompanyClients = this.wrapWithRetry(this._getCompanyClients)
   getInternalUsers = this.wrapWithRetry(this._getInternalUsers)
   getInternalUser = this.wrapWithRetry(this._getInternalUser)
+  getNotifications = this.wrapWithRetry(this._getNotifications)
 }
