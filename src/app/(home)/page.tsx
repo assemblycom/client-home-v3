@@ -23,13 +23,13 @@ export default async function Home() {
       </Suspense>
 
       <div className="flex h-screen w-screen max-w-screen">
-        <div className="flex-1 overflow-scroll">
+        <div className="flex-1 overflow-auto">
           <TopBar />
           <div className="h-[calc(100vh-64px)] w-full overflow-x-hidden overflow-y-scroll bg-background-primary px-6 py-6.5">
             <EditorWrapper />
           </div>
         </div>
-        <Sidebar className="w-[394px] shrink-0" />
+        <Sidebar className="w-100 shrink-0" />
       </div>
     </>
   )
