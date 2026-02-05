@@ -8,7 +8,9 @@ import type { StatusableError } from '@/errors/base-server.error'
 import { NotFoundError } from '@/errors/not-found.error'
 import logger from '@/lib/logger'
 
-type RequestHandler = (req: NextRequest, params: unknown) => Promise<NextResponse>
+type RouteContext<P extends Record<string, string>> = { params: Promise<P> }
+type SimpleHandler = (req: NextRequest) => Promise<NextResponse>
+type ParamsHandler<P extends Record<string, string>> = (req: NextRequest, ctx: RouteContext<P>) => Promise<NextResponse>
 
 /**
  * Reusable utility that wraps a given request handler with a global error handler to standardize response structure
@@ -27,11 +29,15 @@ type RequestHandler = (req: NextRequest, params: unknown) => Promise<NextRespons
  * @throws {ZodError} Captures and handles validation errors and responds with status 400 and the issue detail.
  * @throws {APIError} Captures and handles APIError
  */
-export const withErrorHandler = (handler: RequestHandler): RequestHandler => {
-  return async (req: NextRequest, params: unknown) => {
+export function withErrorHandler(handler: SimpleHandler): SimpleHandler
+export function withErrorHandler<P extends Record<string, string>>(handler: ParamsHandler<P>): ParamsHandler<P>
+export function withErrorHandler<P extends Record<string, string>>(
+  handler: SimpleHandler | ParamsHandler<P>,
+): SimpleHandler | ParamsHandler<P> {
+  return async (req: NextRequest, ctx?: RouteContext<P>) => {
     // Execute the handler wrapped in a try... catch block
     try {
-      return await handler(req, params)
+      return await (handler as ParamsHandler<P>)(req, ctx as RouteContext<P>)
     } catch (error: unknown) {
       // Build error API response and log error
       let message: string | undefined
