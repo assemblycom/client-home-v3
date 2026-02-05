@@ -25,13 +25,19 @@ export const getSanitizedHeaders = (req: NextRequest) => {
   return sanitizedHeaders
 }
 
-function matches(rule: RouteRule, pathname: string, method: string) {
-  if (typeof rule === 'string') return rule === pathname
-  if (rule.path !== pathname) return false
+const pathMatches = (pattern: string, pathname: string): boolean => {
+  const regex = pattern.replace(/:[^/]+/g, '[^/]+').replace(/\//g, '\\/')
+  return new RegExp(`^${regex}$`).test(pathname)
+}
+
+const matches = (rule: RouteRule, pathname: string, method: string) => {
+  const path = typeof rule === 'string' ? rule : rule.path
+  if (!pathMatches(path, pathname)) return false
+  if (typeof rule === 'string') return true
   if (!rule.methods) return true
   return rule.methods.includes(method as HttpMethod)
 }
 
-export function isAuthorized(rules: RouteRule[], req: NextRequest) {
+export const isAuthorized = (rules: RouteRule[], req: NextRequest) => {
   return rules.some((r) => matches(r, req.nextUrl.pathname, req.method))
 }
