@@ -14,8 +14,10 @@ export const getAllUserNotificationCounts = async (
 
   if (!clientId) throw new APIError('Client ID is required', HttpStatusCode.BadRequest)
 
+  const companyId = req.nextUrl.searchParams.get('companyId')
+
   const notificationCountService = NotificationsCountService.new(user)
-  const notificationCounts = await notificationCountService.getNotificationCountsForClient(clientId)
+  const notificationCounts = await notificationCountService.getNotificationCountsForClient(clientId, companyId)
 
   return NextResponse.json({
     data: notificationCounts,

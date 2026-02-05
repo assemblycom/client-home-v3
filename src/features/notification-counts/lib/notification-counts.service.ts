@@ -25,7 +25,10 @@ export default class NotificationsCountService extends BaseService {
     return new NotificationsCountService(user, assembly)
   }
 
-  async getNotificationCountsForClient(recipientClientId: string): Promise<NotificationCountsDto> {
+  async getNotificationCountsForClient(
+    recipientClientId: string,
+    recipientCompanyId: string | null,
+  ): Promise<NotificationCountsDto> {
     const notifications = await this.assembly.getNotifications({ recipientClientId })
     if (!notifications || !notifications.data)
       throw new APIError('Could not fetch notifications list from assembly', HttpStatusCode.InternalServerError)
@@ -38,7 +41,9 @@ export default class NotificationsCountService extends BaseService {
       messages: 0,
     }
 
-    notifications.data.forEach(({ event }) => {
+    notifications.data.forEach(({ event, recipientCompanyId: notificationRecipientCompanyId }) => {
+      if (recipientCompanyId && notificationRecipientCompanyId !== recipientCompanyId) return
+
       const key = this.eventMap[event as NotificationEvent]
       if (key) notificationCounts[key]++
     })
