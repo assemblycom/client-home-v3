@@ -29,6 +29,7 @@
       "@media/*": ["./src/features/media/*"],
       "@settings/*": ["./src/features/settings/*"],
       "@users/*": ["./src/features/users/*"],
+      "@notification-counts/*": ["./src/features/notification-counts/*"],
       "@/*": ["./src/*"]
     }
   },
