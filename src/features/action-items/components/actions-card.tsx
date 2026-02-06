@@ -5,10 +5,11 @@ import { HandleBarTemplate } from '@/features/handlebar-template/components/hand
 import { cn } from '@/utils/tailwind'
 import { ActionItem } from './action-item'
 
-interface Props {
+interface ActionCardProps {
   readonly?: boolean
 }
-export const ActionsCard = ({ readonly }: Props) => {
+
+export const ActionsCard = ({ readonly }: ActionCardProps) => {
   const { enabledActions } = useEnabledActions()
   const viewMode = useViewStore((store) => store.viewMode)
   const [isLoading, setIsLoading] = useState(true)
@@ -32,7 +33,7 @@ export const ActionsCard = ({ readonly }: Props) => {
   return (
     <div className="relative rounded-2xl border border-background-primary bg-gray-100 p-6 shadow-sm transition-all duration-500">
       <div className="mb-4">
-        <h1 className="mb-2 text-heading-xl">Your Actions</h1>
+        <h2 className="mb-2 text-heading-xl">Your Actions</h2>
         <div className="text-body-md text-text-secondary">
           You have{' '}
           <HandleBarTemplate

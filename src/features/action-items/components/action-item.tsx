@@ -4,7 +4,7 @@ import { Icon } from 'copilot-design-system'
 import { HandleBarTemplate } from '@/features/handlebar-template/components/handle-bar-template'
 import { cn } from '@/utils/tailwind'
 
-interface Props {
+interface ActionItemProps {
   action: ActionDefinition
   isLoading?: boolean
   mode: ViewMode
@@ -12,14 +12,12 @@ interface Props {
   portalUrl?: string
 }
 
-export const ActionItem = ({ action, isLoading, mode, className, portalUrl }: Props) => {
+export const ActionItem = ({ action, isLoading, mode, className, portalUrl }: ActionItemProps) => {
   return (
     <div
       className={cn(
         'flex flex-col gap-3 rounded-lg border border-border-gray bg-white p-5 lg:min-w-56',
-        isLoading
-          ? '@md:min-w-56 animate-pulse'
-          : 'group cursor-pointer transition-all duration-300 hover:border-gray-300 hover:shadow-md',
+        isLoading ? '@md:min-w-56 animate-pulse' : 'group transition-all duration-300',
         className,
       )}
     >
@@ -33,7 +31,7 @@ export const ActionItem = ({ action, isLoading, mode, className, portalUrl }: Pr
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <Icon icon={action.icon} className="size-4 transition-transform duration-300 group-hover:scale-110" />
-              <h2 className="text-heading-md">{action.label}</h2>
+              <h3 className="text-heading-md">{action.label}</h3>
             </div>
           </div>
 

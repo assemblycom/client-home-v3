@@ -1,6 +1,6 @@
 import type { ActionItemIcon, ActionItemLabelType } from '@editor/components/Sidebar/Actions/type'
 import type { SettingsUpdateDto } from '@settings/lib/settings-actions.dto'
-import type { IHandleBarTemplate } from '@/features/handlebar-template/types/hande-bar-template.type'
+import type { TemplateString } from '@/features/handlebar-template/types/hande-bar-template.type'
 
 export const ActionItemLabel = Object.freeze({
   INVOICE: 'Invoice',
@@ -16,7 +16,7 @@ type ActionKey = keyof NonNullable<SettingsUpdateDto['actions']>
 export type ActionDefinition = {
   label: string
   icon: ActionItemIcon
-  template: IHandleBarTemplate
+  template: TemplateString
   key: ActionKey
   singularLabel?: string
   appUrlPath: string

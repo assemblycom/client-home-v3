@@ -1,18 +1,18 @@
 import { ViewMode } from '@editor/stores/viewStore'
 import type { ReactNode } from 'react'
-import type { IHandleBarTemplate } from '@/features/handlebar-template/types/hande-bar-template.type'
+import type { TemplateString } from '@/features/handlebar-template/types/hande-bar-template.type'
 import { getTemplateValue } from '@/features/handlebar-template/utils/get-template-value'
 import { cn } from '@/utils/tailwind'
 
-interface Props {
-  template: IHandleBarTemplate
+interface HandleBarTemplateProps {
+  template: TemplateString
   mode: ViewMode
   fallbackValue?: ReactNode
   isLoading?: boolean
   className?: string
 }
 
-export function HandleBarTemplate({ template, mode, fallbackValue, isLoading, className }: Props) {
+export function HandleBarTemplate({ template, mode, fallbackValue, isLoading, className }: HandleBarTemplateProps) {
   if (mode === ViewMode.EDITOR) {
     return (
       <span className="inline-flex align-baseline">

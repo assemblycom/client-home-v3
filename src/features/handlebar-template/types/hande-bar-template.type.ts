@@ -1,1 +1,1 @@
-export type IHandleBarTemplate = `{{${string}}}`
+export type TemplateString = `{{${string}}}`
