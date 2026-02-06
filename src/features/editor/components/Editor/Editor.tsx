@@ -7,8 +7,9 @@ import { EmbedBubbleInput } from '@extensions/Embed.ext/EmbedBubbleInput'
 import extensions from '@extensions/extensions'
 import { FileHandlerExt } from '@extensions/FileHandler.ext'
 import { ImageExt } from '@extensions/Image.ext'
+import { SettingsContext } from '@settings/providers/settings.provider'
 import { EditorContent, useEditor } from '@tiptap/react'
-import { useEffect } from 'react'
+import { useContext, useEffect } from 'react'
 import { useShallow } from 'zustand/shallow'
 
 interface EditorProps {
@@ -18,6 +19,7 @@ interface EditorProps {
 }
 
 export const Editor = ({ token, content, backgroundColor }: EditorProps) => {
+  const settingsStoreApi = useContext(SettingsContext)
   const { setEditor, destroyEditor, showEmbedInput, setShowEmbedInput } = useEditorStore(
     useShallow((s) => ({
       setEditor: s.setEditor,
@@ -35,6 +37,11 @@ export const Editor = ({ token, content, backgroundColor }: EditorProps) => {
     editorProps: { attributes: { class: `bg-[${backgroundColor}] text-custom-xs` } },
     onCreate({ editor }) {
       editor.storage.token.token = token
+    },
+    onUpdate: ({ editor }) => {
+      settingsStoreApi?.getState().setSettings({
+        content: editor.getHTML(),
+      })
     },
   })
 
