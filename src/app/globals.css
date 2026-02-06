@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
 @import "./assets/_variables/_colors.css";
+@import "./assets/_variables/_typography.css";
+@import "./assets/_variables/_breakpoints.css";
 
 :root {
   --font-inter: "Inter", "Arial", "Helvetica", sans-serif;
@@ -87,7 +89,9 @@ body {
 }
 
 .tiptap-wrapper {
-  @apply rounded-xl border border-border-gray px-6 py-5;
+  @layer base {
+    @apply rounded-xl border border-border-gray px-6 py-5;
+  }
 }
 
 .tiptap {

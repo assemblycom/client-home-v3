@@ -8,6 +8,7 @@ import { Subheading } from '@editor/components/Subheading'
 import { useAppControls } from '@editor/hooks/useAppControls'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import { Activity } from 'react'
+import { ActionsCard } from '@/features/action-items/components/actions-card'
 import { useViewStore, ViewMode } from '@/features/editor/stores/viewStore'
 import { getActivityMode } from '@/utils/activity'
 
@@ -22,9 +23,10 @@ export function EditorWrapper() {
   return (
     <div className="contents">
       <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
-        <div className="tiptap-wrapper max-w-full" style={{ backgroundColor }}>
+        <div className="tiptap-wrapper @container max-w-full @max-md:rounded-t-none" style={{ backgroundColor }}>
           <Heading />
           <Subheading />
+          <ActionsCard />
           <Editor token={token} content={content} backgroundColor={backgroundColor} />
         </div>
       </Activity>
