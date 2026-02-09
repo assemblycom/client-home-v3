@@ -5,18 +5,5 @@
     "source.organizeImports": "never",
     "source.organizeImports.biome": "explicit",
     "source.fixAll.biome": "explicit"
-  },
-    "workbench.tree.renderIndentGuides": "always",
-  "workbench.tree.indent": 10,
-  "editor.fontSize": 13,
-  "editor.fontFamily": "Fira Code",
-  "editor.lineHeight": 24,
-  "editor.fontLigatures": true,
-  "editor.formatOnPaste": true,
-  "editor.guides.bracketPairs": true,
-  "files.trimTrailingWhitespace": true,
-
-  "editor.formatOnSave": true,
-  "window.zoomLevel": 0.5,
-
+  }
 }
