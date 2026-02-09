@@ -7,8 +7,6 @@ import { useShallow } from 'zustand/shallow'
 import { areObjKeysEqual } from '@/utils/objects'
 
 export const useAppControls = () => {
-  const editor = useEditorStore((s) => s.editor)
-
   const updateSettingsMutation = useSettingsMutation()
 
   const subheading = useSettingsStore((s) => s.subheading)
@@ -16,8 +14,13 @@ export const useAppControls = () => {
   const backgroundColor = useSettingsStore((s) => s.backgroundColor)
   const setSettings = useSettingsStore((s) => s.setSettings)
 
-  const content = editor?.getHTML()
-  const settings: SettingsUpdateDto = { content, subheading, bannerImageId, backgroundColor }
+  const content = useSettingsStore((s) => s.content)
+  const settings: SettingsUpdateDto = {
+    content,
+    subheading,
+    bannerImageId,
+    backgroundColor,
+  }
 
   const actions: SettingsUpdateDto['actions'] = useSettingsStore(
     useShallow((s) => ({
