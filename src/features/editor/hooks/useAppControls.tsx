@@ -1,5 +1,4 @@
 import { usePrimaryCta, useSecondaryCta } from '@app-bridge/hooks'
-import { useEditorStore } from '@editor/stores/editorStore'
 import { useSettingsMutation } from '@settings/hooks/useSettingsMutation'
 import type { SettingsUpdateDto } from '@settings/lib/settings-actions.dto'
 import { useSettingsStore } from '@settings/providers/settings.provider'

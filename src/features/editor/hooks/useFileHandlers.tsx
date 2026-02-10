@@ -38,7 +38,19 @@ export const useFileHandlers = () => {
         }
 
         const signedUrl = await uploadFileToSupabase(file, token)
-        setContent(currentEditor.getHTML().replaceAll(fileReader.result as string, signedUrl))
+        const { doc } = currentEditor.state
+        let imagePos: number | null = null
+        doc.descendants((node, pos) => {
+          if (node.type.name === 'image' && node.attrs.title === randId) {
+            imagePos = pos
+            return false //short circuit the search for image position.
+          }
+        })
+
+        if (imagePos !== null) {
+          currentEditor.chain().focus().setNodeSelection(imagePos).updateAttributes('image', { src: signedUrl }).run()
+          setContent(currentEditor.getHTML())
+        }
       }
     })
   }
