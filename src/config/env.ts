@@ -15,4 +15,7 @@ const EnvSchema = z.object({
   SUPABASE_SIGNED_URL_EXPIRY: z.number().optional().default(300),
 })
 
-export default EnvSchema.parse(process.env)
+export default EnvSchema.parse({
+  ...process.env,
+  VERCEL_URL: `${['production', 'preview'].includes(process.env.VERCEL_ENV || '') ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}`,
+})
