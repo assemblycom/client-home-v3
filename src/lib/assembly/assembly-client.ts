@@ -130,7 +130,7 @@ export default class AssemblyClient {
     return NotificationsResponseSchema.parse(await this.assembly.listNotifications({ includeRead, recipientClientId }))
   }
 
-  async _getTasks({ clientId, companyId, status }: { clientId: string; companyId: string; status: TaskStatus }) {
+  async _getTasks({ clientId, companyId, status }: { clientId: string; companyId?: string; status: TaskStatus }) {
     logger.info('AssemblyClient#_getTasks')
     const limit = 100 // There is currently an issue that causes limit above 100 to throw error
     return TasksResponseSchema.parse(await this.assembly.retrieveTasks({ clientId, companyId, status, limit }))
