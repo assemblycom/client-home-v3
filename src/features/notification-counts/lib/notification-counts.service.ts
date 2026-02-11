@@ -1,5 +1,4 @@
 import AssemblyClient from '@assembly/assembly-client'
-import { TaskStatus } from '@assembly/types'
 import type { User } from '@auth/lib/user.entity'
 import type { NotificationCountsDto } from '@notification-counts/notification-counts.dto'
 import { NotificationEvent } from '@notification-counts/types'
