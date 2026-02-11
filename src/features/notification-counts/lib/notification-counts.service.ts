@@ -1,4 +1,5 @@
 import AssemblyClient from '@assembly/assembly-client'
+import { TaskStatus } from '@assembly/types'
 import type { User } from '@auth/lib/user.entity'
 import type { NotificationCountsDto } from '@notification-counts/notification-counts.dto'
 import { NotificationEvent } from '@notification-counts/types'
@@ -29,7 +30,19 @@ export default class NotificationsCountService extends BaseService {
     recipientClientId: string,
     recipientCompanyId: string | null,
   ): Promise<NotificationCountsDto> {
-    const notifications = await this.assembly.getNotifications({ recipientClientId })
+    const [notifications, todoTasks, inProgressTasks] = await Promise.all([
+      this.assembly.getNotifications({ recipientClientId }),
+      this.assembly.getTasks({
+        clientId: recipientClientId,
+        companyId: recipientCompanyId || undefined,
+        status: 'todo',
+      }),
+      this.assembly.getTasks({
+        clientId: recipientClientId,
+        companyId: recipientCompanyId || undefined,
+        status: 'inProgress',
+      }),
+    ])
     if (!notifications || !notifications.data)
       throw new APIError('Could not fetch notifications list from assembly', HttpStatusCode.InternalServerError)
 
@@ -37,7 +50,7 @@ export default class NotificationsCountService extends BaseService {
       forms: 0,
       invoices: 0,
       contracts: 0,
-      tasks: 0,
+      tasks: todoTasks.data.length + inProgressTasks.data.length,
       messages: 0,
     }
 

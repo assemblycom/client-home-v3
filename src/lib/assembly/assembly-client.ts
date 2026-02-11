@@ -17,6 +17,7 @@ import {
   InternalUsersResponseSchema,
   type NotificationsResponse,
   NotificationsResponseSchema,
+  TasksResponseSchema,
   type Token,
   TokenSchema,
   type WorkspaceResponse,
@@ -128,6 +129,12 @@ export default class AssemblyClient {
     return NotificationsResponseSchema.parse(await this.assembly.listNotifications({ includeRead, recipientClientId }))
   }
 
+  async _getTasks({ clientId, companyId, status }: Parameters<SDK['retrieveTasks']>[0]) {
+    logger.info('AssemblyClient#_getTasks')
+    const limit = 100 // There is currently an issue that causes limit above 100 to throw error
+    return TasksResponseSchema.parse(await this.assembly.retrieveTasks({ clientId, companyId, status, limit }))
+  }
+
   private wrapWithRetry<Args extends unknown[], R>(fn: (...args: Args) => Promise<R>): (...args: Args) => Promise<R> {
     return (...args: Args): Promise<R> => withRetry(fn.bind(this), args)
   }
@@ -147,4 +154,5 @@ export default class AssemblyClient {
   getInternalUsers = this.wrapWithRetry(this._getInternalUsers)
   getInternalUser = this.wrapWithRetry(this._getInternalUser)
   getNotifications = this.wrapWithRetry(this._getNotifications)
+  getTasks = this.wrapWithRetry(this._getTasks)
 }
