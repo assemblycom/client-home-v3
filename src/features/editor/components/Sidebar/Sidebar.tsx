@@ -42,12 +42,10 @@ export const Sidebar = ({ className }: SidebarProps) => {
   const viewMode = useViewStore((store) => store.viewMode)
 
   return (
-    <aside className={cn('h-screen overflow-y-auto border-border-gray border-l', className)}>
+    <aside className={cn('flex h-screen flex-col border-border-gray border-l', className)}>
       <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
-        <div className="box-content flex h-14 items-center border-border-gray border-b px-6 text-custom-xl">
-          Customization
-        </div>
-        <div className="flex flex-col py-5">
+        <div className="flex h-14 items-center border-border-gray border-b px-6 text-custom-xl">Customization</div>
+        <div className="flex flex-1 flex-col overflow-y-auto py-5">
           {AccordionItems.map((item) => (
             <Accordion key={item.title} title={item.title} content={item.content} className="pr-5 pl-6" />
           ))}
