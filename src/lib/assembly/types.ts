@@ -132,3 +132,21 @@ export const NotificationsResponseSchema = z.object({
     .array(),
 })
 export type NotificationsResponse = z.infer<typeof NotificationsResponseSchema>
+
+export enum TaskStatus {
+  TODO = 'todo',
+  IN_PROGRESS = 'inProgress',
+  COMPLETED = 'completed',
+}
+
+export const TasksResponseSchema = z.object({
+  data: z
+    .object({
+      companyId: z.string().nullable(),
+      clientId: z.string().nullable(),
+      isArchived: z.boolean(),
+      isDeleted: z.boolean(),
+      status: z.enum(TaskStatus),
+    })
+    .array(),
+})
