@@ -1,4 +1,5 @@
 import AssemblyClient from '@assembly/assembly-client'
+import { TaskStatus } from '@assembly/types'
 import type { User } from '@auth/lib/user.entity'
 import type { NotificationCountsDto } from '@notification-counts/notification-counts.dto'
 import { NotificationEvent } from '@notification-counts/types'
@@ -34,12 +35,12 @@ export default class NotificationsCountService extends BaseService {
       this.assembly.getTasks({
         clientId: recipientClientId,
         companyId: recipientCompanyId || undefined,
-        status: 'todo',
+        status: TaskStatus.TODO,
       }),
       this.assembly.getTasks({
         clientId: recipientClientId,
         companyId: recipientCompanyId || undefined,
-        status: 'inProgress',
+        status: TaskStatus.IN_PROGRESS,
       }),
     ])
     if (!notifications || !notifications.data)
