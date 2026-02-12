@@ -14,6 +14,7 @@ export const useAppControls = () => {
   const setSettings = useSettingsStore((s) => s.setSettings)
 
   const content = useSettingsStore((s) => s.content)
+  const hasChanged = useSettingsStore((s) => s.hasChanged)
   const settings: SettingsUpdateDto = {
     content,
     subheading,
@@ -33,7 +34,8 @@ export const useAppControls = () => {
   const initialSettings = useSettingsStore((s) => s.initialSettings)
   const show =
     !areObjKeysEqual(settings, initialSettings, ['content', 'subheading', 'bannerImageId', 'backgroundColor']) ||
-    !areObjKeysEqual(actions, initialSettings.actions, ['tasks', 'invoices', 'messages', 'contracts', 'forms'])
+    !areObjKeysEqual(actions, initialSettings.actions, ['tasks', 'invoices', 'messages', 'contracts', 'forms']) ||
+    hasChanged
 
   useSecondaryCta(
     {

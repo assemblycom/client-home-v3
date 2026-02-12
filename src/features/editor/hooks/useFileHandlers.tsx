@@ -1,11 +1,15 @@
 import { uploadFileToSupabase } from '@editor/client.utils'
-import { useSettingsStore } from '@settings/providers/settings.provider'
 import type { Editor } from '@tiptap/core'
+import type { FileHandlePluginOptions } from '@tiptap/extension-file-handler'
 
 export const useFileHandlers = () => {
-  const setContent = useSettingsStore((store) => store.setContent)
+  // const setContent = useSettingsStore((store) => store.setContent)
 
-  const handleFileInsertion = (currentEditor: Editor, files: File[], htmlContent?: string) => {
+  const handleFileInsertion: Required<FileHandlePluginOptions>['onPaste'] = (
+    currentEditor: Editor,
+    files: File[],
+    htmlContent?: string,
+  ) => {
     files.forEach((file) => {
       if (htmlContent) {
         // if there is htmlContent, stop manual insertion & let other extensions handle insertion via inputRule
@@ -30,7 +34,7 @@ export const useFileHandlers = () => {
           })
           .focus()
           .run()
-        setContent(currentEditor.getHTML())
+        // setContent(currentEditor.getHTML())
         const token = currentEditor.storage.token.token
         if (!token) {
           console.error('Could not upload to supabase due to missing token')
@@ -49,7 +53,7 @@ export const useFileHandlers = () => {
 
         if (imagePos !== null) {
           currentEditor.chain().focus().setNodeSelection(imagePos).updateAttributes('image', { src: signedUrl }).run()
-          setContent(currentEditor.getHTML())
+          // setContent(currentEditor.getHTML())
         }
       }
     })

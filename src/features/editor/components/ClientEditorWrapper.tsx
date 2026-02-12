@@ -1,15 +1,11 @@
 'use client'
 
-import { useAuthStore } from '@auth/providers/auth.provider'
-import { ReadonlyEditor } from '@editor/components/Editor/ReadonlyEditor'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import { ActionsCard } from '@/features/action-items/components/actions-card'
 import { Heading } from './Heading'
 import { Subheading } from './Subheading'
 
-export const ClientEditorWrapper = () => {
-  const token = useAuthStore((store) => store.token)
-  const content = useSettingsStore((store) => store.content)
+export const ClientEditorWrapper = ({ content }: { content: string }) => {
   const backgroundColor = useSettingsStore((store) => store.backgroundColor)
 
   return (
@@ -17,7 +13,8 @@ export const ClientEditorWrapper = () => {
       <Heading />
       <Subheading readonly />
       <ActionsCard readonly />
-      <ReadonlyEditor token={token} content={content} />
+      {/** biome-ignore lint/security/noDangerouslySetInnerHtml: <allow inner html> */}
+      <div dangerouslySetInnerHTML={{ __html: content }} />
     </div>
   )
 }
