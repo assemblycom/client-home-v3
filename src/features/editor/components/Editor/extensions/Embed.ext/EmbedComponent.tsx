@@ -79,7 +79,7 @@ export const Embed = (props: EmbedProps) => {
       document.addEventListener('mousemove', onMove)
       document.addEventListener('mouseup', onUp)
     },
-    [props.updateAttributes],
+    [props],
   )
 
   function extractIframeSrc(inputString: string) {
