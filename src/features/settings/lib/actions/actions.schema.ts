@@ -1,5 +1,5 @@
 import { settings } from '@settings/lib/settings/settings.schema'
-import { boolean, index, pgTable, unique, uuid } from 'drizzle-orm/pg-core'
+import { boolean, index, jsonb, pgTable, unique, uuid } from 'drizzle-orm/pg-core'
 import { id, timestamps, workspaceId } from '@/db/helpers'
 
 export const actions = pgTable(
@@ -29,6 +29,9 @@ export const actions = pgTable(
     forms: boolean().notNull().default(false),
     // Do not support Files toggle for now
     // files: boolean().notNull().default(false),
+
+    // Display order of action items
+    order: jsonb().notNull().default(['invoices', 'messages', 'contracts', 'tasks', 'forms']).$type<string[]>(),
 
     ...timestamps,
   },
