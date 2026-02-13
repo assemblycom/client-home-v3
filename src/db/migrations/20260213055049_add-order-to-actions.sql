@@ -1,0 +1,1 @@
+ALTER TABLE "actions" ADD COLUMN "order" jsonb DEFAULT '["invoices","messages","contracts","tasks","forms"]'::jsonb NOT NULL;
