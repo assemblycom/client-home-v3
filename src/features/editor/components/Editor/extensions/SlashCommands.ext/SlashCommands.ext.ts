@@ -1,6 +1,4 @@
-import { CommandsList, type CommandsListHandle } from '@extensions/SlashCommands.ext/CommandsList'
-import { items } from '@extensions/SlashCommands.ext/items'
-import type { SlashCommandItem } from '@extensions/SlashCommands.ext/types'
+import { SlashMenuAdapter } from '@extensions/SlashCommands.ext/SlashMenuAdapter'
 import { Extension, ReactRenderer } from '@tiptap/react'
 import { Suggestion } from '@tiptap/suggestion'
 import tippy, { type GetReferenceClientRect, type Instance, type Props as TippyProps } from 'tippy.js'
@@ -15,19 +13,17 @@ export const SlashCommandsExt = Extension.create({
 
   addProseMirrorPlugins() {
     return [
-      Suggestion<SlashCommandItem>({
+      Suggestion({
         editor: this.editor,
         char: '/',
         startOfLine: true,
 
         items: ({ query }) => {
-          const q = query.trim().toLowerCase()
-          if (!q) return items
-          return items.filter((item) => item.title.toLowerCase().startsWith(q))
+          return [{ query }]
         },
 
-        command: ({ editor, range, props }) => {
-          props.command({ editor, range })
+        command: () => {
+          // Command execution is handled by SlashMenuAdapter
         },
 
         allow: ({ state }) => {
@@ -36,12 +32,12 @@ export const SlashCommandsExt = Extension.create({
         },
 
         render: () => {
-          let renderer: ReactRenderer<CommandsListHandle> | null = null
+          let renderer: ReactRenderer | null = null
           let popup: Instance<TippyProps> | null = null
 
           return {
             onStart: (props) => {
-              renderer = new ReactRenderer(CommandsList, {
+              renderer = new ReactRenderer(SlashMenuAdapter, {
                 props,
                 editor: props.editor,
               })
@@ -86,16 +82,15 @@ export const SlashCommandsExt = Extension.create({
                 popup?.hide()
                 return true
               }
-
-              // If we have a list, let it handle navigation.
-              const handled = renderer?.ref?.onKeyDown?.(event as KeyboardEvent) ?? false
+              // We have a renderer component, handles navigation on its own.
+              // biome-ignore lint/suspicious/noExplicitAny: ReactRenderer ref type is not exported
+              const handled = (renderer?.ref as any)?.onKeyDown?.(event as KeyboardEvent) ?? false
               return handled
             },
 
             onExit: () => {
               popup?.destroy()
               popup = null
-
               renderer?.destroy()
               renderer = null
             },
