@@ -5,6 +5,7 @@ import {
   handleToolbarAction,
   MenuMode,
 } from '@editor/components/Menu/menuConfig'
+import { useFileHandlers } from '@editor/hooks/useFileHandlers'
 import type { Editor, Range } from '@tiptap/core'
 import { SlashMenu, Toolbar, ToolbarProvider } from 'copilot-design-system'
 import { useMemo } from 'react'
@@ -42,10 +43,12 @@ export const Menu = ({ mode, query, editor, range, items }: MenuProps) => {
     return filtered.map((a) => a.id)
   }, [mode, query, items])
 
+  const handleFile = useFileHandlers()
+
   return (
     <ToolbarProvider
       config={editorActionConfig(mode)}
-      onAction={(actionData) => handleToolbarAction(actionData, editor, range)}
+      onAction={(actionData) => handleToolbarAction(actionData, handleFile, editor, range)}
       editor={editor}
     >
       {mode === MenuMode.SLASH_MENU ? (

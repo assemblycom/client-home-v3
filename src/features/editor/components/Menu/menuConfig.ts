@@ -173,6 +173,7 @@ export const editorActionConfig = (mode: MenuMode): ActionConfig[] => {
 
 export const handleToolbarAction = (
   { action }: ActionData,
+  handleFile: (editor: Editor, files: File[]) => void,
   editorInstance?: Editor,
   range?: { from: number; to: number },
 ) => {
@@ -181,10 +182,16 @@ export const handleToolbarAction = (
     console.warn('Editor not available')
     return
   }
-  executeSlashCommand(action, editor, range)
+  executeSlashCommand(action, editor, handleFile, range)
 }
 
-export const executeSlashCommand = (action: string, editor: Editor, range?: { from: number; to: number }) => {
+export const executeSlashCommand = (
+  action: string,
+  editor: Editor,
+  handleFile: (editor: Editor, files: File[]) => void,
+
+  range?: { from: number; to: number },
+) => {
   // Delete the slash command text if range is provided
   if (range) {
     editor.chain().focus().deleteRange(range).run()
@@ -234,10 +241,19 @@ export const executeSlashCommand = (action: string, editor: Editor, range?: { fr
     case EditorActions.CODE:
       editor.chain().focus().setCodeBlock().run()
       break
-    case EditorActions.ATTACHMENT:
-      // TODO: Implement in later milestone
-      console.info('Toggle attachment')
+    case EditorActions.ATTACHMENT: {
+      editor.chain().focus().setParagraph().run()
+      const input = document.createElement('input')
+      input.type = 'file'
+      input.accept = 'image/*'
+      input.onchange = () => {
+        if (!input.files?.length) return
+        handleFile(editor, Array.from(input.files))
+      }
+      input.click()
+      editor.chain().focus().setParagraph().run()
       break
+    }
     default:
       console.info('Unknown action:', action)
   }

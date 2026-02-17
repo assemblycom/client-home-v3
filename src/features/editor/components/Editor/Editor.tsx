@@ -31,7 +31,14 @@ export const Editor = ({ token, content, backgroundColor }: EditorProps) => {
   const handleFile = useFileHandlers()
 
   const editor = useEditor({
-    extensions: [...extensions, ImageExt, FileHandlerExt.configure({ onPaste: handleFile })],
+    extensions: [
+      ...extensions,
+      ImageExt,
+      FileHandlerExt.configure({
+        onPaste: handleFile,
+        onDrop: (currentEditor, files) => handleFile(currentEditor, files),
+      }),
+    ],
     content,
     immediatelyRender: false, // Avoid SSR & hydration issues
     editorProps: { attributes: { class: `bg-[${backgroundColor}] text-custom-xs` } },
