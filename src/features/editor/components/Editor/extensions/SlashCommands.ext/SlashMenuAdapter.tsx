@@ -1,10 +1,10 @@
 'use client'
 
 import { Menu } from '@editor/components/Menu'
-import { MenuMode } from '@editor/components/Menu/menuConfig'
+import { type ActionConfig, MenuMode } from '@editor/components/Menu/menuConfig'
 
 import type { SuggestionProps } from '@tiptap/suggestion'
-import { forwardRef, useImperativeHandle } from 'react'
+import { useImperativeHandle } from 'react'
 
 /**
  * Simplified adapter that wraps the existing Menu component for slash commands
@@ -15,13 +15,16 @@ type CommandsListHandle = {
   onKeyDown: (event: KeyboardEvent) => boolean
 }
 
-export const SlashMenuAdapter = forwardRef<CommandsListHandle, SuggestionProps>(function SlashMenuAdapter(props, ref) {
-  const { query, editor, range } = props
+type SlashMenuAdapterProps = SuggestionProps<ActionConfig> & {
+  ref?: React.Ref<CommandsListHandle>
+}
+
+export function SlashMenuAdapter({ query, editor, range, items, ref }: SlashMenuAdapterProps) {
   useImperativeHandle(
     ref,
     () => ({
       onKeyDown: (event: KeyboardEvent) => {
-        if (['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' '].includes(event.key)) {
+        if (['ArrowUp', 'ArrowDown', 'Enter', 'Escape'].includes(event.key)) {
           return true
         }
         return false
@@ -30,5 +33,5 @@ export const SlashMenuAdapter = forwardRef<CommandsListHandle, SuggestionProps>(
     [],
   )
 
-  return <Menu mode={MenuMode.SLASH_MENU} query={query} editor={editor} range={range} />
-})
+  return <Menu mode={MenuMode.SLASH_MENU} query={query} editor={editor} range={range} items={items} />
+}

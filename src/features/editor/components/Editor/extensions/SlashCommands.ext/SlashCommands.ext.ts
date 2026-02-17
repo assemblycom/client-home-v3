@@ -1,6 +1,12 @@
+import {
+  type ActionConfig,
+  editorActionConfig,
+  getAllActionsFromConfig,
+  MenuMode,
+} from '@editor/components/Menu/menuConfig'
 import { SlashMenuAdapter } from '@extensions/SlashCommands.ext/SlashMenuAdapter'
 import { Extension, ReactRenderer } from '@tiptap/react'
-import { Suggestion } from '@tiptap/suggestion'
+import { Suggestion, type SuggestionProps } from '@tiptap/suggestion'
 import tippy, { type GetReferenceClientRect, type Instance, type Props as TippyProps } from 'tippy.js'
 
 const normalizeTippyInstance = (value: Instance<TippyProps> | Array<Instance<TippyProps>>) =>
@@ -18,17 +24,20 @@ export const SlashCommandsExt = Extension.create({
         char: '/',
         startOfLine: true,
 
-        items: ({ query }) => {
-          return [{ query }]
-        },
-
-        command: () => {
-          // Command execution is handled by SlashMenuAdapter
-        },
-
         allow: ({ state }) => {
           const node = state.selection.$from.node()
           return !!node && node.textBetween(0, 1) === '/'
+        },
+
+        items: ({ query }) => {
+          const allActions = getAllActionsFromConfig(editorActionConfig(MenuMode.SLASH_MENU))
+          const normalizedQuery = query.trim().toLowerCase()
+
+          if (!normalizedQuery) {
+            return allActions
+          }
+
+          return allActions.filter((action) => action.label.toLowerCase().startsWith(normalizedQuery))
         },
 
         render: () => {
@@ -36,7 +45,7 @@ export const SlashCommandsExt = Extension.create({
           let popup: Instance<TippyProps> | null = null
 
           return {
-            onStart: (props) => {
+            onStart: (props: SuggestionProps<ActionConfig>) => {
               renderer = new ReactRenderer(SlashMenuAdapter, {
                 props,
                 editor: props.editor,
@@ -48,7 +57,7 @@ export const SlashCommandsExt = Extension.create({
                 tippy(document.body, {
                   getReferenceClientRect,
                   content: renderer.element,
-                  showOnCreate: true,
+                  showOnCreate: props.items.length > 0,
                   interactive: true,
                   trigger: 'manual',
                   offset: [0, 5],
@@ -69,12 +78,18 @@ export const SlashCommandsExt = Extension.create({
               )
             },
 
-            onUpdate: (props) => {
+            onUpdate: (props: SuggestionProps<ActionConfig>) => {
               renderer?.updateProps(props)
 
               popup?.setProps({
                 getReferenceClientRect: (props.clientRect ?? fallbackClientRect) as GetReferenceClientRect,
               })
+
+              if (props.items.length > 0) {
+                popup?.show()
+              } else {
+                popup?.hide()
+              }
             },
 
             onKeyDown: ({ event }) => {
@@ -83,8 +98,10 @@ export const SlashCommandsExt = Extension.create({
                 return true
               }
               // We have a renderer component, handles navigation on its own.
-              // biome-ignore lint/suspicious/noExplicitAny: ReactRenderer ref type is not exported
-              const handled = (renderer?.ref as any)?.onKeyDown?.(event as KeyboardEvent) ?? false
+              const handled =
+                (renderer?.ref as { onKeyDown?: (event: KeyboardEvent) => boolean })?.onKeyDown?.(
+                  event as KeyboardEvent,
+                ) ?? false
               return handled
             },
 

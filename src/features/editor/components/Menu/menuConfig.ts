@@ -2,6 +2,8 @@ import { useEditorStore } from '@editor/stores/editorStore'
 import type { Editor } from '@tiptap/core'
 import type { ActionConfig, ActionData } from 'copilot-design-system'
 
+export type { ActionConfig, ActionData }
+
 export enum EditorActions {
   HEADING1 = 'heading1',
   HEADING2 = 'heading2',

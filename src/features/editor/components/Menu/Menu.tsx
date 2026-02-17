@@ -1,4 +1,5 @@
 import {
+  type ActionConfig,
   editorActionConfig,
   getAllActionsFromConfig,
   handleToolbarAction,
@@ -14,12 +15,19 @@ export interface MenuProps {
   query?: string //filter slash menu items
   editor?: Editor // Editor instance for slash commands
   range?: Range // Range to delete when executing slash commands
+  items?: ActionConfig[] // Items passed from suggestion extension
 }
 
-export const Menu = ({ mode, query, editor, range }: MenuProps) => {
+export const Menu = ({ mode, query, editor, range, items }: MenuProps) => {
   const filteredActionIds = useMemo(() => {
-    if (mode !== MenuMode.SLASH_MENU || !query) {
+    if (mode !== MenuMode.SLASH_MENU) {
       return undefined // Show all actions
+    }
+    if (items) {
+      return items.map((a) => a.id)
+    }
+    if (!query) {
+      return undefined
     }
 
     const allActions = getAllActionsFromConfig(editorActionConfig(mode))
@@ -32,7 +40,7 @@ export const Menu = ({ mode, query, editor, range }: MenuProps) => {
     const filtered = allActions.filter((action) => action.label.toLowerCase().startsWith(normalizedQuery))
 
     return filtered.map((a) => a.id)
-  }, [mode, query])
+  }, [mode, query, items])
 
   return (
     <ToolbarProvider
