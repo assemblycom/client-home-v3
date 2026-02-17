@@ -1,8 +1,18 @@
 import { withSentryConfig } from '@sentry/nextjs'
 import type { NextConfig } from 'next'
 
+const supabaseUrl = new URL(process.env.SUPABASE_URL || '')
+
 const nextConfig: NextConfig = {
   allowedDevOrigins: [process.env.NGROK_URL || ''],
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: supabaseUrl.hostname,
+      },
+    ],
+  },
   turbopack: {
     rules: {
       '*.svg': {
