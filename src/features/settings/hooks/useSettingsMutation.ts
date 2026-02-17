@@ -1,9 +1,9 @@
 import { useAuthStore } from '@auth/providers/auth.provider'
-import { useEditorStore } from '@editor/stores/editorStore'
 import { SETTINGS_QUERY_KEY } from '@settings/constants'
 import type { SettingsResponseDto, SettingsUpdateDto } from '@settings/lib/settings-actions.dto'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import { useMutation } from '@tanstack/react-query'
+import { useCurrentEditor } from '@tiptap/react'
 import { ROUTES } from '@/app/routes'
 import { api } from '@/lib/core/axios.instance'
 import { getQueryClient } from '@/lib/core/query.utils'
@@ -11,7 +11,7 @@ import { getQueryClient } from '@/lib/core/query.utils'
 export const useSettingsMutation = () => {
   const token = useAuthStore((s) => s.token)
 
-  const editor = useEditorStore((s) => s.editor)
+  const { editor } = useCurrentEditor()
   const setSettings = useSettingsStore((s) => s.setSettings)
   const setInitialSettings = useSettingsStore((s) => s.setInitialSettings)
 

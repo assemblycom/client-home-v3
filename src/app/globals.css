@@ -23,6 +23,31 @@
   }
 }
 
+:root {
+  --bg-color: #fff;
+}
+
+@theme {
+  /* Root theme tokens */
+  --color-brand: hsl(from var(--bg-color), h s l);
+  --color-brand-fg: hsl(from var(--bg-color) h s l / 0.9);
+  --color-brand-neutral: hsl(from var(--bg-color), h s 80%);
+}
+
+/*
+  Scope helper: apply `.brand-scope` on any container where you override `--bg-color`.
+  This forces the derived brand variables to be re-declared in that scope so utilities like
+  `text-brand-fg` pick up the overridden `--bg-color` reliably.
+
+  Usage:
+    <div class="brand-scope" style="--bg-color: #0f172a"> ... </div>
+*/
+.brand-scope {
+  --color-brand: hsl(from var(--bg-color) h s l);
+  --color-brand-fg: hsl(from var(--bg-color) h s l / 0.2);
+  --color-brand-neutral: hsl(from var(--bg-color) h s calc(l * 0.6));
+}
+
 body {
   @apply bg-background text-foreground box-border;
 }

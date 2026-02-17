@@ -13,7 +13,11 @@
     "format": "biome check --write",
     "lint-staged": "lint-staged",
     "prepare": "husky",
+    "migrate": "bun --bun drizzle-kit migrate",
     "ex": "tsx --tsconfig tsx.tsconfig.json --require dotenv/config --require tsconfig-paths/register"
+  },
+  "engines": {
+    "node": "^20"
   },
   "dependencies": {
     "@sentry/nextjs": "^10.38.0",
