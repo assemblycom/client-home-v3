@@ -1,9 +1,10 @@
 import { ActionsCreateSchema, ActionsUpdateSchema } from '@settings/lib/actions/types'
 import { SettingsSchema, SettingsUpdateSchema } from '@settings/lib/types'
-import type z from 'zod'
+import z from 'zod'
 
 export const SettingsResponseDtoSchema = SettingsSchema.extend({
   actions: ActionsCreateSchema.omit({ settingsId: true }),
+  bannerUrl: z.string().nullable().optional(),
 })
 
 export type SettingsResponseDto = z.infer<typeof SettingsResponseDtoSchema>
