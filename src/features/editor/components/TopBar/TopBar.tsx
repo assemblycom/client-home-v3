@@ -1,5 +1,7 @@
 'use client'
 
+import { Menu } from '@editor/components/Menu'
+import { MenuMode } from '@editor/components/Menu/menuConfig'
 import { ClientSelector } from '@editor/components/TopBar/ClientSelector'
 import { DisplayModeTab } from '@editor/components/TopBar/DisplayModeTab'
 import { TabBtn } from '@editor/components/TopBar/TabBtn'
@@ -40,8 +42,12 @@ export const TopBar = () => {
           <ClientSelector />
         </Activity>
       </div>
-
-      <div>{viewMode === ViewMode.PREVIEW && <DisplayModeTab />}</div>
+      <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
+        <Menu mode={MenuMode.TOOLBAR} />
+      </Activity>
+      <Activity mode={getActivityMode(viewMode === ViewMode.PREVIEW)}>
+        <DisplayModeTab />
+      </Activity>
     </nav>
   )
 }
