@@ -184,6 +184,44 @@ export const handleToolbarAction = (
   executeSlashCommand(action, editor, range)
 }
 
+export const getActionState = (editor: Editor | null, actionId: string): { isActive: boolean; isDisabled: boolean } => {
+  if (!editor) {
+    return { isActive: false, isDisabled: true }
+  }
+  console.info(getIsActive(editor, actionId))
+  return {
+    isActive: getIsActive(editor, actionId),
+    isDisabled: false,
+  }
+}
+
+const getIsActive = (editor: Editor, actionId: string): boolean => {
+  switch (actionId) {
+    case EditorActions.HEADING1:
+      return editor.isActive('heading', { level: 1 })
+    case EditorActions.HEADING2:
+      return editor.isActive('heading', { level: 2 })
+    case EditorActions.HEADING3:
+      return editor.isActive('heading', { level: 3 })
+    case EditorActions.BOLD:
+      return editor.isActive('bold')
+    case EditorActions.ITALIC:
+      return editor.isActive('italic')
+    case EditorActions.UNDERLINE:
+      return editor.isActive('underline')
+    case EditorActions.UNORDERED_LIST:
+      return editor.isActive('bulletList')
+    case EditorActions.ORDERED_LIST:
+      return editor.isActive('orderedList')
+    case EditorActions.CODE:
+      return editor.isActive('codeBlock')
+    case EditorActions.CALLOUT:
+      return editor.isActive('callout')
+    default:
+      return false
+  }
+}
+
 export const executeSlashCommand = (action: string, editor: Editor, range?: { from: number; to: number }) => {
   // Delete the slash command text if range is provided
   if (range) {
