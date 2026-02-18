@@ -3,6 +3,7 @@ import { ReadonlyEditor } from '@editor/components/Editor/ReadonlyEditor'
 import { PreviewTopBar } from '@editor/components/Preview/PreviewTopBar'
 import { DisplayMode, useViewStore } from '@editor/stores/viewStore'
 import { ActionsCard } from '@/features/action-items/components/actions-card'
+import { Banner } from '@/features/banner'
 import { cn } from '@/utils/tailwind'
 import { Heading } from '../Heading'
 import { Subheading } from '../Subheading'
@@ -11,9 +12,10 @@ interface PreviewProps {
   token: string
   content: string
   backgroundColor: string
+  bannerUrl?: string | null
 }
 
-export function Preview({ token, content, backgroundColor }: PreviewProps) {
+export function Preview({ token, content, backgroundColor, bannerUrl }: PreviewProps) {
   const displayMode = useViewStore((store) => store.displayMode)
   const workspace = useViewStore((store) => store.workspace)
 
@@ -35,6 +37,8 @@ export function Preview({ token, content, backgroundColor }: PreviewProps) {
           <div className="tiptap-wrapper @container w-full overflow-auto" style={{ backgroundColor }}>
             <Heading />
             <Subheading readonly />
+            {bannerUrl ? <Banner src={bannerUrl} alt="Workspace Banner" /> : null}
+
             <ActionsCard />
 
             <ReadonlyEditor content={content} token={token} />

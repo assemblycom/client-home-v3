@@ -35,7 +35,7 @@ export function EditorWrapper() {
       </Activity>
 
       <Activity mode={getActivityMode(viewMode === ViewMode.PREVIEW)}>
-        <Preview content={content} token={token} backgroundColor={backgroundColor} />
+        <Preview content={content} token={token} backgroundColor={backgroundColor} bannerUrl={bannerUrl} />
       </Activity>
     </div>
   )
