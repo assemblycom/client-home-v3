@@ -15,6 +15,7 @@ export const useActions = () => {
     })
     .map((item) => {
       return {
+        key: item.key,
         label: item.label,
         icon: item.icon,
         checked: actions?.[item.key] ?? false,
@@ -24,5 +25,9 @@ export const useActions = () => {
       }
     })
 
-  return { actionItems }
+  const onReorder = (newOrder: string[]) => {
+    setActions({ order: newOrder })
+  }
+
+  return { actionItems, onReorder }
 }
