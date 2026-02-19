@@ -28,12 +28,15 @@ export const useAppControls = () => {
       messages: s.actions.messages,
       contracts: s.actions.contracts,
       forms: s.actions.forms,
+      order: s.actions.order,
     })),
   )
   const initialSettings = useSettingsStore((s) => s.initialSettings)
+  const orderChanged = JSON.stringify(actions.order) !== JSON.stringify(initialSettings.actions?.order)
   const show =
     !areObjKeysEqual(settings, initialSettings, ['content', 'subheading', 'bannerImageId', 'backgroundColor']) ||
-    !areObjKeysEqual(actions, initialSettings.actions, ['tasks', 'invoices', 'messages', 'contracts', 'forms'])
+    !areObjKeysEqual(actions, initialSettings.actions, ['tasks', 'invoices', 'messages', 'contracts', 'forms']) ||
+    orderChanged
 
   useSecondaryCta(
     {
