@@ -21,9 +21,25 @@ export const createSettingsStore = (settings: SettingsResponseDto) =>
     ...settings,
     initialSettings: settings,
     //hardcoded the url for now.
-    bannerUrl:
-      settings.bannerUrl ??
-      'https://sakzqessgcaxgporuunf.supabase.co/storage/v1/object/sign/media/common/Container.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hNGIwOGZlMi1jYmQyLTQyZTYtYjliZC0zNjljYmQ4ZDEyNDgiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtZWRpYS9jb21tb24vQ29udGFpbmVyLmpwZyIsImlhdCI6MTc3MTMxOTAyOCwiZXhwIjoxODAyODU1MDI4fQ.hkz8z2g44IDklP_pHFDjoWrMf6UUQtQBU9m66uTGZhM',
+    bannerUrls: [
+      {
+        bannerUrl:
+          'https://sakzqessgcaxgporuunf.supabase.co/storage/v1/object/sign/media/common/Container.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hNGIwOGZlMi1jYmQyLTQyZTYtYjliZC0zNjljYmQ4ZDEyNDgiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtZWRpYS9jb21tb24vQ29udGFpbmVyLmpwZyIsImlhdCI6MTc3MTMxOTAyOCwiZXhwIjoxODAyODU1MDI4fQ.hkz8z2g44IDklP_pHFDjoWrMf6UUQtQBU9m66uTGZhM',
+        bannerId: '1',
+      },
+      {
+        bannerUrl:
+          'https://sakzqessgcaxgporuunf.supabase.co/storage/v1/object/sign/media/common/Container.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hNGIwOGZlMi1jYmQyLTQyZTYtYjliZC0zNjljYmQ4ZDEyNDgiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtZWRpYS9jb21tb24vQ29udGFpbmVyLmpwZyIsImlhdCI6MTc3MTMxOTAyOCwiZXhwIjoxODAyODU1MDI4fQ.hkz8z2g44IDklP_pHFDjoWrMf6UUQtQBU9m66uTGZhM',
+        bannerId: '2',
+      },
+      {
+        bannerUrl:
+          'https://sakzqessgcaxgporuunf.supabase.co/storage/v1/object/sign/media/common/Container.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hNGIwOGZlMi1jYmQyLTQyZTYtYjliZC0zNjljYmQ4ZDEyNDgiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtZWRpYS9jb21tb24vQ29udGFpbmVyLmpwZyIsImlhdCI6MTc3MTMxOTAyOCwiZXhwIjoxODAyODU1MDI4fQ.hkz8z2g44IDklP_pHFDjoWrMf6UUQtQBU9m66uTGZhM',
+        bannerId: '3',
+      },
+    ],
+    bannerImageId: '1',
+    //static banners as of now
 
     setContent: (content: string) => set((s) => ({ ...s, content })),
     setSubheading: (subheading: string) => set((s) => ({ ...s, subheading })),
