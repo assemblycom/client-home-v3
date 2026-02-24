@@ -17,7 +17,6 @@ import {
   InternalUsersResponseSchema,
   type NotificationsResponse,
   NotificationsResponseSchema,
-  type TaskStatus,
   TasksResponseSchema,
   type Token,
   TokenSchema,
@@ -29,6 +28,8 @@ import { copilotApi } from 'copilot-node-sdk'
 import env from '@/config/env'
 import logger from '@/lib/logger'
 import { withRetry } from '@/lib/with-retry'
+import { encodePayload } from '@/utils/crypto'
+import { MAX_FETCH_ASSEMBLY_RESOURCES } from './constants'
 import { AssemblyInvalidTokenError } from './errors'
 
 export default class AssemblyClient {
@@ -130,10 +131,21 @@ export default class AssemblyClient {
     return NotificationsResponseSchema.parse(await this.assembly.listNotifications({ includeRead, recipientClientId }))
   }
 
-  async _getTasks({ clientId, companyId, status }: { clientId: string; companyId?: string; status: TaskStatus }) {
-    logger.info('AssemblyClient#_getTasks')
-    const limit = 100 // There is currently an issue that causes limit above 100 to throw error
-    return TasksResponseSchema.parse(await this.assembly.retrieveTasks({ clientId, companyId, status, limit }))
+  async _getTasks({ workspaceId, clientId, companyId }: { workspaceId: string; clientId: string; companyId?: string }) {
+    // logger.info('AssemblyClient#_getTasks')
+    // const limit = 100 // There is currently an issue that causes limit above 100 to throw error
+    // return TasksResponseSchema.parse(await this.assembly.retrieveTasks({ clientId, companyId, status, limit }))
+    // --- Keep this disabled for now, since assembly throws error saying Marketplace app not found
+    const tasksToken = encodePayload(env.TASKS_ASSEMBLY_API_KEY, { clientId, companyId, workspaceId })
+    const tasksResponse = await fetch(
+      `https://tasks.assembly.com/api/tasks/public?token=${tasksToken}&limit=${MAX_FETCH_ASSEMBLY_RESOURCES}`,
+    )
+    const tasksParsed = TasksResponseSchema.safeParse(await tasksResponse.json())
+    if (!tasksParsed.success) {
+      console.error('Failed to parse tasks')
+      return [] // Fail safely so we don't crash the entire app lol
+    }
+    return tasksParsed.data.data
   }
 
   private wrapWithRetry<Args extends unknown[], R>(fn: (...args: Args) => Promise<R>): (...args: Args) => Promise<R> {
