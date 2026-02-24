@@ -22,7 +22,7 @@ export const Banner = ({ src, alt, isSelected, className }: BannerProps) => {
       />
       {isSelected && (
         <div
-          className="absolute top-[10px] right-[10px] z-10 flex h-6 w-6 flex-shrink-0 flex-col items-end rounded-full bg-white"
+          className="absolute top-2.5 right-2.5 z-10 flex h-6 w-6 flex-shrink-0 flex-col items-end rounded-full bg-white"
           style={{ padding: '4px 4px 0 4px' }}
         >
           <Icon icon="Check" width={16} height={16} />
