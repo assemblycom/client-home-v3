@@ -142,10 +142,6 @@ export enum TaskStatus {
 export const TasksResponseSchema = z.object({
   data: z
     .object({
-      companyId: z.string().nullable(),
-      clientId: z.string().nullable(),
-      isArchived: z.boolean(),
-      isDeleted: z.boolean(),
       status: z.enum(TaskStatus),
     })
     .array(),
