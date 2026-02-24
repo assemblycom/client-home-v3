@@ -30,17 +30,12 @@ export default class NotificationsCountService extends BaseService {
     recipientClientId: string,
     recipientCompanyId: string | null,
   ): Promise<NotificationCountsDto> {
-    const [notifications, todoTasks, inProgressTasks] = await Promise.all([
+    const [notifications, tasks] = await Promise.all([
       this.assembly.getNotifications({ recipientClientId }),
       this.assembly.getTasks({
+        workspaceId: this.user.workspaceId,
         clientId: recipientClientId,
         companyId: recipientCompanyId || undefined,
-        status: TaskStatus.TODO,
-      }),
-      this.assembly.getTasks({
-        clientId: recipientClientId,
-        companyId: recipientCompanyId || undefined,
-        status: TaskStatus.IN_PROGRESS,
       }),
     ])
     if (!notifications || !notifications.data)
@@ -50,7 +45,7 @@ export default class NotificationsCountService extends BaseService {
       forms: 0,
       invoices: 0,
       contracts: 0,
-      tasks: todoTasks.data.length + inProgressTasks.data.length,
+      tasks: tasks.filter((t) => t.status === TaskStatus.TODO || t.status === TaskStatus.IN_PROGRESS).length,
       messages: 0,
     }
 

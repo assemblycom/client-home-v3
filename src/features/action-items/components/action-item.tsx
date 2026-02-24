@@ -10,9 +10,10 @@ interface ActionItemProps {
   mode: ViewMode
   className?: string
   portalUrl?: string
+  count?: number
 }
 
-export const ActionItem = ({ action, isLoading, mode, className, portalUrl }: ActionItemProps) => {
+export const ActionItem = ({ action, isLoading, mode, className, portalUrl, count }: ActionItemProps) => {
   return (
     <div
       className={cn(
@@ -40,7 +41,7 @@ export const ActionItem = ({ action, isLoading, mode, className, portalUrl }: Ac
               className={cn(mode === ViewMode.PREVIEW ? 'text-text-primary' : '')}
               mode={mode}
               template={action.template}
-              fallbackValue={1}
+              fallbackValue={count ?? 1}
             />
             {mode === ViewMode.PREVIEW ? ` ${action.singularLabel?.toLocaleLowerCase()}` : null}
           </div>

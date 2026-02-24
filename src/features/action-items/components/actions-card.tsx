@@ -1,6 +1,7 @@
 import { useViewStore, ViewMode } from '@editor/stores/viewStore'
+import { useNotificationCounts } from '@notification-counts/hooks/useNotificationCounts'
+import type { NotificationCountsDto } from '@notification-counts/notification-counts.dto'
 import { useEnabledActions } from '@settings/hooks/useEnabledActions'
-import { useEffect, useState } from 'react'
 import { HandleBarTemplate } from '@/features/handlebar-template/components/handle-bar-template'
 import { cn } from '@/utils/tailwind'
 import { ActionItem } from './action-item'
@@ -12,23 +13,20 @@ interface ActionCardProps {
 export const ActionsCard = ({ readonly }: ActionCardProps) => {
   const { enabledActions } = useEnabledActions()
   const viewMode = useViewStore((store) => store.viewMode)
-  const [isLoading, setIsLoading] = useState(true)
-
   const workspace = useViewStore((store) => store.workspace)
+  const { counts, isLoading } = useNotificationCounts()
 
   const isPreviewMode = readonly || viewMode === ViewMode.PREVIEW
-
-  useEffect(() => {
-    // Simulate data loading
-    const timer = setTimeout(() => {
-      setIsLoading(false)
-    }, 2000)
-    return () => clearTimeout(timer)
-  }, [])
 
   if (!enabledActions.length) {
     return null
   }
+
+  const totalCount = counts
+    ? enabledActions.reduce((sum, action) => sum + (counts[action.key as keyof NotificationCountsDto] ?? 0), 0)
+    : isPreviewMode
+      ? 12
+      : undefined
 
   return (
     <div className="relative rounded-2xl border border-background-primary bg-gray-100 p-6 shadow-sm transition-all duration-500">
@@ -40,7 +38,7 @@ export const ActionsCard = ({ readonly }: ActionCardProps) => {
             isLoading={isLoading}
             template="{{action.count}}"
             mode={isPreviewMode ? ViewMode.PREVIEW : ViewMode.EDITOR}
-            fallbackValue={readonly ? undefined : 12}
+            fallbackValue={totalCount}
           />{' '}
           pending items
         </div>
@@ -60,6 +58,7 @@ export const ActionsCard = ({ readonly }: ActionCardProps) => {
             action={action}
             mode={isPreviewMode ? ViewMode.PREVIEW : ViewMode.EDITOR}
             portalUrl={workspace?.portalUrl}
+            count={counts?.[action.key as keyof NotificationCountsDto]}
           />
         ))}
       </div>
