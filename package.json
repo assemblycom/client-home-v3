@@ -13,6 +13,8 @@
     "format": "biome check --write",
     "lint-staged": "lint-staged",
     "prepare": "husky",
+    "migration:generate": "bun --bun run drizzle-kit generate --name",
+    "migration:run": "bun --bun run drizzle-kit migrate",
     "ex": "tsx --tsconfig tsx.tsconfig.json --require dotenv/config --require tsconfig-paths/register"
   },
   "dependencies": {

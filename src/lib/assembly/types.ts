@@ -157,10 +157,18 @@ const CustomFieldSchema = z.object({
   entityType: z.enum(['client', 'company']),
 })
 
-export const ClientCustomFieldSchema = CustomFieldSchema.extend({
+const ClientCustomFieldSchema = CustomFieldSchema.extend({
   entityType: z.literal('client'),
 })
 
-export const CompanyCustomFieldSchema = CustomFieldSchema.extend({
+export const ClientCustomFieldsResponseSchema = z.object({
+  data: z.array(ClientCustomFieldSchema),
+})
+
+const CompanyCustomFieldSchema = CustomFieldSchema.extend({
   entityType: z.literal('company'),
+})
+
+export const CompanyCustomFieldsResponseSchema = z.object({
+  data: z.array(CompanyCustomFieldSchema),
 })

@@ -4,6 +4,7 @@ import {
   type AssemblyListArgs,
   type ClientCreateRequest,
   ClientCustomFieldSchema,
+  ClientCustomFieldsResponseSchema,
   type ClientResponse,
   ClientResponseSchema,
   ClientsResponseSchema,
@@ -11,6 +12,7 @@ import {
   CompaniesResponseSchema,
   type CompanyCreateRequest,
   CompanyCustomFieldSchema,
+  CompanyCustomFieldsResponseSchema,
   type CompanyResponse,
   CompanyResponseSchema,
   type InternalUser,
@@ -150,18 +152,14 @@ export default class AssemblyClient {
     return tasksParsed.data.data
   }
 
-  async _getCompanyCustomFields() {
+  private async _getCompanyCustomFields() {
     logger.info('AssemblyClient#_getCompanyCustomFields')
-    return CompanyCustomFieldSchema.array().parse(
-      await this.assembly.listCustomFields({ entityType: 'company' }).then((res) => res.data),
-    )
+    return CompanyCustomFieldsResponseSchema.parse(await this.assembly.listCustomFields({ entityType: 'company' }))
   }
 
-  async _getClientCustomFields() {
+  private async _getClientCustomFields() {
     logger.info('AssemblyClient#_getClientCustomFields')
-    return ClientCustomFieldSchema.array().parse(
-      await this.assembly.listCustomFields({ entityType: 'client' }).then((res) => res.data),
-    )
+    return ClientCustomFieldsResponseSchema.parse(await this.assembly.listCustomFields({ entityType: 'client' }))
   }
 
   private wrapWithRetry<Args extends unknown[], R>(fn: (...args: Args) => Promise<R>): (...args: Args) => Promise<R> {

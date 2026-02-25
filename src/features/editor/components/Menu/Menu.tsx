@@ -54,7 +54,7 @@ export const Menu = ({ mode, query, editor, range, items }: MenuProps) => {
         <Toolbar
           variant="sticky"
           className={cn(
-            'cop-bg-white [&_button]:!bg-white [&_button:hover]:!bg-background-secondary [&_button:active]:!bg-background-secondary',
+            'cop-bg-white [&_button:active]:bg-background-secondary! [&_button:hover]:bg-background-secondary! [&_button]:bg-white!',
           )}
         />
       )}
