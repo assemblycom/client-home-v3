@@ -10,7 +10,7 @@ export const Heading = ({ className }: PropsWithClassname) => {
 
   return (
     <div className={cn('flex font-medium text-custom-xl leading-7', className)}>
-      <div>Good {greeting},&nbsp;</div>
+      <div suppressHydrationWarning>Good {greeting},&nbsp;</div>
       {/* Static placeholder for now */}
       <div>User</div>
     </div>

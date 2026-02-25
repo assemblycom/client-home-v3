@@ -15,7 +15,7 @@ export const DynamicFieldComponent = ({ fieldItem }: DynamicFieldComponentProps)
       </div>
       <div className="mt-3 flex flex-col space-y-3">
         {fieldItem.data.map((item) => (
-          <DynamicFieldItem key={item.name} fieldContent={item.fieldContent} name={item.name} />
+          <DynamicFieldItem key={item.name} fieldContent={item.fieldContent} name={item.name} icon={item.icon} />
         ))}
       </div>
     </div>
