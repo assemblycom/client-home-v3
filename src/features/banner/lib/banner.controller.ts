@@ -19,17 +19,6 @@ export const getBannerImages = async (req: NextRequest): Promise<NextResponse<AP
   })
 }
 
-export const getCurrentBanner = async (req: NextRequest): Promise<NextResponse<APIResponse>> => {
-  const user = authenticateHeaders(req.headers)
-
-  const mediaService = MediaService.new(user)
-  const bannerImages = await mediaService.getBannerImages()
-
-  return NextResponse.json({
-    data: bannerImages,
-  })
-}
-
 export const getImage = async (req: NextRequest): Promise<NextResponse<APIResponse>> => {
   const user = authenticateHeaders(req.headers)
   const searchParams = req.nextUrl.searchParams
