@@ -9,4 +9,8 @@
   --text-heading-md: 0.875rem;
   --text-heading-md--line-height: 1.57143;
   --text-heading-md--font-weight: 500;
+
+  --text-body-xs: 0.75rem;
+  --text-body-xs--font-weight: 400;
+  --text-body-xs--line-height: 1.6667;
 }
