@@ -1,24 +1,26 @@
 import AssemblyClient from '@assembly/assembly-client'
+import { CustomFieldEntityType } from '@assembly/types'
 import { authenticateHeaders } from '@auth/lib/authenticate'
 import { type NextRequest, NextResponse } from 'next/server'
+import z from 'zod'
 import type { APIResponse } from '@/app/types'
+import { NotFoundError } from '@/errors/not-found.error'
 
-export const getCompanyCustomFields = async (req: NextRequest): Promise<NextResponse<APIResponse>> => {
+export const listCustomFields = async (
+  req: NextRequest,
+  { params }: { params: Promise<{ entityType: string }> },
+): Promise<NextResponse<APIResponse>> => {
   const user = authenticateHeaders(req.headers)
 
   const assembly = new AssemblyClient(user.token)
 
-  const response = await assembly.getCompanyCustomFields()
+  const entityTypeResult = z.enum(CustomFieldEntityType).safeParse((await params).entityType)
 
-  return NextResponse.json(response)
-}
+  if (entityTypeResult.error) {
+    throw new NotFoundError()
+  }
 
-export const getClientCustomFields = async (req: NextRequest) => {
-  const user = authenticateHeaders(req.headers)
-
-  const assembly = new AssemblyClient(user.token)
-
-  const response = await assembly.getClientCustomFields()
+  const response = await assembly.listCustomFields({ entityType: entityTypeResult.data })
 
   return NextResponse.json(response)
 }
