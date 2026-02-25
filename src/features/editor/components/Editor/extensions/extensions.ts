@@ -1,3 +1,4 @@
+import { AutofillFieldExt } from '@extensions/AutofillField.ext'
 import { CalloutExt } from '@extensions/Callout.ext'
 import { DropcursorExt } from '@extensions/Dropcursor.ext'
 import { EmbedExt } from '@extensions/Embed.ext'
@@ -23,6 +24,7 @@ const extensions: Array<Extension | Node> = [
   FileHandlerExt,
   DropcursorExt,
   SlashCommandsExt,
+  AutofillFieldExt,
 ]
 
 export default extensions

@@ -2,6 +2,7 @@ import type { IconType } from 'copilot-design-system'
 
 type DynamicFieldData = {
   fieldContent: string
+  value: string
   name: string
   icon: IconType
 }
