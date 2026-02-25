@@ -23,8 +23,8 @@ import {
   type WorkspaceResponse,
   WorkspaceResponseSchema,
 } from '@assembly/types'
-import type { CopilotAPI as SDK } from 'copilot-node-sdk'
-import { copilotApi } from 'copilot-node-sdk'
+import type { AssemblyAPI as SDK } from '@assembly-js/node-sdk'
+import { assemblyApi } from '@assembly-js/node-sdk'
 import env from '@/config/env'
 import logger from '@/lib/logger'
 import { withRetry } from '@/lib/with-retry'
@@ -40,7 +40,7 @@ export default class AssemblyClient {
     readonly customApiKey?: string,
   ) {
     try {
-      this.assembly = copilotApi({
+      this.assembly = assemblyApi({
         apiKey: customApiKey ?? env.ASSEMBLY_API_KEY,
         token,
       })
