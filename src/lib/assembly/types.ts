@@ -146,3 +146,32 @@ export const TasksResponseSchema = z.object({
     })
     .array(),
 })
+
+export enum CustomFieldType {
+  ADDRESS = 'address',
+  EMAIL = 'email',
+  PHONE_NUMBER = 'phoneNumber',
+  TEXT = 'text',
+  NUMBER = 'number',
+  URL = 'url',
+  TAGS = 'multiSelect',
+}
+
+export enum CustomFieldEntityType {
+  CLIENT = 'client',
+  COMPANY = 'company',
+}
+
+const CustomFieldSchema = z.object({
+  id: z.string(),
+  key: z.string(),
+  name: z.string(),
+  type: z.enum(CustomFieldType),
+  order: z.number(),
+  object: z.literal('customField'),
+  entityType: z.enum(CustomFieldEntityType),
+})
+
+export const ListCustomFieldResponseSchema = z.object({
+  data: z.array(CustomFieldSchema),
+})

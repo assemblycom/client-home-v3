@@ -11,10 +11,12 @@ import {
   type CompanyCreateRequest,
   type CompanyResponse,
   CompanyResponseSchema,
+  type CustomFieldEntityType,
   type InternalUser,
   InternalUserResponseSchema,
   type InternalUsersResponse,
   InternalUsersResponseSchema,
+  ListCustomFieldResponseSchema,
   type NotificationsResponse,
   NotificationsResponseSchema,
   TasksResponseSchema,
@@ -148,6 +150,11 @@ export default class AssemblyClient {
     return tasksParsed.data.data
   }
 
+  private async _listCustomFields({ entityType }: { entityType: CustomFieldEntityType }) {
+    logger.info('AssemblyClient#_listCustomFields')
+    return ListCustomFieldResponseSchema.parse(await this.assembly.listCustomFields({ entityType }))
+  }
+
   private wrapWithRetry<Args extends unknown[], R>(fn: (...args: Args) => Promise<R>): (...args: Args) => Promise<R> {
     return (...args: Args): Promise<R> => withRetry(fn.bind(this), args)
   }
@@ -168,4 +175,5 @@ export default class AssemblyClient {
   getInternalUser = this.wrapWithRetry(this._getInternalUser)
   getNotifications = this.wrapWithRetry(this._getNotifications)
   getTasks = this.wrapWithRetry(this._getTasks)
+  listCustomFields = this.wrapWithRetry(this._listCustomFields)
 }
