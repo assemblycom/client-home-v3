@@ -16,7 +16,10 @@ type CachedFields = {
 const cache = new Map<string, CachedFields>()
 
 async function fetchFields(token: string): Promise<CachedFields> {
-  if (cache.has(token)) return cache.get(token)!
+  const cacheData = cache.get(token)
+  if (cacheData) {
+    return cacheData
+  }
 
   const [clientRes, companyRes] = await Promise.all([
     fetch(`/api/custom-fields/client?token=${token}`),
