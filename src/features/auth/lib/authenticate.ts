@@ -62,11 +62,15 @@ export const authenticateProxy = async (req: NextRequest): Promise<NextResponse>
   return NextResponse.next({
     headers: {
       ...headers,
-      [AuthenticatedAPIHeaders.CUSTOM_APP_TOKEN]: token,
-      [AuthenticatedAPIHeaders.INTERNAL_USER_ID]: tokenPayload.internalUserId,
-      [AuthenticatedAPIHeaders.CLIENT_ID]: tokenPayload.clientId,
-      [AuthenticatedAPIHeaders.COMPANY_ID]: tokenPayload.companyId,
-      [AuthenticatedAPIHeaders.WORKSPACE_ID]: tokenPayload.workspaceId,
+      ...Object.fromEntries(
+        Object.entries({
+          [AuthenticatedAPIHeaders.CUSTOM_APP_TOKEN]: token,
+          [AuthenticatedAPIHeaders.INTERNAL_USER_ID]: tokenPayload.internalUserId,
+          [AuthenticatedAPIHeaders.CLIENT_ID]: tokenPayload.clientId,
+          [AuthenticatedAPIHeaders.COMPANY_ID]: tokenPayload.companyId,
+          [AuthenticatedAPIHeaders.WORKSPACE_ID]: tokenPayload.workspaceId,
+        }).filter(([, v]) => v != null),
+      ),
     },
   })
 }
