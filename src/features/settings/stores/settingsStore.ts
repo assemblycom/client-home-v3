@@ -1,5 +1,6 @@
 import type { SettingsResponseDto } from '@settings/lib/settings-actions.dto'
 import { createStore, type StoreApi } from 'zustand'
+import type { BannerImagesResponse } from '@/features/banner/types'
 
 interface SettingsState extends SettingsResponseDto {
   initialSettings: SettingsResponseDto
@@ -12,6 +13,8 @@ interface SettingsAction {
   setSettings: (settings: Partial<SettingsResponseDto>) => void
   setInitialSettings: (settings: SettingsResponseDto) => void
   setBannerUrl: (url: string | null) => void
+  setBannerImages: (banners: BannerImagesResponse) => void
+  setBannerImageId: (bannerImageId: string) => void
 }
 
 export type SettingsStore = SettingsState & SettingsAction
@@ -20,26 +23,6 @@ export const createSettingsStore = (settings: SettingsResponseDto) =>
   createStore<SettingsStore>()((set) => ({
     ...settings,
     initialSettings: settings,
-    //hardcoded the url for now.
-    bannerUrls: [
-      {
-        bannerUrl:
-          'https://sakzqessgcaxgporuunf.supabase.co/storage/v1/object/sign/media/common/Container.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hNGIwOGZlMi1jYmQyLTQyZTYtYjliZC0zNjljYmQ4ZDEyNDgiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtZWRpYS9jb21tb24vQ29udGFpbmVyLmpwZyIsImlhdCI6MTc3MTMxOTAyOCwiZXhwIjoxODAyODU1MDI4fQ.hkz8z2g44IDklP_pHFDjoWrMf6UUQtQBU9m66uTGZhM',
-        bannerId: '1',
-      },
-      {
-        bannerUrl:
-          'https://sakzqessgcaxgporuunf.supabase.co/storage/v1/object/sign/media/common/Container.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hNGIwOGZlMi1jYmQyLTQyZTYtYjliZC0zNjljYmQ4ZDEyNDgiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtZWRpYS9jb21tb24vQ29udGFpbmVyLmpwZyIsImlhdCI6MTc3MTMxOTAyOCwiZXhwIjoxODAyODU1MDI4fQ.hkz8z2g44IDklP_pHFDjoWrMf6UUQtQBU9m66uTGZhM',
-        bannerId: '2',
-      },
-      {
-        bannerUrl:
-          'https://sakzqessgcaxgporuunf.supabase.co/storage/v1/object/sign/media/common/Container.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hNGIwOGZlMi1jYmQyLTQyZTYtYjliZC0zNjljYmQ4ZDEyNDgiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtZWRpYS9jb21tb24vQ29udGFpbmVyLmpwZyIsImlhdCI6MTc3MTMxOTAyOCwiZXhwIjoxODAyODU1MDI4fQ.hkz8z2g44IDklP_pHFDjoWrMf6UUQtQBU9m66uTGZhM',
-        bannerId: '3',
-      },
-    ],
-    bannerImageId: '1',
-    //static banners as of now
 
     setContent: (content: string) => set((s) => ({ ...s, content })),
     setSubheading: (subheading: string) => set((s) => ({ ...s, subheading })),
@@ -49,6 +32,8 @@ export const createSettingsStore = (settings: SettingsResponseDto) =>
     setInitialSettings: (newSettings: Partial<SettingsResponseDto>) =>
       set((s) => ({ ...s, initialSettings: { ...s.initialSettings, ...newSettings } })),
     setBannerUrl: (url: string | null) => set((s) => ({ ...s, bannerUrl: url })),
+    setBannerImages: (banners: BannerImagesResponse) => set((s) => ({ ...s, bannerImages: banners })),
+    setBannerImageId: (bannerImageId: string) => set((s) => ({ ...s, bannerImageId })),
   }))
 
 export type SettingsStoreApi = StoreApi<SettingsStore>

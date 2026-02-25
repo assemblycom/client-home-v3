@@ -4,7 +4,7 @@ import { cn } from '@/utils/tailwind'
 
 interface BannerProps {
   src: string
-  alt: string
+  alt?: string
   isSelected?: boolean
   className?: string
 }
@@ -14,7 +14,7 @@ export const Banner = ({ src, alt, isSelected, className }: BannerProps) => {
     <div className={cn('relative aspect-[5/1] w-full overflow-hidden rounded-lg', className)}>
       <Image
         src={src}
-        alt={alt}
+        alt={alt ?? ''}
         fill
         className="object-cover"
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"

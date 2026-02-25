@@ -1,5 +1,6 @@
 import AssemblyClient from '@assembly/assembly-client'
 import { authenticateHeaders } from '@auth/lib/authenticate'
+import MediaDrizzleRepository from '@media/lib/media.repository'
 import ActionsDrizzleRepository from '@settings/lib/actions/actions.repository'
 import SettingsDrizzleRepository from '@settings/lib/settings/settings.repository'
 import { SettingsUpdateDtoSchema } from '@settings/lib/settings-actions.dto'
@@ -34,6 +35,7 @@ export const updateSettingsWithActions = async (req: NextRequest): Promise<NextR
   const settingsRepository = new SettingsDrizzleRepository(db)
   const actionsRepository = new ActionsDrizzleRepository(db)
   const settingsActionsQueryRepository = new SettingsActionsDrizzleQueryRepository(db)
+  const mediaRepository = new MediaDrizzleRepository(db)
 
   const settingsService = new SettingsActionsService(
     user,
@@ -41,6 +43,7 @@ export const updateSettingsWithActions = async (req: NextRequest): Promise<NextR
     settingsActionsQueryRepository,
     settingsRepository,
     actionsRepository,
+    mediaRepository,
   )
 
   const settings = await settingsService.updateForWorkspace(parsedBody)

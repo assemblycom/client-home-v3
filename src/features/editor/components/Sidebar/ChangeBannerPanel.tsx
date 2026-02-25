@@ -1,17 +1,34 @@
+import { useAuthStore } from '@auth/providers/auth.provider'
+import { useSettingsMutation } from '@settings/hooks/useSettingsMutation'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import { Button, Icon } from 'copilot-design-system'
 import { useState } from 'react'
 import { Banner } from '@/features/banner'
+import { getImageUrl } from '@/features/banner/lib/utils'
 
 interface ChangeBannerPanelProps {
   onBack: () => void
 }
 
 export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
-  const bannerUrls = useSettingsStore((store) => store?.bannerUrls)
+  const bannerImages = useSettingsStore((store) => store?.bannerImages)
   const bannerId = useSettingsStore((store) => store?.bannerImageId)
+  const token = useAuthStore((store) => store.token)
+  const setBannerImage = useSettingsStore((s) => s.setBannerImageId)
+  const updateSettingsMutation = useSettingsMutation()
 
-  const [selectedImage, setSelectedImage] = useState(bannerUrls?.find((item) => item.bannerId === bannerId))
+  const [selectedImage, setSelectedImage] = useState(bannerImages?.find((item) => item.id === bannerId))
+
+  const handleSaveChanges = () => {
+    if (selectedImage?.id) {
+      setBannerImage(selectedImage.id)
+      updateSettingsMutation.mutate({ bannerImageId: selectedImage.id })
+    }
+  }
+
+  const handleCancelChanges = () => {
+    setSelectedImage(bannerImages?.find((item) => item.id === bannerId))
+  }
 
   return (
     <div className="flex h-full flex-col">
@@ -30,7 +47,7 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
       <div className="flex flex-col items-start gap-y-[32px] overflow-y-auto px-[27px] py-[21px]">
         <div className="flex flex-col items-start gap-y-[12px] self-stretch">
           <span className="text-[12px] text-text-secondary leading-[20px]">Current Banner </span>
-          <Banner src={selectedImage?.bannerUrl ?? ''} alt="gg" />
+          <Banner src={getImageUrl(selectedImage?.path ?? '', token)} alt="gg" />
           <Button
             label="Upload image"
             variant="secondary"
@@ -40,26 +57,22 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
         </div>
         <div className="flex flex-col items-start gap-y-[12px] self-stretch">
           <span className="text-[12px] text-text-secondary leading-[20px]">Image library </span>
-          {bannerUrls?.map((banner) => (
+          {bannerImages?.map((banner) => (
             <button
-              key={banner.bannerId}
+              key={banner.id}
               onClick={() => setSelectedImage(banner)}
               className="block w-full cursor-pointer border-none bg-transparent p-0"
               type="button"
             >
-              <Banner
-                src={banner?.bannerUrl ?? ''}
-                alt="gg"
-                isSelected={selectedImage?.bannerId === banner?.bannerId}
-              />
+              <Banner src={getImageUrl(banner.path, token)} isSelected={selectedImage?.id === banner?.id} />
             </button>
           ))}
         </div>
       </div>
-      {selectedImage?.bannerId !== bannerId && (
+      {selectedImage?.id !== bannerId && (
         <div className="mt-auto flex flex-row items-start gap-[10px] border-border-gray border-t px-6 py-3">
-          <Button label="Change" variant="primary" onClick={() => console.info('Info: save changes')} />
-          <Button label="Cancel" variant="secondary" onClick={() => console.info('Info: cancel changes')} />
+          <Button label="Change" variant="primary" onClick={handleSaveChanges} />
+          <Button label="Cancel" variant="secondary" onClick={handleCancelChanges} />
         </div>
       )}
     </div>

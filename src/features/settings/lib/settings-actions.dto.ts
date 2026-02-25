@@ -4,11 +4,11 @@ import z from 'zod'
 
 export const SettingsResponseDtoSchema = SettingsSchema.extend({
   actions: ActionsCreateSchema.omit({ settingsId: true }),
-  bannerUrls: z
+  bannerImages: z
     .array(
       z.object({
-        bannerUrl: z.string().optional(),
-        bannerId: z.string().optional(),
+        id: z.string(),
+        path: z.string(),
       }),
     )
     .optional(),

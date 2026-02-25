@@ -3,7 +3,7 @@
 import { Accordion } from '@editor/components/Sidebar/Accordion'
 import { Actions } from '@editor/components/Sidebar/Actions'
 import { BackgroundColor } from '@editor/components/Sidebar/BackgroundColor'
-import { Banner } from '@editor/components/Sidebar/Banner'
+import { BannerOptions } from '@editor/components/Sidebar/BannerOptions'
 import { DynamicFields } from '@editor/components/Sidebar/DynamicFields'
 import { Segment } from '@editor/components/Sidebar/Segment'
 import { useViewStore, ViewMode } from '@editor/stores/viewStore'
@@ -21,7 +21,7 @@ type SidebarView = 'default' | 'change-banner'
 const createAccordionItems = (onChangeBanner: () => void) => [
   {
     title: 'Banner',
-    content: <Banner onChangeBanner={onChangeBanner} />,
+    content: <BannerOptions onChangeBanner={onChangeBanner} />,
   },
   {
     title: 'Actions',

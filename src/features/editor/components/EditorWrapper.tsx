@@ -10,6 +10,7 @@ import { useSettingsStore } from '@settings/providers/settings.provider'
 import { Activity } from 'react'
 import { ActionsCard } from '@/features/action-items/components/actions-card'
 import { Banner } from '@/features/banner'
+import { getImageUrl } from '@/features/banner/lib/utils'
 import { useViewStore, ViewMode } from '@/features/editor/stores/viewStore'
 import { getActivityMode } from '@/utils/activity'
 
@@ -18,9 +19,9 @@ export function EditorWrapper() {
   const token = useAuthStore((store) => store.token)
   const content = useSettingsStore((store) => store.content)
   const backgroundColor = useSettingsStore((store) => store.backgroundColor)
-  const bannerUrls = useSettingsStore((store) => store?.bannerUrls)
+  const bannerImages = useSettingsStore((store) => store.bannerImages)
   const bannerId = useSettingsStore((store) => store?.bannerImageId)
-  const bannerUrl = bannerUrls?.find((item) => item.bannerId === bannerId)?.bannerUrl
+  const bannerUrl = bannerImages?.find((item) => item.id === bannerId)
 
   useAppControls()
 
@@ -30,14 +31,21 @@ export function EditorWrapper() {
         <div className="tiptap-wrapper @container max-w-full @max-md:rounded-t-none" style={{ backgroundColor }}>
           <Heading />
           <Subheading />
-          {bannerUrl ? <Banner src={bannerUrl} alt="Workspace Banner" className="my-6" /> : null}
+          {bannerUrl ? (
+            <Banner src={getImageUrl(bannerUrl.path, token)} alt="Workspace Banner" className="my-6" />
+          ) : null}
           <ActionsCard />
           <Editor token={token} content={content} backgroundColor={backgroundColor} />
         </div>
       </Activity>
 
       <Activity mode={getActivityMode(viewMode === ViewMode.PREVIEW)}>
-        <Preview content={content} token={token} backgroundColor={backgroundColor} bannerUrl={bannerUrl} />
+        <Preview
+          content={content}
+          token={token}
+          backgroundColor={backgroundColor}
+          bannerUrl={getImageUrl(bannerUrl?.path, token)}
+        />
       </Activity>
     </div>
   )

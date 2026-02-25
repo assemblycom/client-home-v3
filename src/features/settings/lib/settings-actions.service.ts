@@ -1,5 +1,7 @@
 import AssemblyClient from '@assembly/assembly-client'
 import type { User } from '@auth/lib/user.entity'
+import { DEFAULT_BANNER_IMAGE_PATH } from '@media/constants'
+import MediaDrizzleRepository, { type MediaRepository } from '@media/lib/media.repository'
 import { defaultContent } from '@settings/constants'
 import type { ActionsRepository } from '@settings/lib/actions/actions.repository'
 import ActionsDrizzleRepository from '@settings/lib/actions/actions.repository'
@@ -23,6 +25,7 @@ export default class SettingsActionsService extends BaseService {
     private readonly queryRepository: SettingsActionsQueryRepository,
     private readonly settingsRepository: SettingsRepository,
     private readonly actionsRepository: ActionsRepository,
+    private readonly mediaRepository: MediaRepository,
   ) {
     super(user, assembly)
   }
@@ -37,6 +40,7 @@ export default class SettingsActionsService extends BaseService {
     const settingsRepository = new SettingsDrizzleRepository(db)
     const actionsRepository = new ActionsDrizzleRepository(db)
     const settingsActionsQueryRepository = new SettingsActionsDrizzleQueryRepository(db)
+    const mediaRepository = new MediaDrizzleRepository(db)
 
     return new SettingsActionsService(
       user,
@@ -44,6 +48,7 @@ export default class SettingsActionsService extends BaseService {
       settingsActionsQueryRepository,
       settingsRepository,
       actionsRepository,
+      mediaRepository,
     )
   }
 
@@ -52,6 +57,7 @@ export default class SettingsActionsService extends BaseService {
 
     // Handle missing settings and/or actions
     if (!settingsAndActions?.settings || !settingsAndActions?.actions) {
+      const defaultBanner = await this.mediaRepository.getByPath(DEFAULT_BANNER_IMAGE_PATH)
       return await DBService.transaction(async (tx) => {
         this.settingsRepository.setTx(tx)
         this.actionsRepository.setTx(tx)
@@ -61,8 +67,7 @@ export default class SettingsActionsService extends BaseService {
             settingsAndActions?.settings ||
             (await this.settingsRepository.createOne(this.user.workspaceId, {
               content: defaultContent,
-              // We can add default banner img here later
-              // bannerImageId: null,
+              bannerImageId: defaultBanner?.id || null,
             }))
           const actions =
             settingsAndActions?.actions ||

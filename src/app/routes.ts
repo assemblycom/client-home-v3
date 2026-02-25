@@ -6,6 +6,8 @@ export const ROUTES = Object.freeze({
     settings: '/api/settings',
     workspace: '/api/workspace',
     media: '/api/media',
+    image: '/api/media/image',
+    bannerImages: '/api/media/banner-images',
     users: '/api/users',
     notificationCounts: '/api/users/:id/notification-counts',
   },
@@ -31,6 +33,8 @@ export const authorizedRoutes: Record<string, RouteRule[]> = {
     ROUTES.api.workspace,
     ROUTES.api.settings,
     ROUTES.api.media,
+    ROUTES.api.bannerImages,
+    ROUTES.api.image,
     ROUTES.api.users,
     ROUTES.api.notificationCounts,
   ],
@@ -42,5 +46,7 @@ export const authorizedRoutes: Record<string, RouteRule[]> = {
     },
     // We have to implement further policy level auth so that client can only access its own notification counts
     ROUTES.api.notificationCounts,
+    ROUTES.api.bannerImages,
+    ROUTES.api.image,
   ],
 }

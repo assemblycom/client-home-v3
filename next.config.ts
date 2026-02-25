@@ -6,6 +6,11 @@ const supabaseUrl = new URL(process.env.SUPABASE_URL || '')
 const nextConfig: NextConfig = {
   allowedDevOrigins: [process.env.NGROK_URL || ''],
   images: {
+    localPatterns: [
+      {
+        pathname: '/**',
+      },
+    ],
     remotePatterns: [
       {
         protocol: 'https',
