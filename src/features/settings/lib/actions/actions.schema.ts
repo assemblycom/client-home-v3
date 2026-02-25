@@ -15,9 +15,6 @@ export const actions = pgTable(
     // Enable showing number of pending invoices in actions banner
     invoices: boolean().notNull().default(false),
 
-    // Enable showing number of pending messages in actions banner
-    messages: boolean().notNull().default(false),
-
     // Enable showing number of pending contracts in actions banner
     contracts: boolean().notNull().default(false),
 
@@ -31,7 +28,7 @@ export const actions = pgTable(
     // files: boolean().notNull().default(false),
 
     // Display order of action items
-    order: jsonb().notNull().default(['invoices', 'messages', 'contracts', 'tasks', 'forms']).$type<string[]>(),
+    order: jsonb().notNull().default(['invoices', 'contracts', 'tasks', 'forms']).$type<string[]>(),
 
     ...timestamps,
   },

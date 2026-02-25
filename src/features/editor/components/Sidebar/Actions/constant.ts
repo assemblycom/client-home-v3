@@ -4,7 +4,6 @@ import type { TemplateString } from '@/features/handlebar-template/types/hande-b
 
 export const ActionItemLabel = Object.freeze({
   INVOICE: 'Invoice',
-  MESSAGE: 'Message',
   CONTRACT: 'Contract',
   TASKS: 'Tasks',
   FORMS: 'Forms',
@@ -30,14 +29,6 @@ export const ActionDefinitions = Object.freeze({
     template: `{{invoices.count}}`,
     key: 'invoices',
     appUrlPath: 'invoices',
-  },
-  [ActionItemLabel.MESSAGE]: {
-    label: 'Messages',
-    singularLabel: 'Message',
-    icon: 'Message',
-    template: `{{messages.count}}`,
-    key: 'messages',
-    appUrlPath: 'messaging',
   },
   [ActionItemLabel.CONTRACT]: {
     label: 'Contracts',

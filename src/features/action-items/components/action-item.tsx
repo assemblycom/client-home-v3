@@ -43,7 +43,9 @@ export const ActionItem = ({ action, isLoading, mode, className, portalUrl, coun
               template={action.template}
               fallbackValue={count ?? 0}
             />
-            {mode === ViewMode.PREVIEW ? ` ${action.singularLabel?.toLocaleLowerCase()}` : null}
+            {mode === ViewMode.PREVIEW
+              ? ` ${count === 1 ? action.singularLabel?.toLocaleLowerCase() : action.label.toLocaleLowerCase()}`
+              : null}
           </div>
           <a href={`${portalUrl}/${action.appUrlPath}`} className="flex items-center gap-2 text-body-md">
             View all <Icon icon={'ArrowRight'} className="size-3.25" />
