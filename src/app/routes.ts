@@ -8,6 +8,8 @@ export const ROUTES = Object.freeze({
     media: '/api/media',
     users: '/api/users',
     notificationCounts: '/api/users/:id/notification-counts',
+    companyCustomFields: '/api/custom-fields/company',
+    clientCustomFields: '/api/custom-fields/client',
   },
 })
 
@@ -33,9 +35,13 @@ export const authorizedRoutes: Record<string, RouteRule[]> = {
     ROUTES.api.media,
     ROUTES.api.users,
     ROUTES.api.notificationCounts,
+    ROUTES.api.clientCustomFields,
+    ROUTES.api.companyCustomFields,
   ],
   clientUsers: [
     ROUTES.client,
+    ROUTES.api.clientCustomFields,
+    ROUTES.api.companyCustomFields,
     {
       path: ROUTES.api.settings,
       methods: ['GET'],

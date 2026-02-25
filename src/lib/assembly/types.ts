@@ -151,9 +151,9 @@ const CustomFieldSchema = z.object({
   id: z.string(),
   key: z.string(),
   name: z.string(),
-  type: z.string(),
+  type: z.enum(['address', 'email', 'phoneNumber', 'text', 'number', 'tags', 'url']),
   order: z.number(),
-  object: z.string(),
+  object: z.literal('customField'),
   entityType: z.enum(['client', 'company']),
 })
 
