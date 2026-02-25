@@ -3,6 +3,22 @@ import type { NextConfig } from 'next'
 
 const supabaseUrl = new URL(process.env.SUPABASE_URL || '')
 
+const allowedRemotePatterns = !process.env.ALLOWED_REMOTE_PATTERNS
+  ? []
+  : process.env.ALLOWED_REMOTE_PATTERNS.split(',').flatMap((pattern) => {
+      const trimmedHost = pattern?.trim()
+      if (!trimmedHost) {
+        return []
+      }
+      const url = new URL(pattern)
+      return [
+        {
+          protocol: 'https',
+          hostname: url.hostname,
+        } as unknown as Required<Required<NextConfig>['images']>['remotePatterns'][number],
+      ]
+    })
+
 const nextConfig: NextConfig = {
   allowedDevOrigins: [process.env.NGROK_URL || ''],
   images: {
@@ -11,6 +27,7 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: supabaseUrl.hostname,
       },
+      ...allowedRemotePatterns,
     ],
   },
   turbopack: {

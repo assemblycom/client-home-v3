@@ -1,6 +1,9 @@
+import { useCustomFields } from '@/features/custom-fields/hooks/useCustomFields'
 import type { DynamicField } from '@/features/editor/components/Sidebar/DynamicFields/type'
 
 export const useDynamicFields = () => {
+  const { clientCustomFields, companyCustomFields } = useCustomFields()
+
   const dynamicFields: DynamicField[] = [
     {
       type: 'client',
@@ -21,6 +24,10 @@ export const useDynamicFields = () => {
           fieldContent: '{{client.company}}',
           name: 'Company',
         },
+        ...clientCustomFields.map(({ key, name }) => ({
+          fieldContent: `{{client.${key}}}`,
+          name,
+        })),
       ],
     },
     {
@@ -34,6 +41,10 @@ export const useDynamicFields = () => {
           fieldContent: '{{company.email}}',
           name: 'Email',
         },
+        ...companyCustomFields.map(({ key, name }) => ({
+          fieldContent: `{{company.${key}}}`,
+          name,
+        })),
       ],
     },
     {
