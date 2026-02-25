@@ -4,7 +4,14 @@ import z from 'zod'
 
 export const SettingsResponseDtoSchema = SettingsSchema.extend({
   actions: ActionsCreateSchema.omit({ settingsId: true }),
-  bannerUrl: z.string().nullable().optional(),
+  bannerUrls: z
+    .array(
+      z.object({
+        bannerUrl: z.string().optional(),
+        bannerId: z.string().optional(),
+      }),
+    )
+    .optional(),
 })
 
 export type SettingsResponseDto = z.infer<typeof SettingsResponseDtoSchema>

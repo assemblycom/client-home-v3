@@ -18,7 +18,9 @@ export function EditorWrapper() {
   const token = useAuthStore((store) => store.token)
   const content = useSettingsStore((store) => store.content)
   const backgroundColor = useSettingsStore((store) => store.backgroundColor)
-  const bannerUrl = useSettingsStore((store) => store.bannerUrl)
+  const bannerUrls = useSettingsStore((store) => store?.bannerUrls)
+  const bannerId = useSettingsStore((store) => store?.bannerImageId)
+  const bannerUrl = bannerUrls?.find((item) => item.bannerId === bannerId)?.bannerUrl
 
   useAppControls()
 
@@ -28,7 +30,7 @@ export function EditorWrapper() {
         <div className="tiptap-wrapper @container max-w-full @max-md:rounded-t-none" style={{ backgroundColor }}>
           <Heading />
           <Subheading />
-          {bannerUrl ? <Banner src={bannerUrl} alt="Workspace Banner" /> : null}
+          {bannerUrl ? <Banner src={bannerUrl} alt="Workspace Banner" className="my-6" /> : null}
           <ActionsCard />
           <Editor token={token} content={content} backgroundColor={backgroundColor} />
         </div>
