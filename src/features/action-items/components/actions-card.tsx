@@ -24,9 +24,7 @@ export const ActionsCard = ({ readonly }: ActionCardProps) => {
 
   const totalCount = counts
     ? enabledActions.reduce((sum, action) => sum + (counts[action.key as keyof NotificationCountsDto] ?? 0), 0)
-    : isPreviewMode
-      ? 12
-      : undefined
+    : 0
 
   return (
     <div className="relative rounded-2xl border border-background-primary bg-gray-100 p-6 shadow-sm transition-all duration-500">

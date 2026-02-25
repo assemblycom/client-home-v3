@@ -41,7 +41,7 @@ export const ActionItem = ({ action, isLoading, mode, className, portalUrl, coun
               className={cn(mode === ViewMode.PREVIEW ? 'text-text-primary' : '')}
               mode={mode}
               template={action.template}
-              fallbackValue={count ?? 1}
+              fallbackValue={count ?? 0}
             />
             {mode === ViewMode.PREVIEW ? ` ${action.singularLabel?.toLocaleLowerCase()}` : null}
           </div>
