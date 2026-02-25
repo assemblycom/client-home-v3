@@ -3,7 +3,6 @@ import 'server-only'
 import {
   type AssemblyListArgs,
   type ClientCreateRequest,
-  ClientCustomFieldSchema,
   ClientCustomFieldsResponseSchema,
   type ClientResponse,
   ClientResponseSchema,
@@ -11,7 +10,6 @@ import {
   type CompaniesResponse,
   CompaniesResponseSchema,
   type CompanyCreateRequest,
-  CompanyCustomFieldSchema,
   CompanyCustomFieldsResponseSchema,
   type CompanyResponse,
   CompanyResponseSchema,
