@@ -9,6 +9,7 @@ import { useAppControls } from '@editor/hooks/useAppControls'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import { Activity } from 'react'
 import { ActionsCard } from '@/features/action-items/components/actions-card'
+import { Banner } from '@/features/banner'
 import { useViewStore, ViewMode } from '@/features/editor/stores/viewStore'
 import { getActivityMode } from '@/utils/activity'
 
@@ -17,6 +18,7 @@ export function EditorWrapper() {
   const token = useAuthStore((store) => store.token)
   const content = useSettingsStore((store) => store.content)
   const backgroundColor = useSettingsStore((store) => store.backgroundColor)
+  const bannerUrl = useSettingsStore((store) => store.bannerUrl)
 
   useAppControls()
 
@@ -26,13 +28,14 @@ export function EditorWrapper() {
         <div className="tiptap-wrapper @container max-w-full @max-md:rounded-t-none" style={{ backgroundColor }}>
           <Heading />
           <Subheading />
+          {bannerUrl ? <Banner src={bannerUrl} alt="Workspace Banner" /> : null}
           <ActionsCard />
           <Editor token={token} content={content} backgroundColor={backgroundColor} />
         </div>
       </Activity>
 
       <Activity mode={getActivityMode(viewMode === ViewMode.PREVIEW)}>
-        <Preview content={content} token={token} backgroundColor={backgroundColor} />
+        <Preview content={content} token={token} backgroundColor={backgroundColor} bannerUrl={bannerUrl} />
       </Activity>
     </div>
   )
