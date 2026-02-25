@@ -147,18 +147,33 @@ export const TasksResponseSchema = z.object({
     .array(),
 })
 
+export enum CustomFieldTypeSchema {
+  ADDRESS = 'address',
+  EMAIL = 'email',
+  PHONE_NUMBER = 'phoneNumber',
+  TEXT = 'text',
+  NUMBER = 'number',
+  URL = 'url',
+  TAGS = 'multiSelect',
+}
+
+export enum CustomFieldEntityTypeSchema {
+  CLIENT = 'client',
+  COMPANY = 'company',
+}
+
 const CustomFieldSchema = z.object({
   id: z.string(),
   key: z.string(),
   name: z.string(),
-  type: z.enum(['address', 'email', 'phoneNumber', 'text', 'number', 'tags', 'url']),
+  type: z.enum(CustomFieldTypeSchema),
   order: z.number(),
   object: z.literal('customField'),
-  entityType: z.enum(['client', 'company']),
+  entityType: z.enum(CustomFieldEntityTypeSchema),
 })
 
 const ClientCustomFieldSchema = CustomFieldSchema.extend({
-  entityType: z.literal('client'),
+  entityType: z.literal(CustomFieldEntityTypeSchema.CLIENT),
 })
 
 export const ClientCustomFieldsResponseSchema = z.object({
@@ -166,7 +181,7 @@ export const ClientCustomFieldsResponseSchema = z.object({
 })
 
 const CompanyCustomFieldSchema = CustomFieldSchema.extend({
-  entityType: z.literal('company'),
+  entityType: z.literal(CustomFieldEntityTypeSchema.COMPANY),
 })
 
 export const CompanyCustomFieldsResponseSchema = z.object({
