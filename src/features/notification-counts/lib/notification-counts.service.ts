@@ -46,7 +46,6 @@ export default class NotificationsCountService extends BaseService {
       invoices: 0,
       contracts: 0,
       tasks: tasks.filter((t) => t.status === TaskStatus.TODO || t.status === TaskStatus.IN_PROGRESS).length,
-      messages: 0,
     }
 
     notifications.data.forEach(({ event, recipientCompanyId: notificationRecipientCompanyId }) => {
