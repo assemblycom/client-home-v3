@@ -1,5 +1,5 @@
 import type { IconType } from 'copilot-design-system'
-import { toCamelCase } from '@/utils/strings'
+import camelCase from 'lodash/camelCase'
 
 export type FieldEntityType = 'client' | 'company' | 'workspace'
 
@@ -30,7 +30,7 @@ export function getFieldDisplayContent(
   labels?: { individualTerm?: string; groupTerm?: string },
 ): string {
   if (!labels) return value
-  const clientPrefix = toCamelCase(labels.individualTerm ?? 'client')
-  const companyPrefix = toCamelCase(labels.groupTerm ?? 'company')
+  const clientPrefix = camelCase(labels.individualTerm ?? 'client')
+  const companyPrefix = camelCase(labels.groupTerm ?? 'company')
   return value.replace('{{client.', `{{${clientPrefix}.`).replace('{{company.', `{{${companyPrefix}.`)
 }

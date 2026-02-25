@@ -48,7 +48,7 @@ export const AutofillSuggestionMenu = forwardRef<AutofillSuggestionMenuHandle, S
     }
 
     return (
-      <div className="max-h-[300px] min-w-[200px] overflow-y-auto rounded-md border border-border-gray bg-white py-1 shadow-md">
+      <div className="max-h-72 min-w-48 overflow-y-auto rounded-md border border-border-gray bg-white py-1 shadow-md">
         {props.items.map((item, index) => (
           <button
             type="button"
