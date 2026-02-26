@@ -13,7 +13,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
-import { media } from '@/features/media/lib/media.schema'
+import { media, mediaTypeEnum } from '@/features/media/lib/media.schema'
 
 const getRequiredEnv = (key: string): string => {
   const value = process.env[key]
@@ -76,6 +76,7 @@ const run = async () => {
           path,
           type,
           size,
+          mediaType: mediaTypeEnum.enumValues[0], //banner
         })
         .onConflictDoNothing()
 
