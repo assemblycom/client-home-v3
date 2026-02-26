@@ -13,12 +13,14 @@ export type AutofillSuggestionMenuHandle = {
 type Props = SuggestionProps<FieldItem> & { ref?: Ref<AutofillSuggestionMenuHandle> }
 
 export function AutofillSuggestionMenu({ ref, ...props }: Props) {
-  const { items, isLoading } = useDynamicFields()
+  const { dynamicFields, isLoading } = useDynamicFields()
 
   const filteredItems = useMemo(() => {
     const normalized = props.query.toLowerCase()
-    return (normalized ? items.filter((item) => item.label.toLowerCase().includes(normalized)) : items).slice(0, 10)
-  }, [items, props.query])
+    return (
+      normalized ? dynamicFields.filter((item) => item.label.toLowerCase().includes(normalized)) : dynamicFields
+    ).slice(0, 10)
+  }, [dynamicFields, props.query])
 
   const [selectedIndex, setSelectedIndex] = useState(0)
 
