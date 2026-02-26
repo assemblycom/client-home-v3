@@ -41,6 +41,15 @@ export const WorkspaceResponseSchema = z.object({
 })
 export type WorkspaceResponse = z.infer<typeof WorkspaceResponseSchema>
 
+export const AppInstallsDataSchema = z.object({
+  appId: z.string().optional(),
+  displayName: z.string().optional(),
+  id: z.string().optional(),
+  type: z.string().optional(),
+  object: z.string().optional(),
+})
+export const AppInstallsResponseSchema = z.array(AppInstallsDataSchema)
+
 // Response schema for `/clients/{clientId}` endpoint
 export const ClientResponseSchema = z.object({
   id: z.string(),
