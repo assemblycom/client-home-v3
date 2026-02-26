@@ -19,22 +19,20 @@ export function resolveTemplate(
   switch (entity) {
     case 'client': {
       if (!client) return ''
-      switch (field) {
-        case 'firstName':
-          return client.firstName ?? ''
-        case 'lastName':
-          return client.lastName ?? ''
-        case 'email':
-          return client.email ?? ''
-        case 'company':
-          return company?.name ?? ''
-        default:
-          return String(client.customFields?.[field] ?? '')
+      const builtIn: Record<string, string | undefined> = {
+        firstName: client.firstName,
+        lastName: client.lastName,
+        email: client.email,
+        company: company?.name,
       }
+      return builtIn[field] ?? String(client.customFields?.[field] ?? '')
     }
     case 'company': {
       if (!company) return ''
-      return String(company.customFields?.[field] ?? '')
+      const builtIn: Record<string, string | undefined> = {
+        name: company.name,
+      }
+      return builtIn[field] ?? String(company.customFields?.[field] ?? '')
     }
     case 'workspace': {
       if (!workspace) return ''
