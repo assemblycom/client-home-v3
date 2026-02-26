@@ -53,6 +53,10 @@ export function HandleBarTemplate({
     )
   }
 
+  if (isLoading) {
+    return <span className={cn('inline-block h-[1em] w-16 animate-pulse rounded bg-gray-200', className)} />
+  }
+
   const resolved = resolveTemplate(template, previewClient, previewCompany, workspace)
   return <span className={className}>{resolved || fallbackValue}</span>
 }

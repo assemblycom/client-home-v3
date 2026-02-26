@@ -27,3 +27,9 @@ export const UsersDtoSchema = z.object({
   companies: CompaniesDtoSchema.array(),
 })
 export type UsersDto = z.infer<typeof UsersDtoSchema>
+
+export const CurrentClientDtoSchema = z.object({
+  client: ClientsDtoSchema,
+  company: CompaniesDtoSchema.nullable(),
+})
+export type CurrentClientDto = z.infer<typeof CurrentClientDtoSchema>

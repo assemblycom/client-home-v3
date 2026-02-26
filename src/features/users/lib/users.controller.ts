@@ -13,3 +13,12 @@ export const getAllUsers = async (req: NextRequest): Promise<NextResponse<APIRes
     data: clients,
   })
 }
+
+export const getCurrentClient = async (req: NextRequest): Promise<NextResponse<APIResponse>> => {
+  const user = authenticateHeaders(req.headers)
+
+  const usersService = UsersService.new(user)
+  const currentClient = await usersService.getCurrentClient()
+
+  return NextResponse.json({ data: currentClient })
+}
