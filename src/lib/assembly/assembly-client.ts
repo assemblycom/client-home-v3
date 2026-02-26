@@ -1,6 +1,7 @@
 import 'server-only'
 
 import {
+  AppInstallsResponseSchema,
   type AssemblyListArgs,
   type ClientCreateRequest,
   type ClientResponse,
@@ -69,6 +70,11 @@ export default class AssemblyClient {
   async _getWorkspace(): Promise<WorkspaceResponse> {
     logger.info('AssemblyClient#_getWorkspace')
     return WorkspaceResponseSchema.parse(await this.assembly.retrieveWorkspace())
+  }
+
+  async _getAppId(appDeploymentId: string): Promise<string | null> {
+    const installedApps = AppInstallsResponseSchema.parse(await this.assembly.listAppInstalls())
+    return installedApps.find((app) => app.appId === appDeploymentId)?.id || null
   }
 
   async _createClient(requestBody: ClientCreateRequest, sendInvite: boolean = false): Promise<ClientResponse> {
@@ -176,4 +182,5 @@ export default class AssemblyClient {
   getNotifications = this.wrapWithRetry(this._getNotifications)
   getTasks = this.wrapWithRetry(this._getTasks)
   listCustomFields = this.wrapWithRetry(this._listCustomFields)
+  getAppId = this.wrapWithRetry(this._getAppId)
 }
