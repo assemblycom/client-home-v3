@@ -5,6 +5,7 @@ export const ROUTES = Object.freeze({
     health: '/api/health',
     settings: '/api/settings',
     workspace: '/api/workspace',
+    tasksAppId: '/api/workspace/tasks-app-id',
     media: '/api/media',
     users: '/api/users',
     notificationCounts: '/api/users/:id/notification-counts',
@@ -39,6 +40,7 @@ export const authorizedRoutes: Record<string, RouteRule[]> = {
   clientUsers: [
     ROUTES.client,
     ROUTES.api.listCustomFields,
+    ROUTES.api.tasksAppId,
     {
       path: ROUTES.api.settings,
       methods: ['GET'],
