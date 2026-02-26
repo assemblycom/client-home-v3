@@ -1,5 +1,6 @@
 import { authenticateHeaders } from '@auth/lib/authenticate'
 import MediaService from '@media/lib/media.service'
+import { CreateMediaRequestDtoSchema } from '@media/media.dto'
 import httpStatus from 'http-status'
 import { type NextRequest, NextResponse } from 'next/server'
 import type { APIResponse } from '@/app/types'
@@ -19,10 +20,20 @@ export const getBannerImages = async (req: NextRequest): Promise<NextResponse<AP
   })
 }
 
+export const insertBannerImage = async (req: NextRequest): Promise<NextResponse<APIResponse>> => {
+  const user = authenticateHeaders(req.headers)
+  const body = await req.json()
+  const parsedBody = CreateMediaRequestDtoSchema.parse(body)
+  const mediaService = MediaService.new(user)
+  const bannerImage = await mediaService.createMediaEntry(parsedBody)
+  return NextResponse.json({
+    data: bannerImage,
+  })
+}
+
 export const getImage = async (req: NextRequest): Promise<NextResponse<APIResponse>> => {
   const user = authenticateHeaders(req.headers)
   const searchParams = req.nextUrl.searchParams
-  console.info('HEREEEE', searchParams)
   const filePath = searchParams.get('filePath')
 
   if (!filePath) {

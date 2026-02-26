@@ -5,7 +5,7 @@ import type { User } from '@auth/lib/user.entity'
 import { MediaFolders } from '@media/constants'
 import type { MediaRepository } from '@media/lib/media.repository'
 import MediaDrizzleRepository from '@media/lib/media.repository'
-import type { MediaSignedUrlResponseDto } from '@media/media.dto'
+import type { CreateMediaRequestDto, MediaSignedUrlResponseDto } from '@media/media.dto'
 import httpStatus from 'http-status'
 import db from '@/db'
 import APIError from '@/errors/api.error'
@@ -59,5 +59,10 @@ export default class MediaService extends BaseService {
   async getBannerImages() {
     const bannerImages = await this.repository.getBannerImages(this.user.workspaceId)
     return bannerImages
+  }
+
+  async createMediaEntry(payload: CreateMediaRequestDto) {
+    const media = await this.repository.createMedia(payload, this.user.workspaceId, this.user.internalUserId ?? '')
+    return media
   }
 }
