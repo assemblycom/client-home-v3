@@ -23,6 +23,7 @@ export const uploadFileToSupabase = async (file: File, token: string): Promise<s
     const text = await res.text().catch(() => '')
     console.error('Upload failed:', res.status, text)
   }
+
   const filePath = (await res.json()).Key
 
   const signedImgUrlResponse = await api.get<{ data: MediaSignedUrlResponseDto }>(`/api/media?token=${token}`, {
