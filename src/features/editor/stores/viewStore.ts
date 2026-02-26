@@ -38,7 +38,7 @@ export const useViewStore = create<ViewStore>()((set) => ({
   ...defaultState,
   changeView: (data: Partial<ViewStoreState>) => set(data),
   setWorkspace: (workspace: WorkspaceResponse) => set({ workspace }),
-  setTasksAppId: (id: string) => set({ tasksAppId: id }),
+  setTasksAppId: (tasksAppId: string | null) => set({ tasksAppId }),
   reset: () => set(defaultState),
 }))
 
