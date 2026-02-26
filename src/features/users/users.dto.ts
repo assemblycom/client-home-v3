@@ -28,8 +28,8 @@ export const UsersDtoSchema = z.object({
 })
 export type UsersDto = z.infer<typeof UsersDtoSchema>
 
-export const CurrentClientDtoSchema = z.object({
+export const ClientContextDtoSchema = z.object({
   client: ClientsDtoSchema,
   company: CompaniesDtoSchema.nullable(),
 })
-export type CurrentClientDto = z.infer<typeof CurrentClientDtoSchema>
+export type ClientContextDto = z.infer<typeof ClientContextDtoSchema>

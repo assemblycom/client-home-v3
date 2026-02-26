@@ -7,7 +7,7 @@ export const ROUTES = Object.freeze({
     workspace: '/api/workspace',
     media: '/api/media',
     users: '/api/users',
-    currentClient: '/api/current-client',
+    clientContext: '/api/client-context',
     notificationCounts: '/api/users/:id/notification-counts',
     listCustomFields: '/api/custom-fields/:entityType',
   },
@@ -39,7 +39,7 @@ export const authorizedRoutes: Record<string, RouteRule[]> = {
   ],
   clientUsers: [
     ROUTES.api.workspace,
-    ROUTES.api.currentClient,
+    ROUTES.api.clientContext,
     ROUTES.client,
     ROUTES.api.listCustomFields,
     {

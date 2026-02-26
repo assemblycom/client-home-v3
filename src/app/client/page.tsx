@@ -1,6 +1,6 @@
 import { AssemblyNoTokenError } from '@assembly/errors'
 import { ClientEditorWrapper } from '@editor/components/ClientEditorWrapper'
-import { CurrentClientFetcher } from '@users/components/CurrentClientFetcher'
+import { ClientContextFetcher } from '@users/components/ClientContextFetcher'
 import { headers } from 'next/headers'
 import { Suspense } from 'react'
 import { AuthenticatedAPIHeaders } from '@/app/types'
@@ -14,7 +14,7 @@ export default async function ClientPage() {
   return (
     <div className="flex h-screen w-screen">
       <Suspense>
-        <CurrentClientFetcher token={token} />
+        <ClientContextFetcher token={token} />
       </Suspense>
       <Suspense>
         <WorkspaceFetcher token={token} />
