@@ -19,12 +19,10 @@ export const Banner = ({ src, alt, isSelected, className }: BannerProps) => {
         className="object-cover"
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
         priority
+        unoptimized //since the src is using token which is dynamic, nextjs cannot optimize it.
       />
       {isSelected && (
-        <div
-          className="absolute top-2.5 right-2.5 z-10 flex h-6 w-6 flex-shrink-0 flex-col items-end rounded-full bg-white"
-          style={{ padding: '4px 4px 0 4px' }}
-        >
+        <div className="absolute top-2.5 right-2.5 z-10 flex h-6 w-6 flex-shrink-0 flex-col items-end rounded-full bg-white p-1 pb-0">
           <Icon icon="Check" width={16} height={16} />
         </div>
       )}
