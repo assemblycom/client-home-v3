@@ -1,3 +1,4 @@
+import { useAuthStore } from '@auth/providers/auth.provider'
 import type { ActionDefinition } from '@editor/components/Sidebar/Actions/constant'
 import { ViewMode } from '@editor/stores/viewStore'
 import { Icon } from 'copilot-design-system'
@@ -13,7 +14,19 @@ interface ActionItemProps {
   count?: number
 }
 
-export const ActionItem = ({ action, isLoading, mode, className, portalUrl, count }: ActionItemProps) => {
+export const ActionItem = ({ action, isLoading, mode, className, count }: ActionItemProps) => {
+  const clientId = useAuthStore((s) => s.clientId)
+
+  const handleClick = () => {
+    if (!clientId) return
+
+    if (action.key === 'tasks') {
+      window.parent.postMessage({ type: 'history.push', id: process.env.NEXT_PUBLIC_TASKS_APP_ID, route: 'apps' }, '*')
+    } else {
+      window.parent.postMessage({ type: 'history.push', route: action.key }, '*')
+    }
+  }
+
   return (
     <div
       className={cn(
@@ -47,9 +60,9 @@ export const ActionItem = ({ action, isLoading, mode, className, portalUrl, coun
               ? ` ${count === 1 ? action.singularLabel?.toLocaleLowerCase() : action.label.toLocaleLowerCase()}`
               : null}
           </div>
-          <a href={`${portalUrl}/${action.appUrlPath}`} className="flex items-center gap-2 text-body-md">
+          <button className="flex items-center gap-2 text-body-md" onClick={handleClick} type="button">
             View all <Icon icon={'ArrowRight'} className="size-3.25" />
-          </a>
+          </button>
         </>
       )}
     </div>
