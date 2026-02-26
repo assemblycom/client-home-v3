@@ -1,6 +1,6 @@
 import { useAuthStore } from '@auth/providers/auth.provider'
 import type { ActionDefinition } from '@editor/components/Sidebar/Actions/constant'
-import { ViewMode } from '@editor/stores/viewStore'
+import { useViewStore, ViewMode } from '@editor/stores/viewStore'
 import { Icon } from 'copilot-design-system'
 import { HandleBarTemplate } from '@/features/handlebar-template/components/handle-bar-template'
 import { cn } from '@/utils/tailwind'
@@ -16,12 +16,13 @@ interface ActionItemProps {
 
 export const ActionItem = ({ action, isLoading, mode, className, count }: ActionItemProps) => {
   const clientId = useAuthStore((s) => s.clientId)
+  const tasksAppId = useViewStore((s) => s.tasksAppId)
 
   const handleClick = () => {
     if (!clientId) return
 
-    if (action.key === 'tasks') {
-      window.parent.postMessage({ type: 'history.push', id: process.env.NEXT_PUBLIC_TASKS_APP_ID, route: 'apps' }, '*')
+    if (action.key === 'tasks' && tasksAppId) {
+      window.parent.postMessage({ type: 'history.push', id: tasksAppId, route: 'apps' }, '*')
     } else {
       window.parent.postMessage({ type: 'history.push', route: action.key }, '*')
     }
