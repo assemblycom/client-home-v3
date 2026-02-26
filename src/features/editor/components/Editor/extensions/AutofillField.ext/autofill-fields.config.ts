@@ -10,6 +10,14 @@ export type BuiltInField = {
   entityType: FieldEntityType
 }
 
+export type FieldItem = {
+  value: string // canonical: {{client.firstName}}
+  label: string // workspace-labelled: {{person.firstName}}
+  name: string // human label: "First Name"
+  icon: IconType
+  entityType: FieldEntityType
+}
+
 export const BUILT_IN_FIELDS: BuiltInField[] = [
   { value: '{{client.firstName}}', name: 'First Name', icon: 'Profile', entityType: 'client' },
   { value: '{{client.lastName}}', name: 'Last Name', icon: 'Profile', entityType: 'client' },

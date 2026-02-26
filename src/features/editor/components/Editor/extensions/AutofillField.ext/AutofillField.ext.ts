@@ -6,9 +6,9 @@ import tippy, { type GetReferenceClientRect, type Instance, type Props as TippyP
 
 const autofillSuggestionKey = new PluginKey('autofillSuggestion')
 
+import type { FieldItem } from '@editor/components/Editor/extensions/AutofillField.ext/autofill-fields.config'
 import { AutofillFieldNodeView } from './AutofillFieldNodeView'
 import { AutofillSuggestionMenu, type AutofillSuggestionMenuHandle } from './AutofillSuggestionMenu'
-import { type AutofillItem, fetchAutofillItems } from './autofill.utils'
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -68,16 +68,14 @@ export const AutofillFieldExt = Node.create({
 
   addProseMirrorPlugins() {
     return [
-      Suggestion<AutofillItem>({
+      Suggestion<FieldItem>({
         editor: this.editor,
         pluginKey: autofillSuggestionKey,
         char: '{{',
 
-        items: async ({ query, editor }) => {
-          const token = editor.storage.token?.token as string | undefined
-          if (!token) return []
-          return await fetchAutofillItems(token, query)
-        },
+        // Items are managed by AutofillSuggestionMenu via React Query hooks.
+        // Returning a non-empty array keeps the popup visible while typing.
+        items: (): FieldItem[] => [{ value: '', label: '', name: '', icon: 'Profile', entityType: 'client' }],
 
         command: ({ editor, range, props }) => {
           editor
@@ -96,7 +94,7 @@ export const AutofillFieldExt = Node.create({
           let popup: Instance<TippyProps> | null = null
 
           return {
-            onStart: (props: SuggestionProps<AutofillItem>) => {
+            onStart: (props: SuggestionProps<FieldItem>) => {
               renderer = new ReactRenderer(AutofillSuggestionMenu, {
                 props,
                 editor: props.editor,
@@ -108,7 +106,7 @@ export const AutofillFieldExt = Node.create({
                 tippy(document.body, {
                   getReferenceClientRect,
                   content: renderer.element,
-                  showOnCreate: props.items.length > 0,
+                  showOnCreate: true,
                   interactive: true,
                   trigger: 'manual',
                   offset: [0, 5],
@@ -126,13 +124,12 @@ export const AutofillFieldExt = Node.create({
               )
             },
 
-            onUpdate: (props: SuggestionProps<AutofillItem>) => {
+            onUpdate: (props: SuggestionProps<FieldItem>) => {
               renderer?.updateProps(props)
               popup?.setProps({
                 getReferenceClientRect: (props.clientRect ?? fallbackRect) as GetReferenceClientRect,
               })
-              if (props.items.length > 0) popup?.show()
-              else popup?.hide()
+              popup?.show()
             },
 
             onKeyDown: ({ event }) => {

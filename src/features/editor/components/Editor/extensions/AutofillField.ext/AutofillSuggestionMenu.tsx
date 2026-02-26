@@ -1,70 +1,88 @@
 'use client'
 
+import type { FieldItem } from '@editor/components/Editor/extensions/AutofillField.ext/autofill-fields.config'
+import { useDynamicFields } from '@editor/components/Sidebar/DynamicFields/useDynamicFields'
 import type { SuggestionProps } from '@tiptap/suggestion'
-import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
+import { type Ref, useEffect, useImperativeHandle, useMemo, useState } from 'react'
 import { cn } from '@/utils/tailwind'
-import type { AutofillItem } from './autofill.utils'
 
 export type AutofillSuggestionMenuHandle = {
   onKeyDown: (event: KeyboardEvent) => boolean
 }
 
-export const AutofillSuggestionMenu = forwardRef<AutofillSuggestionMenuHandle, SuggestionProps<AutofillItem>>(
-  (props, ref) => {
-    const [selectedIndex, setSelectedIndex] = useState(0)
+type Props = SuggestionProps<FieldItem> & { ref?: Ref<AutofillSuggestionMenuHandle> }
 
-    // biome-ignore lint/correctness/useExhaustiveDependencies: <need to reset when items changes>
-    useEffect(() => setSelectedIndex(0), [props.items])
+export function AutofillSuggestionMenu({ ref, ...props }: Props) {
+  const { items, isLoading } = useDynamicFields()
 
-    const selectItem = (index: number) => {
-      const item = props.items[index]
-      if (item) props.command(item)
-    }
+  const filteredItems = useMemo(() => {
+    const normalized = props.query.toLowerCase()
+    return (normalized ? items.filter((item) => item.label.toLowerCase().includes(normalized)) : items).slice(0, 10)
+  }, [items, props.query])
 
-    useImperativeHandle(ref, () => ({
-      onKeyDown: (event: KeyboardEvent) => {
-        if (event.key === 'ArrowUp') {
-          setSelectedIndex((i) => (i - 1 + props.items.length) % props.items.length)
-          return true
-        }
-        if (event.key === 'ArrowDown') {
-          setSelectedIndex((i) => (i + 1) % props.items.length)
-          return true
-        }
-        if (event.key === 'Enter') {
-          selectItem(selectedIndex)
-          return true
-        }
-        return false
-      },
-    }))
+  const [selectedIndex, setSelectedIndex] = useState(0)
 
-    if (props.items.length === 0) {
-      return (
-        <div className="rounded-md border border-border-gray bg-white p-2 shadow-md">
-          <p className="px-2 py-1 text-text-secondary text-xs">No fields found</p>
-        </div>
-      )
-    }
+  // biome-ignore lint/correctness/useExhaustiveDependencies: reset selection when filtered list changes
+  useEffect(() => setSelectedIndex(0), [filteredItems])
 
+  const selectItem = (index: number) => {
+    const item = filteredItems[index]
+    if (item) props.command(item)
+  }
+
+  useImperativeHandle(ref, () => ({
+    onKeyDown: (event: KeyboardEvent) => {
+      if (event.key === 'ArrowUp') {
+        setSelectedIndex((i) => (i - 1 + filteredItems.length) % filteredItems.length)
+        return true
+      }
+      if (event.key === 'ArrowDown') {
+        setSelectedIndex((i) => (i + 1) % filteredItems.length)
+        return true
+      }
+      if (event.key === 'Enter') {
+        selectItem(selectedIndex)
+        return true
+      }
+      return false
+    },
+  }))
+
+  if (isLoading) {
     return (
-      <div className="max-h-72 min-w-48 overflow-y-auto rounded-md border border-border-gray bg-white py-1 shadow-md">
-        {props.items.map((item, index) => (
-          <button
-            type="button"
-            key={item.value}
-            className={cn(
-              'w-full px-3 py-1.5 text-left text-sm hover:bg-background-primary',
-              index === selectedIndex && 'bg-background-primary',
-            )}
-            onClick={() => selectItem(index)}
-          >
-            {item.label}
-          </button>
-        ))}
+      <div className="min-w-48 rounded-md border border-border-gray bg-white p-2 shadow-md">
+        <div className="space-y-1.5 px-2 py-1">
+          {(['60%', '75%', '60%', '90%'] as const).map((width) => (
+            <div key={width} className="h-4 animate-pulse rounded bg-gray-200" style={{ width }} />
+          ))}
+        </div>
       </div>
     )
-  },
-)
+  }
 
-AutofillSuggestionMenu.displayName = 'AutofillSuggestionMenu'
+  if (filteredItems.length === 0) {
+    return (
+      <div className="rounded-md border border-border-gray bg-white p-2 shadow-md">
+        <p className="px-2 py-1 text-text-secondary text-xs">No fields found</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="max-h-72 min-w-48 overflow-y-auto rounded-md border border-border-gray bg-white py-1 shadow-md">
+      {filteredItems.map((item, index) => (
+        <button
+          type="button"
+          key={item.value}
+          className={cn(
+            'w-full px-3 py-1.5 text-left text-sm hover:bg-background-primary',
+            index === selectedIndex && 'bg-background-primary',
+          )}
+          onClick={() => selectItem(index)}
+        >
+          {item.label}
+        </button>
+      ))}
+    </div>
+  )
+}
