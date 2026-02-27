@@ -1,5 +1,7 @@
 import { media } from '@media/lib/media.schema'
 import { index, pgTable, text, uuid, varchar } from 'drizzle-orm/pg-core'
+import { createInsertSchema } from 'drizzle-zod'
+import type z from 'zod'
 import { id, timestamps, workspaceId } from '@/db/helpers'
 
 export const settings = pgTable(
@@ -20,7 +22,13 @@ export const settings = pgTable(
     // Image id in media table for banner. Multiple settings can point to the same image (default image library)
     bannerImageId: uuid().references(() => media.id),
 
+    // ID of IU who created the settings
+    createdById: uuid(),
+
     ...timestamps,
   },
   (t) => [index('idx_settings__workspace_id').on(t.workspaceId)],
 )
+
+export const SettingsInsertPayloadSchema = createInsertSchema(settings)
+export type SettingsInsertPayload = z.infer<typeof SettingsInsertPayloadSchema>
