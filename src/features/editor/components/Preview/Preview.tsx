@@ -37,7 +37,7 @@ export function Preview({ token, content, backgroundColor, bannerUrl }: PreviewP
           <div className="tiptap-wrapper @container w-full overflow-auto" style={{ backgroundColor }}>
             <Heading />
             <Subheading readonly />
-            {bannerUrl ? <Banner src={bannerUrl} alt="Workspace Banner" /> : null}
+            {bannerUrl ? <Banner src={bannerUrl} alt="Workspace Banner" className="my-6" /> : null}
 
             <ActionsCard />
 

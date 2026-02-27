@@ -22,6 +22,11 @@ const allowedRemotePatterns = !process.env.ALLOWED_REMOTE_PATTERNS
 const nextConfig: NextConfig = {
   allowedDevOrigins: [process.env.NGROK_URL || ''],
   images: {
+    localPatterns: [
+      {
+        pathname: '/**',
+      },
+    ],
     remotePatterns: [
       {
         protocol: 'https',

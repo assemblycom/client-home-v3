@@ -3,22 +3,25 @@
 import { Accordion } from '@editor/components/Sidebar/Accordion'
 import { Actions } from '@editor/components/Sidebar/Actions'
 import { BackgroundColor } from '@editor/components/Sidebar/BackgroundColor'
-import { Banner } from '@editor/components/Sidebar/Banner'
+import { BannerOptions } from '@editor/components/Sidebar/BannerOptions'
 import { DynamicFields } from '@editor/components/Sidebar/DynamicFields'
 import { Segment } from '@editor/components/Sidebar/Segment'
 import { useViewStore, ViewMode } from '@editor/stores/viewStore'
-import { Activity } from 'react'
+import { Activity, useMemo, useState } from 'react'
 import type { PropsWithClassname } from '@/app/types'
 import { getActivityMode } from '@/utils/activity'
 import { cn } from '@/utils/tailwind'
+import { ChangeBannerPanel } from './ChangeBannerPanel'
 import { PreviewSidebar } from './PreviewSidebar'
 
 interface SidebarProps extends PropsWithClassname {}
 
-const AccordionItems = [
+type SidebarView = 'default' | 'change-banner'
+
+const createAccordionItems = (onChangeBanner: () => void) => [
   {
     title: 'Banner',
-    content: <Banner />,
+    content: <BannerOptions onChangeBanner={onChangeBanner} />,
   },
   {
     title: 'Actions',
@@ -40,16 +43,23 @@ const AccordionItems = [
 
 export const Sidebar = ({ className }: SidebarProps) => {
   const viewMode = useViewStore((store) => store.viewMode)
-
+  const [sidebarView, setSidebarView] = useState<SidebarView>('default')
+  const accordionItems = useMemo(() => createAccordionItems(() => setSidebarView('change-banner')), [])
   return (
     <aside className={cn('flex h-screen flex-col border-border-gray border-l', className)}>
       <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
-        <div className="flex h-14 items-center border-border-gray border-b px-6 text-custom-xl">Customization</div>
-        <div className="flex flex-1 flex-col overflow-y-auto py-5">
-          {AccordionItems.map((item) => (
-            <Accordion key={item.title} title={item.title} content={item.content} className="pr-5 pl-6" />
-          ))}
-        </div>
+        {sidebarView === 'change-banner' ? (
+          <ChangeBannerPanel onBack={() => setSidebarView('default')} />
+        ) : (
+          <>
+            <div className="flex h-14 items-center border-border-gray border-b px-6 text-custom-xl">Customization</div>
+            <div className="flex flex-1 flex-col overflow-y-auto py-5">
+              {accordionItems.map((item) => (
+                <Accordion key={item.title} title={item.title} content={item.content} className="pr-5 pl-6" />
+              ))}
+            </div>
+          </>
+        )}
       </Activity>
       <Activity mode={getActivityMode(viewMode === ViewMode.PREVIEW)}>
         <PreviewSidebar />

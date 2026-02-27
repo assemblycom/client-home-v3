@@ -2,6 +2,7 @@ import { AssemblyNoTokenError } from '@assembly/errors'
 import { EditorWrapper } from '@editor/components/EditorWrapper'
 import { Sidebar } from '@editor/components/Sidebar'
 import { TopBar } from '@editor/components/TopBar'
+import { BannerImagesFetcher } from '@media/components/BannerImagesFetcher'
 import { UsersFetcher } from '@users/components/UsersFetcher'
 import { headers } from 'next/headers'
 import { Suspense } from 'react'
@@ -20,6 +21,9 @@ export default async function Home() {
       </Suspense>
       <Suspense>
         <WorkspaceFetcher token={token} />
+      </Suspense>
+      <Suspense>
+        <BannerImagesFetcher token={token} />
       </Suspense>
 
       <div className="flex h-screen w-screen max-w-screen">

@@ -55,4 +55,9 @@ export default class MediaService extends BaseService {
     const fileNameWithTimestamp = getFileNameWithTimestamp(fileName)
     return `${this.user.workspaceId}/${mode}/${fileNameWithTimestamp}`
   }
+
+  async getBannerImages() {
+    const bannerImages = await this.repository.getBannerImages(this.user.workspaceId)
+    return bannerImages
+  }
 }

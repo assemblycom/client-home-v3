@@ -1,5 +1,7 @@
-import { index, pgTable, uuid, varchar } from 'drizzle-orm/pg-core'
+import { index, pgEnum, pgTable, uuid, varchar } from 'drizzle-orm/pg-core'
 import { id, timestamps, workspaceId } from '@/db/helpers'
+
+export const mediaTypeEnum = pgEnum('media_type', ['banner', 'media'])
 
 export const media = pgTable(
   'media',
@@ -21,6 +23,9 @@ export const media = pgTable(
     type: varchar({ length: 1028 }).notNull(),
     // File size
     size: varchar({ length: 1028 }).notNull(),
+
+    // Type of media (banner or media)
+    mediaType: mediaTypeEnum().notNull().default('media'),
 
     ...timestamps,
   },
