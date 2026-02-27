@@ -1,10 +1,10 @@
 import 'server-only'
 
-import type { User } from '@auth/lib/user.entity'
 import type { MediaType } from '@media/lib/media.entity'
 import { media } from '@media/lib/media.schema'
+import { BANNER } from '@media/lib/types'
 import type { CreateMediaRequestDto } from '@media/media.dto'
-import { eq, or } from 'drizzle-orm'
+import { and, eq, or } from 'drizzle-orm'
 import type { BaseRepository } from '@/lib/core/base.repository'
 import BaseDrizzleRepository from '@/lib/core/base-drizzle.repository'
 
@@ -19,7 +19,7 @@ export default class MediaDrizzleRepository extends BaseDrizzleRepository implem
     const result = await this.db
       .select()
       .from(media)
-      .where(or(eq(media.workspaceId, workspaceId), eq(media.workspaceId, '*')))
+      .where(and(or(eq(media.workspaceId, workspaceId), eq(media.workspaceId, '*')), eq(media.mediaType, BANNER)))
     return result
   }
 
