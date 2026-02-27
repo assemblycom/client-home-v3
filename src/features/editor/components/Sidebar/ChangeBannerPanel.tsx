@@ -4,7 +4,7 @@ import { useSettingsStore } from '@settings/providers/settings.provider'
 import { Button, Icon } from 'copilot-design-system'
 import { useRef, useState } from 'react'
 import { Banner } from '@/features/banner'
-import { useMediaMutation } from '@/features/banner/hooks/useMediaMutation'
+import { useBannerMutation } from '@/features/banner/hooks/useBannerMutation'
 import { getImageUrl, handleBannerUpload } from '@/features/banner/lib/utils'
 
 interface ChangeBannerPanelProps {
@@ -17,7 +17,7 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
   const token = useAuthStore((store) => store.token)
   const setBannerImage = useSettingsStore((s) => s.setBannerImageId)
   const updateSettingsMutation = useSettingsMutation()
-  const createMediaMutation = useMediaMutation()
+  const createBannerMutation = useBannerMutation()
 
   const [selectedImage, setSelectedImage] = useState(bannerImages?.find((item) => item.id === bannerId))
   const [isUploading, setIsUploading] = useState(false)
@@ -34,7 +34,7 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
     try {
       const mediaMetadata = await handleBannerUpload(e, token)
       if (mediaMetadata) {
-        createMediaMutation.mutate({
+        createBannerMutation.mutate({
           ...mediaMetadata,
           mediaType: 'banner',
         })
