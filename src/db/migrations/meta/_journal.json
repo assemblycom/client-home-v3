@@ -36,6 +36,13 @@
       "when": 1772087273056,
       "tag": "20260226062753_add_media_type_enum_to_media_table",
       "breakpoints": false
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1772190571303,
+      "tag": "20260227110931_add-created-by-id-to-settings",
+      "breakpoints": false
     }
   ]
 }
