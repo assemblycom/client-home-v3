@@ -13,7 +13,8 @@
     "format": "biome check --write",
     "lint-staged": "lint-staged",
     "prepare": "husky",
-    "ex": "tsx --tsconfig tsx.tsconfig.json --require dotenv/config --require tsconfig-paths/register"
+    "ex": "tsx --tsconfig tsx.tsconfig.json --require dotenv/config --require tsconfig-paths/register",
+    "data-migrate": "pnpm ex scripts/data-migration"
   },
   "dependencies": {
     "@assembly-js/node-sdk": "^3.19.1",
