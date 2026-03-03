@@ -35,13 +35,21 @@ export const useDynamicFields = () => {
       return { value, label: getFieldDisplayContent(value, labels), name, icon, entityType }
     }
 
-    return [
+    const all = [
       ...BUILT_IN_FIELDS.filter((f) => f.entityType === 'client').map(toItem),
       ...clientCustomFields.map(({ key, name, icon }) => toCustomItem('client', key, name, icon)),
       ...BUILT_IN_FIELDS.filter((f) => f.entityType === 'company').map(toItem),
       ...companyCustomFields.map(({ key, name, icon }) => toCustomItem('company', key, name, icon)),
       ...BUILT_IN_FIELDS.filter((f) => f.entityType === 'workspace').map(toItem),
     ]
+
+    // Deduplicate by canonical value — built-in fields (listed first) take precedence
+    const seen = new Set<string>()
+    return all.filter((f) => {
+      if (seen.has(f.value)) return false
+      seen.add(f.value)
+      return true
+    })
   }, [clientCustomFields, companyCustomFields, labels])
 
   return { dynamicFields, isLoading }

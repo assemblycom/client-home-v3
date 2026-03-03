@@ -37,19 +37,22 @@ export function HandleBarTemplate({
   if (mode === ViewMode.EDITOR) {
     const label = displayContent ?? template
     return (
-      <span className="inline-flex align-baseline">
-        <div
-          title={template}
-          className={cn(
-            'relative inline-block w-fit max-w-full justify-center overflow-clip rounded-lg border border-border-gray bg-white px-2 font-normal text-sm text-text-secondary transition-all',
-            isLoading && 'border-transparent text-transparent',
-            className,
-          )}
-        >
-          {isLoading && <span className="absolute size-full animate-pulse bg-gray-200" />}
-          <span className="line-clamp-1 text-ellipsis break-all">{label}</span>
-        </div>
-      </span>
+      <>
+        <span className="inline-flex align-baseline">
+          <div
+            title={template}
+            className={cn(
+              'relative inline-block w-fit max-w-full justify-center overflow-clip rounded-lg border border-border-gray bg-white px-2 font-normal text-sm text-text-secondary transition-all',
+              isLoading && 'border-transparent text-transparent',
+              className,
+            )}
+          >
+            {isLoading && <span className="absolute size-full animate-pulse bg-gray-200" />}
+            <span className="line-clamp-1 text-ellipsis break-all">{label}</span>
+          </div>
+        </span>
+        &nbsp;
+      </>
     )
   }
 
