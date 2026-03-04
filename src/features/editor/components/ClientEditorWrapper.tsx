@@ -31,7 +31,7 @@ export const ClientEditorWrapper = () => {
 
   return (
     <div className={`@container min-h-full w-full overflow-auto px-12 py-11`} style={{ backgroundColor }}>
-      <Heading />
+      <Heading readonly />
       <Subheading readonly />
       <ActionsCard readonly />
       <ReadonlyEditor token={token} content={content} />
