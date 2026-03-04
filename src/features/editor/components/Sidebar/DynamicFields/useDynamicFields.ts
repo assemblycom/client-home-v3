@@ -1,41 +1,56 @@
+'use client'
+
+import {
+  BUILT_IN_FIELDS,
+  type FieldEntityType,
+  type FieldItem,
+  getFieldDisplayContent,
+} from '@editor/components/Editor/extensions/AutofillField.ext/autofill-fields.config'
+import { useViewStore } from '@editor/stores/viewStore'
+import { useMemo } from 'react'
 import { useCustomFields } from '@/features/custom-fields/hooks/useCustomFields'
-import type { DynamicField } from '@/features/editor/components/Sidebar/DynamicFields/type'
+
+export type { FieldItem }
 
 export const useDynamicFields = () => {
-  const { clientCustomFields, companyCustomFields } = useCustomFields()
+  const { clientCustomFields, companyCustomFields, isLoading } = useCustomFields()
+  const labels = useViewStore((s) => s.workspace?.labels)
 
-  const dynamicFields: DynamicField[] = [
-    {
-      type: 'client',
-      data: [
-        { fieldContent: '{{client.firstName}}', name: 'First Name', icon: 'Profile' },
-        { fieldContent: '{{client.lastName}}', name: 'Last Name', icon: 'Profile' },
-        { fieldContent: '{{client.email}}', name: 'Email', icon: 'Email' },
-        { fieldContent: '{{client.company}}', name: 'Company', icon: 'Building' },
-        ...clientCustomFields.map(({ key, name, icon }) => ({
-          fieldContent: `{{client.${key}}}`,
-          name,
-          icon,
-        })),
-      ],
-    },
-    {
-      type: 'company',
-      data: [
-        { fieldContent: '{{company.address}}', name: 'Address', icon: 'Location' },
-        { fieldContent: '{{company.email}}', name: 'Email', icon: 'Email' },
-        ...companyCustomFields.map(({ key, name, icon }) => ({
-          fieldContent: `{{company.${key}}}`,
-          name,
-          icon,
-        })),
-      ],
-    },
-    {
-      type: 'workspace',
-      data: [{ fieldContent: '{{workspace.brand}}', name: 'Company Name', icon: 'Customization' }],
-    },
-  ]
+  const dynamicFields = useMemo(() => {
+    const toItem = (field: (typeof BUILT_IN_FIELDS)[number]): FieldItem => ({
+      value: field.value,
+      label: getFieldDisplayContent(field.value, labels),
+      name: field.name,
+      icon: field.icon,
+      entityType: field.entityType,
+    })
 
-  return { dynamicFields }
+    const toCustomItem = (
+      entityType: FieldEntityType,
+      key: string,
+      name: string,
+      icon: FieldItem['icon'],
+    ): FieldItem => {
+      const value = `{{${entityType}.${key}}}`
+      return { value, label: getFieldDisplayContent(value, labels), name, icon, entityType }
+    }
+
+    const all = [
+      ...BUILT_IN_FIELDS.filter((f) => f.entityType === 'client').map(toItem),
+      ...clientCustomFields.map(({ key, name, icon }) => toCustomItem('client', key, name, icon)),
+      ...BUILT_IN_FIELDS.filter((f) => f.entityType === 'company').map(toItem),
+      ...companyCustomFields.map(({ key, name, icon }) => toCustomItem('company', key, name, icon)),
+      ...BUILT_IN_FIELDS.filter((f) => f.entityType === 'workspace').map(toItem),
+    ]
+
+    // Deduplicate by canonical value — built-in fields (listed first) take precedence
+    const seen = new Set<string>()
+    return all.filter((f) => {
+      if (seen.has(f.value)) return false
+      seen.add(f.value)
+      return true
+    })
+  }, [clientCustomFields, companyCustomFields, labels])
+
+  return { dynamicFields, isLoading }
 }

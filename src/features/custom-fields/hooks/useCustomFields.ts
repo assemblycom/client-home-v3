@@ -27,7 +27,7 @@ type CustomFieldItem = {
 export function useCustomFields() {
   const token = useAuthStore((s) => s.token)
 
-  const { data: clientCustomFields } = useQuery({
+  const { data: clientCustomFields, isLoading: clientIsLoading } = useQuery({
     queryKey: [CUSTOM_FIELDS_QUERY_KEY, CustomFieldEntityType.CLIENT],
     queryFn: async (): Promise<CustomFieldItem[]> => {
       const res = await api.get(`/api/custom-fields/${CustomFieldEntityType.CLIENT}?token=${token}`)
@@ -38,7 +38,7 @@ export function useCustomFields() {
     },
   })
 
-  const { data: companyCustomFields } = useQuery({
+  const { data: companyCustomFields, isLoading: companyIsLoading } = useQuery({
     queryKey: [CUSTOM_FIELDS_QUERY_KEY, CustomFieldEntityType.COMPANY],
     queryFn: async (): Promise<CustomFieldItem[]> => {
       const res = await api.get(`/api/custom-fields/${CustomFieldEntityType.COMPANY}?token=${token}`)
@@ -52,5 +52,6 @@ export function useCustomFields() {
   return {
     clientCustomFields: clientCustomFields ?? [],
     companyCustomFields: companyCustomFields ?? [],
+    isLoading: clientIsLoading || companyIsLoading,
   }
 }

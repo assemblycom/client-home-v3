@@ -13,8 +13,8 @@ export const DynamicFields = () => {
         when the document is shared.
       </div>
       <div className="mt-5 flex flex-col space-y-4">
-        {dynamicFields.map((item) => (
-          <DynamicFieldComponent key={item.type} fieldItem={item} />
+        {(['client', 'company', 'workspace'] as const).map((type) => (
+          <DynamicFieldComponent key={type} type={type} fields={dynamicFields.filter((f) => f.entityType === type)} />
         ))}
       </div>
     </>

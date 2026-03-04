@@ -2,7 +2,14 @@ import AssemblyClient from '@assembly/assembly-client'
 import { MAX_FETCH_ASSEMBLY_RESOURCES } from '@assembly/constants'
 import type { ClientResponse, CompanyResponse } from '@assembly/types'
 import type { User } from '@auth/lib/user.entity'
-import { type ClientsDto, type CompaniesDto, type UsersDto, UsersDtoSchema } from '@users/users.dto'
+import {
+  type ClientContextDto,
+  ClientContextDtoSchema,
+  type ClientsDto,
+  type CompaniesDto,
+  type UsersDto,
+  UsersDtoSchema,
+} from '@users/users.dto'
 import { HttpStatusCode } from 'axios'
 import APIError from '@/errors/api.error'
 import BaseService from '@/lib/core/base.service'
@@ -43,6 +50,21 @@ export default class UsersService extends BaseService {
         return aName.localeCompare(bName)
       }),
       companies: companies.data?.map(this.getParsedCompaniesData) || [],
+    })
+  }
+
+  async getClientContext(): Promise<ClientContextDto> {
+    const { clientId, companyId } = this.user
+    if (!clientId) throw new APIError('No clientId for this user', HttpStatusCode.BadRequest)
+
+    const [client, company] = await Promise.all([
+      this.assembly.getClient(clientId),
+      companyId ? this.assembly.getCompany(companyId) : Promise.resolve(null),
+    ])
+
+    return ClientContextDtoSchema.parse({
+      client: this.getParsedClientData(client, companyId),
+      company: company ? this.getParsedCompaniesData(company) : null,
     })
   }
 

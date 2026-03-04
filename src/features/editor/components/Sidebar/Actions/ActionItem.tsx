@@ -26,6 +26,7 @@ export const ActionItem = ({ id, icon, label, checked, onChange }: ActionItemPro
     >
       <div className="flex items-center">
         <button
+          suppressHydrationWarning
           {...attributes}
           {...listeners}
           className="mr-2 cursor-grab touch-none text-text-secondary active:cursor-grabbing"

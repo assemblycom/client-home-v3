@@ -257,8 +257,8 @@ export const executeSlashCommand = (action: string, editor: Editor, range?: { fr
       editor.chain().focus().toggleOrderedList().run()
       break
     case EditorActions.AUTOFILL:
-      // TODO: Implement in later milestone
-      console.info('Toggle handlebars')
+      // Insert '{{' to trigger the autofill field suggestion
+      editor.chain().focus().insertContent('{{').run()
       break
     case EditorActions.TABLE:
       editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
