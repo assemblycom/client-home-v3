@@ -111,7 +111,7 @@ body {
 
   ul,
   ol {
-    @apply pl-6;
+    @apply pl-6 text-sm leading-5.5;
   }
 
   hr {
