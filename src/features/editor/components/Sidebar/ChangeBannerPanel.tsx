@@ -60,17 +60,17 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex-col items-start gap-y-[4px] self-stretch border-border-gray border-b px-4 pt-2 pb-6 pl-6">
+      <div className="flex h-14 w-full shrink-0 items-center border-border-gray border-b px-6 py-3">
         <button type="button" onClick={onBack} className="flex cursor-pointer items-center gap-1.5 py-[3px]">
           <Icon icon="ArrowLeft" className="size-3.25" />
           <span className="font-normal text-[11px] text-text-primary leading-[18px]">Back</span>
         </button>
-        <div className="flex flex-col gap-y-[4px] py-1">
-          <span className="font-normal text-[20px] text-text-primary leading-6">Change banner</span>
-          <span className="text-[13px] text-text-primary leading-[21px]">
-            Recommended image size is 1139 x 231 pixels. Text in images may appear cut off at smallest screen sizes.
-          </span>
-        </div>
+      </div>
+      <div className="flex flex-col gap-y-[4px] border-border-gray border-b px-6 pt-4 pb-6">
+        <span className="font-normal text-[20px] text-text-primary leading-6">Change banner</span>
+        <span className="text-[13px] text-text-primary leading-[21px]">
+          Recommended image size is 1139 x 231 pixels. Text in images may appear cut off at smallest screen sizes.
+        </span>
       </div>
       <div className="flex flex-col items-start gap-y-[32px] overflow-y-auto px-[27px] py-[21px]">
         <div className="flex flex-col items-start gap-y-[12px] self-stretch">
