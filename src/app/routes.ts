@@ -8,6 +8,7 @@ export const ROUTES = Object.freeze({
     tasksAppId: '/api/workspace/tasks-app-id',
     media: '/api/media',
     image: '/api/media/image',
+    upload: '/api/media/upload',
     bannerImages: '/api/media/banner-images',
     users: '/api/users',
     clientContext: '/api/client-context',
@@ -41,6 +42,7 @@ export const authorizedRoutes: Record<string, RouteRule[]> = {
     ROUTES.api.users,
     ROUTES.api.notificationCounts,
     ROUTES.api.listCustomFields,
+    ROUTES.api.upload,
   ],
   clientUsers: [
     ROUTES.api.workspace,
