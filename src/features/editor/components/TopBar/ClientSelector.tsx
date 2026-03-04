@@ -2,14 +2,25 @@ import { Popper } from '@editor/components/Popper'
 import { useSelector } from '@editor/hooks/useSelector'
 import { useUsersStore } from '@users/stores/usersStore'
 import { Icon, UserCompanySelector } from 'copilot-design-system'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export const ClientSelector = () => {
   const { selectorClients, selectorCompanies, handleSelectorChange } = useSelector()
   const previewClient = useUsersStore((store) => store.previewClient)
   const [isOpen, setIsOpen] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
+  const selectorRef = useRef<HTMLDivElement>(null)
   const togglePopper = () => setIsOpen((prev) => !prev)
+
+  useEffect(() => {
+    if (isOpen) {
+      // Wait a frame for the portal to mount, then focus the react-select input
+      requestAnimationFrame(() => {
+        const input = selectorRef.current?.querySelector<HTMLInputElement>('input')
+        input?.focus()
+      })
+    }
+  }, [isOpen])
 
   return (
     <div>
@@ -28,17 +39,19 @@ export const ClientSelector = () => {
         <Icon icon="ChevronDown" name="arrow-down" height={10} width={10} className="text-text-primary" />
       </button>
       <Popper isOpen={isOpen} setIsOpen={setIsOpen} triggerRef={triggerRef} className="bg-white!">
-        <UserCompanySelector
-          menuIsOpen={true}
-          name="active-user"
-          className="topbar-selector bg-white!"
-          clientUsers={selectorClients}
-          companies={selectorCompanies}
-          placeholder="Search"
-          onChange={handleSelectorChange}
-          limitSelectedOptions={1}
-          closeMenuOnSelect
-        />
+        <div ref={selectorRef}>
+          <UserCompanySelector
+            menuIsOpen={true}
+            name="active-user"
+            className="topbar-selector bg-white!"
+            clientUsers={selectorClients}
+            companies={selectorCompanies}
+            placeholder="Search"
+            onChange={handleSelectorChange}
+            limitSelectedOptions={1}
+            closeMenuOnSelect
+          />
+        </div>
       </Popper>
     </div>
   )
