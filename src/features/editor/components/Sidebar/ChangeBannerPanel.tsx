@@ -74,7 +74,7 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
       </div>
       <div className="flex flex-col items-start gap-y-[32px] overflow-y-auto px-[27px] py-[21px]">
         <div className="flex flex-col items-start gap-y-[12px] self-stretch">
-          <span className="text-[12px] text-text-secondary leading-[20px]">Current Banner </span>
+          <span className="text-[12px] text-text-secondary leading-[20px]">Current banner</span>
           <Banner src={getImageUrl(currentBannerPath, token)} alt="banner" />
           <input type="file" accept="image/*" ref={fileInputRef} onChange={onBannerUpload} className="hidden" />
           <Button
@@ -86,7 +86,7 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
           />
         </div>
         <div className="flex flex-col items-start gap-y-[12px] self-stretch">
-          <span className="text-[12px] text-text-secondary leading-[20px]">Image library </span>
+          <span className="text-[12px] text-text-secondary leading-[20px]">Image library</span>
           {bannerImages?.map((banner) => (
             <button
               key={banner.id}
