@@ -1,4 +1,4 @@
-import { media } from '@media/lib/media.schema'
+import { media, mediaTypeEnum } from '@media/lib/media.schema'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import type z from 'zod'
 
@@ -11,3 +11,6 @@ export const MediaCreateSchema = createInsertSchema(media).omit({
   updatedAt: true,
 })
 export type MediaCreatePayload = z.infer<typeof MediaCreateSchema>
+
+export const BANNER = mediaTypeEnum.enumValues[0]
+export const MEDIA = mediaTypeEnum.enumValues[1]

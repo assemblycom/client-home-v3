@@ -1,13 +1,21 @@
 import 'client-only'
 
+import { MediaFolders } from '@media/constants'
 import type { MediaSignedUrlResponseDto } from '@media/media.dto'
 import type { Editor } from '@tiptap/core'
 import { api } from '@/lib/core/axios.instance'
 
-export const uploadFileToSupabase = async (file: File, token: string): Promise<string> => {
-  const signedUrlResponse = await api.post<{ data: MediaSignedUrlResponseDto }>(`/api/media?token=${token}`, {
-    fileName: file.name,
-  })
+export const uploadFileToSupabase = async (
+  file: File,
+  token: string,
+  mediaFolder: MediaFolders = MediaFolders.EDITOR,
+): Promise<{ signedUrl: string; path: string }> => {
+  const signedUrlResponse = await api.post<{ data: MediaSignedUrlResponseDto }>(
+    `/api/media?token=${token}&mediafolder=${mediaFolder}`,
+    {
+      fileName: file.name,
+    },
+  )
 
   const signedUrl = signedUrlResponse.data.data.signedUrl
 
@@ -22,6 +30,7 @@ export const uploadFileToSupabase = async (file: File, token: string): Promise<s
   if (!res.ok) {
     const text = await res.text().catch(() => '')
     console.error('Upload failed:', res.status, text)
+    throw new Error('Upload failed')
   }
 
   const filePath = (await res.json()).Key
@@ -30,7 +39,10 @@ export const uploadFileToSupabase = async (file: File, token: string): Promise<s
     params: { filePath },
   })
 
-  return signedImgUrlResponse.data.data.signedUrl
+  return {
+    signedUrl: signedImgUrlResponse.data.data.signedUrl,
+    path: filePath,
+  }
 }
 
 export const replaceEditorImageSrcByUploadId = (editor: Editor, uploadId: string, newSrc: string) => {
