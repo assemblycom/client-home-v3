@@ -2,8 +2,8 @@ import { useAuthStore } from '@auth/providers/auth.provider'
 import { useSettingsMutation } from '@settings/hooks/useSettingsMutation'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import { Button, Icon } from 'copilot-design-system'
-import { useRef, useState } from 'react'
-import { Banner } from '@/features/banner'
+import { useCallback, useRef, useState } from 'react'
+import { Banner, BannerSkeleton } from '@/features/banner'
 import { useBannerMutation } from '@/features/banner/hooks/useBannerMutation'
 import { getImageUrl, handleBannerUpload } from '@/features/banner/lib/utils'
 
@@ -21,6 +21,16 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
 
   const [selectedImage, setSelectedImage] = useState(bannerImages?.find((item) => item.id === bannerId))
   const [isUploading, setIsUploading] = useState(false)
+
+  const LOAD_THRESHOLD = 15
+  const loadedCountRef = useRef(0)
+  const [libraryReady, setLibraryReady] = useState(false)
+  const onLibraryImageLoad = useCallback(() => {
+    loadedCountRef.current += 1
+    if (loadedCountRef.current >= Math.min(LOAD_THRESHOLD, bannerImages?.length ?? 0)) {
+      setLibraryReady(true)
+    }
+  }, [bannerImages?.length])
 
   const handleSaveChanges = () => {
     if (selectedImage?.id) {
@@ -87,16 +97,26 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
         </div>
         <div className="flex flex-col items-start gap-y-[12px] self-stretch">
           <span className="text-[12px] text-text-secondary leading-[20px]">Image library </span>
-          {bannerImages?.map((banner) => (
-            <button
-              key={banner.id}
-              onClick={() => setSelectedImage(banner)}
-              className="block w-full cursor-pointer border-none bg-transparent p-0"
-              type="button"
-            >
-              <Banner src={getImageUrl(banner.path, token)} isSelected={selectedImage?.id === banner?.id} />
-            </button>
-          ))}
+          {bannerImages
+            ? bannerImages.map((banner) => (
+                <button
+                  key={banner.id}
+                  onClick={() => setSelectedImage(banner)}
+                  className="block w-full cursor-pointer border-none bg-transparent p-0"
+                  type="button"
+                >
+                  <Banner
+                    src={getImageUrl(banner.path, token)}
+                    isSelected={selectedImage?.id === banner?.id}
+                    showSkeleton={!libraryReady}
+                    onImageLoad={onLibraryImageLoad}
+                  />
+                </button>
+              ))
+            : Array.from({ length: 3 }).map((_, i) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton placeholders
+                <BannerSkeleton key={i} />
+              ))}
         </div>
       </div>
       {selectedImage?.id !== bannerId && (
