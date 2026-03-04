@@ -60,7 +60,7 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex h-14 w-full shrink-0 items-center border-border-gray border-b px-6 py-3">
+      <div className="flex h-14 w-full shrink-0 items-center px-6 py-3">
         <button type="button" onClick={onBack} className="flex cursor-pointer items-center gap-1.5 py-[3px]">
           <Icon icon="ArrowLeft" className="size-3.25" />
           <span className="font-normal text-[11px] text-text-primary leading-[18px]">Back</span>
