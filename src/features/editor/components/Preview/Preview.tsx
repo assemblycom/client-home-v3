@@ -30,11 +30,13 @@ export function Preview({ token, content, backgroundColor, bannerUrl }: PreviewP
     >
       <PreviewTopBar url={workspace?.portalUrl} />
 
-      <div className="flex min-h-32 flex-1 flex-col items-center justify-center p-6">
+      <div className="preview-scrollable min-h-0 flex-1 overflow-auto border-gray-200 border-t">
         {!workspace ? (
-          <Loader />
+          <div className="flex min-h-32 items-center justify-center">
+            <Loader />
+          </div>
         ) : (
-          <div className="tiptap-wrapper @container w-full overflow-auto" style={{ backgroundColor }}>
+          <div className="@container w-full px-6 py-5" style={{ backgroundColor }}>
             <Heading />
             <Subheading readonly />
             {bannerUrl ? <Banner src={bannerUrl} alt="Workspace Banner" className="my-6" /> : null}

@@ -88,6 +88,20 @@ body {
   }
 }
 
+.preview-scrollable {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+  }
+}
+
 .tiptap-wrapper {
   @layer base {
     @apply rounded-xl border border-border-gray px-6 py-5;
