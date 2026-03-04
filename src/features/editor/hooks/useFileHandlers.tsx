@@ -37,7 +37,8 @@ export const useFileHandlers = () => {
           return // Keep the blob image for now
         }
 
-        const signedUrl = await uploadFileToSupabase(file, token)
+        const { path } = await uploadFileToSupabase(file, token)
+        const proxyUrl = `/api/media/image?token=${token}&filePath=${path}`
         const { doc } = currentEditor.state
         let imagePos: number | null = null
         doc.descendants((node, pos) => {
@@ -48,7 +49,7 @@ export const useFileHandlers = () => {
         })
 
         if (imagePos !== null) {
-          currentEditor.chain().focus().setNodeSelection(imagePos).updateAttributes('image', { src: signedUrl }).run()
+          currentEditor.chain().focus().setNodeSelection(imagePos).updateAttributes('image', { src: proxyUrl }).run()
           setContent(currentEditor.getHTML())
         }
       }

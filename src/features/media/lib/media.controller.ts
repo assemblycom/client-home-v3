@@ -3,7 +3,7 @@ import 'server-only'
 import { authenticateHeaders } from '@auth/lib/authenticate'
 import { MediaFolderSchema, type MediaFolders } from '@media/constants'
 import MediaService from '@media/lib/media.service'
-import { MediaUploadRequestDtoSchema } from '@media/media.dto'
+import { CreateMediaRequestDtoSchema, MediaUploadRequestDtoSchema } from '@media/media.dto'
 import httpStatus from 'http-status'
 import { type NextRequest, NextResponse } from 'next/server'
 import type { APIResponse } from '@/app/types'
@@ -24,6 +24,15 @@ export const getSignedUrl = async (req: NextRequest): Promise<NextResponse<APIRe
   return NextResponse.json({ data: { signedUrl } })
 }
 
+export const createMedia = async (req: NextRequest): Promise<NextResponse<APIResponse>> => {
+  const user = authenticateHeaders(req.headers)
+  const body = await req.json()
+  const parsedBody = CreateMediaRequestDtoSchema.parse(body)
+  const mediaService = MediaService.new(user)
+  const media = await mediaService.createMediaEntry(parsedBody)
+  return NextResponse.json({ data: media })
+}
+
 export const getUploadUrl = async (req: NextRequest): Promise<NextResponse<APIResponse>> => {
   const user = await authenticateHeaders(req.headers)
   const { fileName } = MediaUploadRequestDtoSchema.parse(await req.json())
@@ -36,4 +45,35 @@ export const getUploadUrl = async (req: NextRequest): Promise<NextResponse<APIRe
   const uploadInfo = await mediaService.getSignedUploadUrl(fileName, mediaFolder)
 
   return NextResponse.json({ data: uploadInfo })
+}
+
+export const getImage = async (req: NextRequest): Promise<NextResponse<APIResponse>> => {
+  const user = authenticateHeaders(req.headers)
+  const searchParams = req.nextUrl.searchParams
+  const filePath = searchParams.get('filePath')
+
+  if (!filePath) {
+    throw new APIError('File path is required', httpStatus.BAD_REQUEST)
+  }
+
+  const mediaService = MediaService.new(user)
+  const signedUrl = await mediaService.getSignedFileUrl(removeBucketNameFromPath(filePath))
+
+  if (!signedUrl) {
+    throw new APIError('SignedUrl not found', httpStatus.INTERNAL_SERVER_ERROR)
+  }
+  const imageResponse = await fetch(signedUrl)
+
+  if (!imageResponse.ok) {
+    throw new APIError('Failed to fetch image', httpStatus.INTERNAL_SERVER_ERROR)
+  }
+
+  const headers: ResponseInit['headers'] = {
+    'Content-Type': imageResponse.headers.get('Content-Type') || 'image/jpeg', // Set appropriate content type
+    'Cache-Control': 'public, max-age=1864000, immutable', // Optional: Cache headers for performance
+  }
+
+  return new NextResponse(imageResponse.body, {
+    headers,
+  })
 }

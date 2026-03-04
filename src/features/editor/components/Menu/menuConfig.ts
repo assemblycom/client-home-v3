@@ -1,3 +1,4 @@
+import { triggerImageUpload } from '@editor/client.utils'
 import { useEditorStore } from '@editor/stores/editorStore'
 import type { Editor } from '@tiptap/core'
 import type { ActionConfig, ActionData } from 'copilot-design-system'
@@ -273,8 +274,7 @@ export const executeSlashCommand = (action: string, editor: Editor, range?: { fr
       editor.chain().focus().setCodeBlock().run()
       break
     case EditorActions.ATTACHMENT:
-      // TODO: Implement in later milestone
-      console.info('Toggle attachment')
+      triggerImageUpload(editor)
       break
     default:
       console.info('Unknown action:', action)

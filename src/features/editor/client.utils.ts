@@ -9,7 +9,7 @@ export const uploadFileToSupabase = async (
   file: File,
   token: string,
   mediaFolder: MediaFolders = MediaFolders.EDITOR,
-): Promise<{ signedUrl: string; path: string }> => {
+): Promise<{ path: string }> => {
   const signedUrlResponse = await api.post<{ data: MediaSignedUrlResponseDto }>(
     `/api/media?token=${token}&mediafolder=${mediaFolder}`,
     {
@@ -17,7 +17,7 @@ export const uploadFileToSupabase = async (
     },
   )
 
-  const signedUrl = signedUrlResponse.data.data.signedUrl
+  const { signedUrl, path } = signedUrlResponse.data.data
 
   const res = await fetch(signedUrl, {
     method: 'PUT',
@@ -33,16 +33,59 @@ export const uploadFileToSupabase = async (
     throw new Error('Upload failed')
   }
 
-  const filePath = (await res.json()).Key
+  return { path }
+}
 
-  const signedImgUrlResponse = await api.get<{ data: MediaSignedUrlResponseDto }>(`/api/media?token=${token}`, {
-    params: { filePath },
-  })
+export const triggerImageUpload = (editor: Editor) => {
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.accept = 'image/*'
 
-  return {
-    signedUrl: signedImgUrlResponse.data.data.signedUrl,
-    path: filePath,
+  input.onchange = () => {
+    const file = input.files?.[0]
+    if (!file) return
+
+    const fileReader = new FileReader()
+    fileReader.readAsDataURL(file)
+    fileReader.onload = async () => {
+      const randId = crypto.randomUUID()
+
+      editor
+        .chain()
+        .focus()
+        .insertContentAt(editor.state.selection.anchor, {
+          type: 'image',
+          attrs: {
+            src: fileReader.result,
+            title: randId,
+          },
+        })
+        .focus()
+        .run()
+
+      const token = editor.storage.token.token
+      if (!token) {
+        console.error('Could not upload to supabase due to missing token')
+        return
+      }
+
+      const { path: rawPath } = await uploadFileToSupabase(file, token)
+      const path = rawPath.startsWith('media/') ? rawPath.substring(6) : rawPath
+      const proxyUrl = `/api/media/image?token=${token}&filePath=${path}`
+
+      replaceEditorImageSrcByUploadId(editor, randId, proxyUrl)
+
+      api.post(`/api/media/upload?token=${token}`, {
+        path,
+        name: file.name,
+        type: file.type,
+        size: String(file.size),
+        mediaType: 'media',
+      })
+    }
   }
+
+  input.click()
 }
 
 export const replaceEditorImageSrcByUploadId = (editor: Editor, uploadId: string, newSrc: string) => {

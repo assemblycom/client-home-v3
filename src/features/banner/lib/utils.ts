@@ -10,10 +10,9 @@ export const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>,
   if (!file) return
 
   const { path } = await uploadFileToSupabase(file, token, MediaFolders.BANNER)
-  const formatPath = path.startsWith('media/') ? path.substring(6) : path
 
   return {
-    path: formatPath,
+    path,
     name: file.name,
     type: file.type,
     size: file.size.toString(),
