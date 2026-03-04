@@ -188,7 +188,6 @@ export const getActionState = (editor: Editor | null, actionId: string): { isAct
   if (!editor) {
     return { isActive: false, isDisabled: true }
   }
-  console.info(getIsActive(editor, actionId))
   return {
     isActive: getIsActive(editor, actionId),
     isDisabled: false,

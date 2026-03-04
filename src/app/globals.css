@@ -115,7 +115,7 @@ body {
   }
 
   hr {
-    @apply border-text-primary;
+    @apply border-text-primary my-3;
   }
 
   p.is-empty::before {
@@ -145,7 +145,7 @@ body {
   }
 
   .callout {
-    @apply my-5 bg-background-primary p-3 rounded;
+    @apply bg-background-primary p-3 rounded;
     .callout__content {
       @apply font-medium text-sm leading-5.5;
     }

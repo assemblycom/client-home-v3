@@ -42,7 +42,7 @@ export function HandleBarTemplate({
           <div
             title={template}
             className={cn(
-              'relative inline-block w-fit max-w-full justify-center overflow-clip rounded-lg border border-border-gray bg-white px-2 font-normal text-sm text-text-secondary transition-all',
+              'relative inline-block h-6 w-fit max-w-full justify-center overflow-clip rounded-lg border border-border-gray bg-white px-2 font-normal text-sm text-text-secondary transition-all',
               isLoading && 'border-transparent text-transparent',
               className,
             )}
