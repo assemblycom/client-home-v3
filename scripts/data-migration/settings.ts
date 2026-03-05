@@ -53,7 +53,7 @@ export const migrateSettings = async () => {
         workspaceId: setting.workspaceId,
         backgroundColor: setting.backgroundColor,
         subheading: "Here's what needs your attention today",
-        content: migrateIframeToEmbed(stripNotificationWidget(setting.content)) || defaultContent,
+        content: (setting.content && migrateIframeToEmbed(stripNotificationWidget(setting.content))) || defaultContent,
         createdById: setting.createdById,
         createdAt: new Date(setting.createdAt),
         updatedAt: new Date(setting.updatedAt),
