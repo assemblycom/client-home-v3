@@ -36,10 +36,7 @@ export function Preview({ token, content, backgroundColor, bannerUrl }: PreviewP
             <Loader />
           </div>
         ) : (
-          <div
-            className="tiptap-wrapper @container flex w-full flex-col gap-5 overflow-auto"
-            style={{ backgroundColor }}
-          >
+          <div className="@container flex w-full flex-col gap-5 overflow-auto px-6 py-5" style={{ backgroundColor }}>
             <div className="flex flex-col gap-1.5">
               <Heading />
               <Subheading readonly />
