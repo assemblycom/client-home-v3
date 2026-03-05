@@ -40,7 +40,7 @@ export const ClientEditorWrapper = () => {
       style={{ backgroundColor }}
     >
       <div className="flex flex-col gap-1.5">
-        <Heading />
+        <Heading readonly />
         <Subheading readonly />
       </div>
       {bannerUrl ? <Banner src={getImageUrl(bannerUrl.path, token)} alt="Workspace Banner" /> : null}
