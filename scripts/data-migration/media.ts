@@ -106,10 +106,10 @@ export const migrateMedia = async () => {
             .set({ bannerImageId: oldFile.id })
             .where(eq(settings.workspaceId, oldFile.workspaceId))
         })
-        console.log(`Migrated ${toPath}`)
+        console.info(`Migrated ${toPath}`)
       }),
     )
 
-    console.log(`Batch ${i / BATCH_SIZE + 1} done (${Math.min(i + BATCH_SIZE, oldMedia.length)}/${oldMedia.length})`)
+    console.info(`Batch ${i / BATCH_SIZE + 1} done (${Math.min(i + BATCH_SIZE, oldMedia.length)}/${oldMedia.length})`)
   }
 }
