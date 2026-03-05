@@ -1,5 +1,6 @@
 import { AssemblyNoTokenError } from '@assembly/errors'
 import { ClientEditorWrapper } from '@editor/components/ClientEditorWrapper'
+import { BannerImagesFetcher } from '@media/components/BannerImagesFetcher'
 import { ClientContextFetcher } from '@users/components/ClientContextFetcher'
 import { headers } from 'next/headers'
 import { Suspense } from 'react'
@@ -18,6 +19,9 @@ export default async function ClientPage() {
       </Suspense>
       <Suspense>
         <WorkspaceFetcher token={token} />
+      </Suspense>
+      <Suspense>
+        <BannerImagesFetcher token={token} />
       </Suspense>
       <ClientEditorWrapper />
     </div>

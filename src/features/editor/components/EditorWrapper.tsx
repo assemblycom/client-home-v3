@@ -28,12 +28,15 @@ export function EditorWrapper() {
   return (
     <div className="contents">
       <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
-        <div className="tiptap-wrapper @container max-w-full @max-md:rounded-t-none" style={{ backgroundColor }}>
-          <Heading />
-          <Subheading />
-          {bannerUrl ? (
-            <Banner src={getImageUrl(bannerUrl.path, token)} alt="Workspace Banner" className="my-6" />
-          ) : null}
+        <div
+          className="tiptap-wrapper @container flex max-w-full flex-col gap-5 @max-md:rounded-t-none"
+          style={{ backgroundColor }}
+        >
+          <div className="flex flex-col gap-1.5">
+            <Heading />
+            <Subheading />
+          </div>
+          {bannerUrl ? <Banner src={getImageUrl(bannerUrl.path, token)} alt="Workspace Banner" /> : null}
           <ActionsCard />
           <Editor token={token} content={content} backgroundColor={backgroundColor} />
         </div>

@@ -109,7 +109,7 @@ body {
 }
 
 .tiptap {
-  @apply pt-5 text-text-primary min-h-[calc(100vh-116px)] rounded-xl;
+  @apply text-text-primary min-h-[calc(100vh-116px)] rounded-xl;
 
   h1 {
     @apply text-xl leading-7 font-medium;
