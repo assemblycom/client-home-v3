@@ -1,13 +1,13 @@
-// Steps:
-// 1. Move actions to new actions table
-// 2. Move media blobs to new supabase store
-// 3. Move media to new medias table
-// 4. Move settings to new settings table
-
+import { migrateMedia } from './media'
 import { migrateSettings } from './settings'
 
 async function run() {
+  console.info('Migrating settings...')
   await migrateSettings()
+  console.info('Migrating media...')
+  await migrateMedia()
+
+  console.info('We did it 🔥')
 }
 
 ;(async () => await run())()
