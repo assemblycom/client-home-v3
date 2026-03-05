@@ -14,11 +14,11 @@ export const Subheading = ({ readonly, className }: SubheadingProps) => {
 
   if (readonly) {
     if (!subheading) return null
-    return <div className={cn('pt-2 text-sm text-text-secondary leading-5.5', className)}>{subheading}</div>
+    return <div className={cn('text-sm text-text-secondary leading-5.5', className)}>{subheading}</div>
   }
 
   return (
-    <div className={cn('pt-2', className)}>
+    <div className={cn(className)}>
       <input
         type="text"
         id="subheading"

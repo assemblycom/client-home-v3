@@ -36,13 +36,16 @@ export function Preview({ token, content, backgroundColor, bannerUrl }: PreviewP
             <Loader />
           </div>
         ) : (
-          <div className="@container w-full px-6 py-5" style={{ backgroundColor }}>
-            <Heading />
-            <Subheading readonly />
-            {bannerUrl ? <Banner src={bannerUrl} alt="Workspace Banner" className="my-6" /> : null}
-
+          <div
+            className="tiptap-wrapper @container flex w-full flex-col gap-5 overflow-auto"
+            style={{ backgroundColor }}
+          >
+            <div className="flex flex-col gap-1.5">
+              <Heading />
+              <Subheading readonly />
+            </div>
+            {bannerUrl ? <Banner src={bannerUrl} alt="Workspace Banner" /> : null}
             <ActionsCard />
-
             <ReadonlyEditor content={content} token={token} />
           </div>
         )}

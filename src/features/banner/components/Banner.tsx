@@ -11,7 +11,7 @@ interface BannerProps {
 
 export const Banner = ({ src, alt, isSelected, className }: BannerProps) => {
   return (
-    <div className={cn('relative aspect-[5/1] w-full overflow-hidden rounded-lg', className)}>
+    <div className={cn('relative aspect-[5/1] w-full shrink-0 overflow-hidden rounded-lg', className)}>
       <Image
         src={src}
         alt={alt ?? ''}
