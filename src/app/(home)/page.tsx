@@ -29,9 +29,7 @@ export default async function Home() {
       <div className="flex h-screen w-screen max-w-screen">
         <div className="@container flex h-screen flex-1 flex-col overflow-hidden">
           <TopBar />
-          <div className="w-full grow overflow-x-hidden overflow-y-scroll bg-background-primary @md:px-6 @md:pt-6.5 pb-6.5">
-            <EditorWrapper />
-          </div>
+          <EditorWrapper />
         </div>
         <Sidebar className="w-100 shrink-0" />
       </div>

@@ -26,12 +26,12 @@ export function EditorWrapper() {
   useAppControls()
 
   return (
-    <div className="contents">
+    <div
+      className="w-full grow overflow-x-hidden overflow-y-scroll @md:px-6 @md:pt-6.5 pb-6.5"
+      style={{ backgroundColor }}
+    >
       <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
-        <div
-          className="tiptap-wrapper @container flex max-w-full flex-col gap-5 @max-md:rounded-t-none"
-          style={{ backgroundColor }}
-        >
+        <div className="flex max-w-full flex-col gap-5 @max-md:rounded-t-none" style={{ backgroundColor }}>
           <div className="flex flex-col gap-1.5">
             <Heading />
             <Subheading />
