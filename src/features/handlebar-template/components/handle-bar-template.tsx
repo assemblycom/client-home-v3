@@ -43,7 +43,7 @@ export function HandleBarTemplate({
             title={template}
             style={{ fontSize: 'inherit', lineHeight: 1.25 }}
             className={cn(
-              'relative inline-block w-fit max-w-full justify-center overflow-clip rounded-lg border border-border-gray bg-white px-1 font-normal text-text-secondary transition-all',
+              'relative inline-block w-fit max-w-full justify-center overflow-clip rounded border border-border-gray bg-white px-1 font-normal text-text-secondary transition-all',
               isLoading && 'border-transparent text-transparent',
               className,
             )}
