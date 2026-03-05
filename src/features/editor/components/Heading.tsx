@@ -10,7 +10,11 @@ import { cn } from '@/utils/tailwind'
 
 const TEMPLATE = '{{client.firstName}}' as const
 
-export const Heading = ({ className, readonly }: PropsWithClassname & { readonly?: boolean }) => {
+interface HeadingProps extends PropsWithClassname {
+  readonly?: boolean
+}
+
+export const Heading = ({ readonly, className }: HeadingProps) => {
   const greeting = useMemo(() => getTimeOfDay(), [])
 
   const viewMode = useViewStore((s) => s.viewMode)
