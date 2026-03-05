@@ -11,14 +11,17 @@ import { cn } from '@/utils/tailwind'
 const TEMPLATE = '{{client.firstName}}' as const
 
 export const Heading = ({ className }: PropsWithClassname) => {
-  const greeting = useMemo(() => getTimeOfDay().charAt(0).toUpperCase() + getTimeOfDay().slice(1), [])
+  const greeting = useMemo(() => getTimeOfDay(), [])
+
   const viewMode = useViewStore((s) => s.viewMode)
   const workspace = useViewStore((s) => s.workspace)
   const displayContent = getFieldDisplayContent(TEMPLATE, workspace?.labels)
 
   return (
     <div className={cn('flex font-medium text-custom-xl leading-7', className)}>
-      <div suppressHydrationWarning>Good {greeting},&nbsp;</div>
+      <div className="capitalize" suppressHydrationWarning>
+        Good {greeting},&nbsp;
+      </div>
       <span>
         <HandleBarTemplate
           template={TEMPLATE}
