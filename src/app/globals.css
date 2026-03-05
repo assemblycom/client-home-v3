@@ -129,7 +129,7 @@ body {
   }
 
   hr {
-    @apply border-text-primary my-3;
+    @apply my-2 border-text-primary;
   }
 
   p.is-empty::before {
