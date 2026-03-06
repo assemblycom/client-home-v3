@@ -2,10 +2,11 @@ import { useAuthStore } from '@auth/providers/auth.provider'
 import { useSettingsMutation } from '@settings/hooks/useSettingsMutation'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import { Button, Icon } from 'copilot-design-system'
-import { useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { Banner } from '@/features/banner'
+import { BannerUploadDropzone } from '@/features/banner/components/BannerUploadDropzone'
 import { useBannerMutation } from '@/features/banner/hooks/useBannerMutation'
-import { getImageUrl, handleBannerUpload } from '@/features/banner/lib/utils'
+import { getImageUrl, handleBannerFileUpload } from '@/features/banner/lib/utils'
 
 interface ChangeBannerPanelProps {
   onBack: () => void
@@ -22,28 +23,50 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
   const [selectedImage, setSelectedImage] = useState(bannerImages?.find((item) => item.id === bannerId))
   const [isUploading, setIsUploading] = useState(false)
 
+  const handleRemoveBanner = () => {
+    setSelectedImage(undefined)
+    updateSettingsMutation.mutate({ bannerImageId: null, bannerPositionX: 50, bannerPositionY: 50 })
+  }
+
   const handleSaveChanges = () => {
     if (selectedImage?.id) {
-      setBannerImage(selectedImage.id)
       updateSettingsMutation.mutate({ bannerImageId: selectedImage.id, bannerPositionX: 50, bannerPositionY: 50 })
     }
   }
 
-  const onBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsUploading(true)
-    try {
-      const mediaMetadata = await handleBannerUpload(e, token)
-      if (mediaMetadata) {
-        createBannerMutation.mutate({
-          ...mediaMetadata,
-          mediaType: 'banner',
+  const uploadFile = useCallback(
+    (file: File) => {
+      setIsUploading(true)
+      handleBannerFileUpload(file, token)
+        .then((mediaMetadata) => {
+          createBannerMutation.mutate(
+            {
+              ...mediaMetadata,
+              mediaType: 'banner',
+            },
+            {
+              onSuccess: (data) => {
+                const uploaded = data.data
+                setBannerImage(uploaded.id)
+                setSelectedImage({ id: uploaded.id, path: uploaded.path })
+                updateSettingsMutation.mutate({ bannerImageId: uploaded.id, bannerPositionX: 50, bannerPositionY: 50 })
+              },
+            },
+          )
         })
-      }
-    } catch (error) {
-      console.error('Failed to upload banner:', error)
-    } finally {
-      setIsUploading(false)
-    }
+        .catch((error) => {
+          console.error('Failed to upload banner:', error)
+        })
+        .finally(() => {
+          setIsUploading(false)
+        })
+    },
+    [token, createBannerMutation, setBannerImage, updateSettingsMutation],
+  )
+
+  const onBannerUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) uploadFile(file)
   }
 
   const handleCancelChanges = () => {
@@ -57,6 +80,7 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
   }
 
   const currentBannerPath = selectedImage?.path ?? ''
+  const hasBanner = !!selectedImage
 
   return (
     <div className="flex h-full flex-col">
@@ -75,15 +99,43 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
       <div className="flex flex-col items-start gap-y-[32px] overflow-y-auto px-[27px] py-[21px]">
         <div className="flex flex-col items-start gap-y-[12px] self-stretch">
           <span className="text-[12px] text-text-secondary leading-[20px]">Current banner</span>
-          <Banner src={getImageUrl(currentBannerPath, token)} alt="banner" />
           <input type="file" accept="image/*" ref={fileInputRef} onChange={onBannerUpload} className="hidden" />
-          <Button
-            label={isUploading ? 'Uploading...' : 'Upload image'}
-            variant="secondary"
-            onClick={openFilePicker}
-            className="w-full"
-            disabled={isUploading}
-          />
+          {hasBanner ? (
+            <>
+              <div className="group/banner relative w-full">
+                <Banner src={getImageUrl(currentBannerPath, token)} alt="banner" />
+                <button
+                  type="button"
+                  onClick={handleRemoveBanner}
+                  className="absolute top-2 right-2 z-10 cursor-pointer rounded-[4px] bg-white p-[5px] opacity-0 shadow-sm transition-opacity group-hover/banner:opacity-100"
+                >
+                  <Icon icon="Trash" width={16} height={16} />
+                </button>
+              </div>
+              <Button
+                label={isUploading ? 'Uploading...' : 'Upload image'}
+                variant="secondary"
+                onClick={openFilePicker}
+                className="w-full"
+                disabled={isUploading}
+              />
+            </>
+          ) : (
+            <>
+              <BannerUploadDropzone
+                isUploading={isUploading}
+                onFileSelect={uploadFile}
+                onClickUpload={openFilePicker}
+              />
+              <Button
+                label={isUploading ? 'Uploading...' : 'Upload image'}
+                variant="secondary"
+                onClick={openFilePicker}
+                className="w-full"
+                disabled={isUploading}
+              />
+            </>
+          )}
         </div>
         <div className="flex flex-col items-start gap-y-[12px] self-stretch">
           <span className="text-[12px] text-text-secondary leading-[20px]">Image library</span>
