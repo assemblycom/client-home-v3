@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@assembly-js/app-bridge':
+        specifier: ^1.1.0
+        version: 1.1.0
       '@assembly-js/node-sdk':
         specifier: ^3.19.1
         version: 3.19.1(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -192,6 +195,9 @@ packages:
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
+
+  '@assembly-js/app-bridge@1.1.0':
+    resolution: {integrity: sha512-brMSQxpldcwdqCpIxcVUKj6eX3uP18BKH4NhWpgGVaLo/aDVD/G4j/AI98UYeLeLK0unkjKuo4NLQZRNmE9Lag==}
 
   '@assembly-js/node-sdk@3.19.1':
     resolution: {integrity: sha512-8td1ks3Oj3aPmFGUXdoTC28fEH3t5keyDt4vTewfOBSZW3sW0Rxw7LP9oP4clw29KIeLQtM5BTpsP3I5VM0edw==}
@@ -4702,6 +4708,8 @@ packages:
 snapshots:
 
   '@alloc/quick-lru@5.2.0': {}
+
+  '@assembly-js/app-bridge@1.1.0': {}
 
   '@assembly-js/node-sdk@3.19.1(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
