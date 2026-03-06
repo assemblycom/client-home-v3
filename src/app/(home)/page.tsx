@@ -27,7 +27,7 @@ export default async function Home() {
       </Suspense>
 
       <div className="flex h-screen w-screen max-w-screen">
-        <div className="@container flex h-screen flex-1 flex-col overflow-hidden">
+        <div className="@container mx-auto flex h-screen max-w-xl flex-1 flex-col overflow-hidden">
           <TopBar />
           <EditorWrapper />
         </div>

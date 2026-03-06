@@ -36,7 +36,7 @@ export const ClientEditorWrapper = () => {
 
   return (
     <div
-      className={`@container flex min-h-full w-full flex-col gap-5 overflow-auto px-12 py-11`}
+      className={`@container mx-auto flex min-h-full w-full max-w-xl flex-col gap-5 overflow-auto px-12 py-11`}
       style={{ backgroundColor }}
     >
       <div className="flex flex-col gap-1.5">
