@@ -2,6 +2,7 @@ import { Icon } from 'copilot-design-system'
 import Image from 'next/image'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { cn } from '@/utils/tailwind'
+import { BannerSkeleton } from './BannerSkeleton'
 
 interface BannerProps {
   src: string
@@ -26,12 +27,18 @@ export const Banner = ({
   onChangeBanner,
   onSavePosition,
 }: BannerProps) => {
+  const [isLoaded, setIsLoaded] = useState(false)
   const [isRepositioning, setIsRepositioning] = useState(false)
   const [currentX, setCurrentX] = useState(positionX)
   const [currentY, setCurrentY] = useState(positionY)
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null)
   const [dragStartPosition, setDragStartPosition] = useState({ x: positionX, y: positionY })
   const containerRef = useRef<HTMLDivElement>(null)
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: reset loading state when src changes
+  useEffect(() => {
+    setIsLoaded(false)
+  }, [src])
 
   useEffect(() => {
     setCurrentX(positionX)
@@ -100,14 +107,21 @@ export const Banner = ({
         src={src}
         alt={alt ?? ''}
         fill
-        className={cn('object-cover', isRepositioning && 'cursor-grab active:cursor-grabbing')}
+        className={cn(
+          'object-cover transition-opacity duration-300',
+          isLoaded ? 'opacity-100' : 'opacity-0',
+          isRepositioning && 'cursor-grab active:cursor-grabbing',
+        )}
         style={{ objectPosition: `${currentX}% ${currentY}%` }}
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
         priority
         unoptimized
         draggable={false}
         onMouseDown={handleMouseDown}
+        onLoad={() => setIsLoaded(true)}
       />
+
+      {!isLoaded && <BannerSkeleton />}
 
       {/* Grid background while repositioning: */}
       {isRepositioning && (
