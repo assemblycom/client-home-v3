@@ -139,7 +139,7 @@ body {
   }
 
   hr {
-    @apply my-2 border-text-primary;
+    @apply my-2 border-border-gray;
   }
 
   p.is-empty::before {
