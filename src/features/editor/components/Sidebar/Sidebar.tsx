@@ -6,8 +6,9 @@ import { BackgroundColor } from '@editor/components/Sidebar/BackgroundColor'
 import { BannerOptions } from '@editor/components/Sidebar/BannerOptions'
 import { DynamicFields } from '@editor/components/Sidebar/DynamicFields'
 import { Segment } from '@editor/components/Sidebar/Segment'
+import { useSidebarStore } from '@editor/stores/sidebarStore'
 import { useViewStore, ViewMode } from '@editor/stores/viewStore'
-import { Activity, useMemo, useState } from 'react'
+import { Activity, useMemo } from 'react'
 import type { PropsWithClassname } from '@/app/types'
 import { getActivityMode } from '@/utils/activity'
 import { cn } from '@/utils/tailwind'
@@ -15,8 +16,6 @@ import { ChangeBannerPanel } from './ChangeBannerPanel'
 import { PreviewSidebar } from './PreviewSidebar'
 
 interface SidebarProps extends PropsWithClassname {}
-
-type SidebarView = 'default' | 'change-banner'
 
 const createAccordionItems = (onChangeBanner: () => void) => [
   {
@@ -43,8 +42,9 @@ const createAccordionItems = (onChangeBanner: () => void) => [
 
 export const Sidebar = ({ className }: SidebarProps) => {
   const viewMode = useViewStore((store) => store.viewMode)
-  const [sidebarView, setSidebarView] = useState<SidebarView>('default')
-  const accordionItems = useMemo(() => createAccordionItems(() => setSidebarView('change-banner')), [])
+  const sidebarView = useSidebarStore((store) => store.sidebarView)
+  const setSidebarView = useSidebarStore((store) => store.setSidebarView)
+  const accordionItems = useMemo(() => createAccordionItems(() => setSidebarView('change-banner')), [setSidebarView])
   return (
     <aside className={cn('flex h-screen flex-col border-border-gray border-l', className)}>
       <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>

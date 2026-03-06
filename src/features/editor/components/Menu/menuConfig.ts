@@ -19,7 +19,7 @@ export enum EditorActions {
   TABLE = 'table',
   CALLOUT = 'callout',
   DIVIDER = 'divider',
-  CODE = 'code',
+  EMBED = 'embed',
   ATTACHMENT = 'attachment',
 }
 
@@ -149,10 +149,10 @@ export const editorActionConfig = (mode: MenuMode): ActionConfig[] => {
       actions: [
         {
           type: 'action',
-          id: EditorActions.CODE,
-          action: EditorActions.CODE,
+          id: EditorActions.EMBED,
+          action: EditorActions.EMBED,
           icon: 'Code',
-          label: 'Code',
+          label: 'Embed',
         },
         {
           type: 'action',
@@ -213,8 +213,8 @@ const getIsActive = (editor: Editor, actionId: string): boolean => {
       return editor.isActive('bulletList')
     case EditorActions.ORDERED_LIST:
       return editor.isActive('orderedList')
-    case EditorActions.CODE:
-      return editor.isActive('codeBlock')
+    case EditorActions.EMBED:
+      return editor.isActive('embed')
     case EditorActions.CALLOUT:
       return editor.isActive('callout')
     default:
@@ -269,8 +269,8 @@ export const executeSlashCommand = (action: string, editor: Editor, range?: { fr
     case EditorActions.DIVIDER:
       editor.chain().focus().setHorizontalRule().run()
       break
-    case EditorActions.CODE:
-      editor.chain().focus().setCodeBlock().run()
+    case EditorActions.EMBED:
+      useEditorStore.getState().setShowEmbedInput(true)
       break
     case EditorActions.ATTACHMENT:
       triggerImageUpload(editor)

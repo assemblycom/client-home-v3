@@ -1,5 +1,6 @@
 import { Icon } from 'copilot-design-system'
 import Image from 'next/image'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { cn } from '@/utils/tailwind'
 
 interface BannerProps {
@@ -7,23 +8,176 @@ interface BannerProps {
   alt?: string
   isSelected?: boolean
   className?: string
+  editable?: boolean
+  positionX?: number
+  positionY?: number
+  onChangeBanner?: () => void
+  onSavePosition?: (positionX: number, positionY: number) => void
 }
 
-export const Banner = ({ src, alt, isSelected, className }: BannerProps) => {
+export const Banner = ({
+  src,
+  alt,
+  isSelected,
+  className,
+  editable,
+  positionX = 50,
+  positionY = 50,
+  onChangeBanner,
+  onSavePosition,
+}: BannerProps) => {
+  const [isRepositioning, setIsRepositioning] = useState(false)
+  const [currentX, setCurrentX] = useState(positionX)
+  const [currentY, setCurrentY] = useState(positionY)
+  const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null)
+  const [dragStartPosition, setDragStartPosition] = useState({ x: positionX, y: positionY })
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setCurrentX(positionX)
+    setCurrentY(positionY)
+  }, [positionX, positionY])
+
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (!isRepositioning) return
+      e.preventDefault()
+      setDragStart({ x: e.clientX, y: e.clientY })
+      setDragStartPosition({ x: currentX, y: currentY })
+    },
+    [isRepositioning, currentX, currentY],
+  )
+
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!dragStart || !containerRef.current) return
+
+      const rect = containerRef.current.getBoundingClientRect()
+      const sensitivityX = 200 / rect.width
+      const sensitivityY = 200 / rect.height
+
+      const deltaX = -(e.clientX - dragStart.x) * sensitivityX
+      const deltaY = -(e.clientY - dragStart.y) * sensitivityY
+
+      setCurrentX(Math.max(0, Math.min(100, dragStartPosition.x + deltaX)))
+      setCurrentY(Math.max(0, Math.min(100, dragStartPosition.y + deltaY)))
+    },
+    [dragStart, dragStartPosition],
+  )
+
+  const handleMouseUp = useCallback(() => {
+    setDragStart(null)
+  }, [])
+
+  useEffect(() => {
+    if (dragStart !== null) {
+      window.addEventListener('mousemove', handleMouseMove)
+      window.addEventListener('mouseup', handleMouseUp)
+      return () => {
+        window.removeEventListener('mousemove', handleMouseMove)
+        window.removeEventListener('mouseup', handleMouseUp)
+      }
+    }
+  }, [dragStart, handleMouseMove, handleMouseUp])
+
+  const handleSave = () => {
+    onSavePosition?.(Math.round(currentX), Math.round(currentY))
+    setIsRepositioning(false)
+  }
+
+  const handleCancel = () => {
+    setCurrentX(positionX)
+    setCurrentY(positionY)
+    setIsRepositioning(false)
+  }
+
   return (
-    <div className={cn('relative aspect-[5/1] w-full shrink-0 overflow-hidden rounded-lg', className)}>
+    <div
+      ref={containerRef}
+      className={cn('group relative aspect-[5/1] w-full shrink-0 overflow-hidden rounded-lg', className)}
+    >
       <Image
         src={src}
         alt={alt ?? ''}
         fill
-        className="object-cover"
+        className={cn('object-cover', isRepositioning && 'cursor-grab active:cursor-grabbing')}
+        style={{ objectPosition: `${currentX}% ${currentY}%` }}
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
         priority
-        unoptimized //since the src is using token which is dynamic, nextjs cannot optimize it.
+        unoptimized
+        draggable={false}
+        onMouseDown={handleMouseDown}
       />
+
+      {/* Grid background while repositioning: */}
+      {isRepositioning && (
+        <>
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              backgroundImage:
+                'linear-gradient(rgba(255,255,255,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px)',
+              backgroundSize: '40px 40px',
+            }}
+          />
+          <div className="pointer-events-none absolute inset-0 bg-black/10" />
+        </>
+      )}
+
       {isSelected && (
         <div className="absolute top-2.5 right-2.5 z-10 flex h-6 w-6 flex-shrink-0 flex-col items-end rounded-full bg-white p-1 pb-0">
           <Icon icon="Check" width={16} height={16} />
+        </div>
+      )}
+
+      {isRepositioning && (
+        <>
+          <div className="absolute top-2.5 right-2.5 z-10 flex items-center gap-1">
+            <button
+              type="button"
+              onClick={handleSave}
+              className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-border-gray bg-white py-[3px] pr-2 pl-2 font-medium text-sm text-text-primary shadow-sm hover:bg-gray-50"
+            >
+              <Icon icon="Check" width={14} height={14} />
+              Save
+            </button>
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-border-gray bg-white py-[3px] pr-2 pl-2 font-medium text-sm text-text-primary shadow-sm hover:bg-gray-50"
+            >
+              <Icon icon="Close" width={14} height={14} />
+              Cancel
+            </button>
+          </div>
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div className="flex items-center gap-2 rounded-lg bg-white px-3 py-1.5 font-medium text-sm text-text-primary shadow-sm">
+              <Icon icon="Reposition" width={16} height={16} />
+              Drag image to reposition
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Normal mode: */}
+      {editable && !isRepositioning && (
+        <div className="absolute top-2.5 right-2.5 z-10 flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+          <button
+            type="button"
+            onClick={onChangeBanner}
+            className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-border-gray bg-white py-[3px] pr-2 pl-2 font-medium text-sm text-text-primary shadow-sm hover:bg-gray-50"
+          >
+            <Icon icon="Edit" width={14} height={14} />
+            Change
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsRepositioning(true)}
+            className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-border-gray bg-white py-[3px] pr-2 pl-2 font-medium text-sm text-text-primary shadow-sm hover:bg-gray-50"
+          >
+            <Icon icon="Reposition" width={14} height={14} />
+            Reposition
+          </button>
         </div>
       )}
     </div>
