@@ -112,15 +112,27 @@ body {
   @apply text-text-primary min-h-[calc(100vh-116px)] rounded-xl;
 
   h1 {
-    @apply text-xl leading-7 font-medium;
+    @apply text-xl leading-7 font-medium mt-4 mb-1;
+  }
+
+  h1:first-child {
+    @apply mt-0;
   }
 
   h2 {
-    @apply text-lg leading-6 font-medium;
+    @apply text-lg leading-6 font-medium mt-3 mb-1;
+  }
+
+  h2:first-child {
+    @apply mt-0;
   }
 
   p {
-    @apply text-sm leading-5.5 font-normal;
+    @apply text-sm leading-5.5 font-normal mb-2;
+  }
+
+  p:last-child {
+    @apply mb-0;
   }
 
   ul,
