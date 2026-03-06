@@ -15,6 +15,8 @@ interface SettingsAction {
   setBannerUrl: (url: string | null) => void
   setBannerImages: (banners: BannerImagesResponse) => void
   setBannerImageId: (bannerImageId: string) => void
+  setBannerPositionX: (bannerPositionX: number) => void
+  setBannerPositionY: (bannerPositionY: number) => void
 }
 
 export type SettingsStore = SettingsState & SettingsAction
@@ -34,6 +36,8 @@ export const createSettingsStore = (settings: SettingsResponseDto) =>
     setBannerUrl: (url: string | null) => set((s) => ({ ...s, bannerUrl: url })),
     setBannerImages: (banners: BannerImagesResponse) => set((s) => ({ ...s, bannerImages: banners })),
     setBannerImageId: (bannerImageId: string) => set((s) => ({ ...s, bannerImageId })),
+    setBannerPositionX: (bannerPositionX: number) => set((s) => ({ ...s, bannerPositionX })),
+    setBannerPositionY: (bannerPositionY: number) => set((s) => ({ ...s, bannerPositionY })),
   }))
 
 export type SettingsStoreApi = StoreApi<SettingsStore>

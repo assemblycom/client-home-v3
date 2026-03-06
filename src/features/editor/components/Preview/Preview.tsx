@@ -13,9 +13,18 @@ interface PreviewProps {
   content: string
   backgroundColor: string
   bannerUrl?: string | null
+  bannerPositionX?: number
+  bannerPositionY?: number
 }
 
-export function Preview({ token, content, backgroundColor, bannerUrl }: PreviewProps) {
+export function Preview({
+  token,
+  content,
+  backgroundColor,
+  bannerUrl,
+  bannerPositionX,
+  bannerPositionY,
+}: PreviewProps) {
   const displayMode = useViewStore((store) => store.displayMode)
   const workspace = useViewStore((store) => store.workspace)
 
@@ -41,7 +50,9 @@ export function Preview({ token, content, backgroundColor, bannerUrl }: PreviewP
               <Heading />
               <Subheading readonly />
             </div>
-            {bannerUrl ? <Banner src={bannerUrl} alt="Workspace Banner" /> : null}
+            {bannerUrl ? (
+              <Banner src={bannerUrl} alt="Workspace Banner" positionX={bannerPositionX} positionY={bannerPositionY} />
+            ) : null}
             <ActionsCard />
             <ReadonlyEditor content={content} token={token} />
           </div>

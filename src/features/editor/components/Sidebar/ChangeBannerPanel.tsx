@@ -25,7 +25,7 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
   const handleSaveChanges = () => {
     if (selectedImage?.id) {
       setBannerImage(selectedImage.id)
-      updateSettingsMutation.mutate({ bannerImageId: selectedImage.id })
+      updateSettingsMutation.mutate({ bannerImageId: selectedImage.id, bannerPositionX: 50, bannerPositionY: 50 })
     }
   }
 

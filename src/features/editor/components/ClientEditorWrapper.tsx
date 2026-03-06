@@ -20,6 +20,8 @@ export const ClientEditorWrapper = () => {
   const bannerImages = useSettingsStore((store) => store.bannerImages)
   const bannerId = useSettingsStore((store) => store?.bannerImageId)
   const bannerUrl = bannerImages?.find((item) => item.id === bannerId)
+  const bannerPositionX = useSettingsStore((store) => store.bannerPositionX) ?? 50
+  const bannerPositionY = useSettingsStore((store) => store.bannerPositionY) ?? 50
 
   useQuery({
     queryKey: ['tasks-app-id'],
@@ -43,7 +45,14 @@ export const ClientEditorWrapper = () => {
         <Heading readonly />
         <Subheading readonly />
       </div>
-      {bannerUrl ? <Banner src={getImageUrl(bannerUrl.path, token)} alt="Workspace Banner" /> : null}
+      {bannerUrl ? (
+        <Banner
+          src={getImageUrl(bannerUrl.path, token)}
+          alt="Workspace Banner"
+          positionX={bannerPositionX}
+          positionY={bannerPositionY}
+        />
+      ) : null}
 
       <ActionsCard readonly />
       <ReadonlyEditor token={token} content={content} />
