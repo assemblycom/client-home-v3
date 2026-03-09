@@ -22,6 +22,12 @@ const stripNotificationWidget = (content: string) =>
 const migrateIframeToEmbed = (content: string) =>
   content.replace(/<iframe\b/g, '<embed').replace(/<\/iframe>/g, '</embed>')
 
+const migrateAutofillTags = (content: string) =>
+  content.replace(
+    /<span\s+data-type="mention"\s+class="autofill-pill"\s+data-id="(\{\{__(\w+)__\.(\w+)\}\})">.*?<\/span>/g,
+    (_match, _fullId, prefix, field) => `<autofill-field data-value="{{${prefix}.${field}}}"></autofill-field>`,
+  )
+
 const notificationKeyMap: Record<string, string> = {
   billing: 'invoices',
   forms: 'forms',
@@ -53,7 +59,9 @@ export const migrateSettings = async () => {
         workspaceId: setting.workspaceId,
         backgroundColor: setting.backgroundColor,
         subheading: "Here's what needs your attention today",
-        content: (setting.content && migrateIframeToEmbed(stripNotificationWidget(setting.content))) || defaultContent,
+        content:
+          (setting.content && migrateAutofillTags(migrateIframeToEmbed(stripNotificationWidget(setting.content)))) ||
+          defaultContent,
         createdById: setting.createdById,
         createdAt: new Date(setting.createdAt),
         updatedAt: new Date(setting.updatedAt),
