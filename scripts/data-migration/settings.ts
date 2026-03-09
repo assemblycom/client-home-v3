@@ -22,11 +22,19 @@ const stripNotificationWidget = (content: string) =>
 const migrateIframeToEmbed = (content: string) =>
   content.replace(/<iframe\b/g, '<embed').replace(/<\/iframe>/g, '</embed>')
 
+const renameField = (field: string) => (field === 'givenName' ? 'firstName' : field) // Drop support for givenNaem
+
 const migrateAutofillTags = (content: string) =>
-  content.replace(
-    /<span\s+data-type="mention"\s+class="autofill-pill"\s+data-id="(\{\{__(\w+)__\.(\w+)\}\})">.*?<\/span>/g,
-    (_match, _fullId, prefix, field) => `<autofill-field data-value="{{${prefix}.${field}}}"></autofill-field>`,
-  )
+  content
+    .replace(
+      /<span\s+data-type="mention"\s+class="autofill-pill"\s+data-id="(\{\{__(\w+)__\.(\w+)\}\})">.*?<\/span>/g,
+      (_match, _fullId, prefix, field) =>
+        `<autofill-field data-value="{{${prefix}.${renameField(field)}}}"></autofill-field>`,
+    )
+    .replace(
+      /<autofill>\{\{__(\w+)__\.(\w+)\}\}<\/autofill>/g,
+      (_match, prefix, field) => `<autofill-field data-value="{{${prefix}.${renameField(field)}}}"></autofill-field>`,
+    )
 
 const notificationKeyMap: Record<string, string> = {
   billing: 'invoices',
