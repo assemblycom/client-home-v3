@@ -28,44 +28,51 @@ export const ActionItem = ({ action, isLoading, mode, className, count }: Action
     }
   }
 
-  return (
-    <div
-      className={cn(
-        'flex flex-col gap-3 rounded-lg border border-border-gray bg-white p-5 lg:min-w-56',
-        isLoading ? '@md:min-w-56 animate-pulse' : 'group transition-all duration-300',
-        className,
-      )}
-    >
-      {isLoading ? (
+  if (isLoading) {
+    return (
+      <div
+        className={cn(
+          'flex @md:min-w-56 animate-pulse flex-col gap-3 rounded-lg border border-border-gray bg-white p-5 lg:min-w-56',
+          className,
+        )}
+      >
         <div className="flex items-center gap-3">
           <div className="h-6 w-6 rounded-md bg-gray-200" />
           <div className="h-5 w-32 rounded bg-gray-200" />
         </div>
-      ) : (
-        <>
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <Icon icon={action.icon} className="size-4 transition-transform duration-300 group-hover:scale-110" />
-              <h3 className="text-heading-md">{action.label}</h3>
-            </div>
-          </div>
+      </div>
+    )
+  }
 
-          <div className="flex items-center gap-2 text-body-md text-text-secondary">
-            <HandleBarTemplate
-              className={cn(mode === ViewMode.PREVIEW ? 'text-text-primary' : '')}
-              mode={mode}
-              template={action.template}
-              fallbackValue={count ?? 0}
-            />
-            {mode === ViewMode.PREVIEW
-              ? ` ${count === 1 ? action.singularLabel?.toLocaleLowerCase() : action.label.toLocaleLowerCase()}`
-              : null}
-          </div>
-          <button className="flex items-center gap-2 text-body-md" onClick={handleClick} type="button">
-            View all <Icon icon={'ArrowRight'} className="size-3.25" />
-          </button>
-        </>
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      className={cn(
+        'group flex flex-col gap-3 rounded-lg border border-border-gray bg-white p-5 text-left transition-all duration-300 lg:min-w-56',
+        clientId && 'cursor-pointer',
+        className,
       )}
-    </div>
+    >
+      <div className="flex w-full items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <Icon icon={action.icon} className="size-4 transition-transform duration-300 group-hover:scale-110" />
+          <h3 className="text-heading-md">{action.label}</h3>
+        </div>
+        <Icon icon="ArrowRight" width={12.5} height={12.5} className="hidden text-text-secondary lg:block" />
+      </div>
+
+      <div className="flex items-center gap-2 text-body-md text-text-secondary">
+        <HandleBarTemplate
+          className={cn(mode === ViewMode.PREVIEW ? 'text-text-primary' : '')}
+          mode={mode}
+          template={action.template}
+          fallbackValue={count ?? 0}
+        />
+        {mode === ViewMode.PREVIEW
+          ? ` ${count === 1 ? action.singularLabel?.toLocaleLowerCase() : action.label.toLocaleLowerCase()}`
+          : null}
+      </div>
+    </button>
   )
 }
