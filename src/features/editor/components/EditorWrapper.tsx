@@ -15,6 +15,8 @@ import { getImageUrl } from '@/features/banner/lib/utils'
 import { useSidebarStore } from '@/features/editor/stores/sidebarStore'
 import { useViewStore, ViewMode } from '@/features/editor/stores/viewStore'
 import { getActivityMode } from '@/utils/activity'
+import { isDarkColor } from '@/utils/color'
+import { cn } from '@/utils/tailwind'
 
 export function EditorWrapper() {
   const viewMode = useViewStore((store) => store.viewMode)
@@ -30,12 +32,14 @@ export function EditorWrapper() {
 
   const { mutate: updateSettings } = useSettingsMutation()
 
+  const isDark = isDarkColor(backgroundColor)
+
   useAppControls()
 
   return (
     <div
-      className="w-full grow overflow-x-hidden overflow-y-scroll @md:px-6 @md:pt-6.5 pb-6.5"
-      style={{ backgroundColor }}
+      className={cn('w-full grow overflow-x-hidden overflow-y-scroll @md:px-6 @md:pt-6.5 pb-6.5', isDark && 'dark')}
+      style={{ backgroundColor, '--bg-color': backgroundColor } as React.CSSProperties}
     >
       <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
         <div className="flex max-w-full flex-col gap-5 @max-md:rounded-t-none" style={{ backgroundColor }}>
@@ -57,7 +61,7 @@ export function EditorWrapper() {
             />
           ) : null}
           <ActionsCard />
-          <Editor token={token} content={content} backgroundColor={backgroundColor} />
+          <Editor token={token} content={content} />
         </div>
       </Activity>
 

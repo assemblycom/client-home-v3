@@ -27,10 +27,10 @@ export const ActionsCard = ({ readonly }: ActionCardProps) => {
     : 0
 
   return (
-    <div className="relative rounded-2xl border border-border-gray bg-gray-100 p-6 shadow-sm transition-all duration-500">
+    <div className="relative rounded-2xl border border-border-gray bg-gray-100 p-6 shadow-sm transition-all duration-500 dark-bg:border-white/20 dark-bg:bg-white/10">
       <div className="mb-4">
-        <h2 className="mb-2 text-heading-xl">Your Actions</h2>
-        <div className="text-body-md text-text-secondary">
+        <h2 className="mb-2 text-heading-xl dark-bg:text-white">Your Actions</h2>
+        <div className="text-body-md text-text-secondary dark-bg:text-white/70">
           You have{' '}
           <HandleBarTemplate
             isLoading={isLoading}

@@ -4,6 +4,7 @@ import { PreviewTopBar } from '@editor/components/Preview/PreviewTopBar'
 import { DisplayMode, useViewStore } from '@editor/stores/viewStore'
 import { ActionsCard } from '@/features/action-items/components/actions-card'
 import { Banner } from '@/features/banner'
+import { isDarkColor } from '@/utils/color'
 import { cn } from '@/utils/tailwind'
 import { Heading } from '../Heading'
 import { Subheading } from '../Subheading'
@@ -27,6 +28,7 @@ export function Preview({
 }: PreviewProps) {
   const displayMode = useViewStore((store) => store.displayMode)
   const workspace = useViewStore((store) => store.workspace)
+  const isDark = isDarkColor(backgroundColor)
 
   return (
     <div
@@ -45,7 +47,10 @@ export function Preview({
             <Loader />
           </div>
         ) : (
-          <div className="@container flex w-full flex-col gap-5 overflow-auto px-6 py-5" style={{ backgroundColor }}>
+          <div
+            className={cn('@container flex w-full flex-col gap-5 overflow-auto px-6 py-5', isDark && 'dark')}
+            style={{ backgroundColor, '--bg-color': backgroundColor } as React.CSSProperties}
+          >
             <div className="flex flex-col gap-1.5">
               <Heading />
               <Subheading readonly />

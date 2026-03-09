@@ -4,8 +4,18 @@
 @import "./assets/_variables/_typography.css";
 @import "./assets/_variables/_breakpoints.css";
 
+@custom-variant dark-bg (&:where(.dark, .dark *));
+
 :root {
   --font-inter: "Inter", "Arial", "Helvetica", sans-serif;
+  --bg-color: #ffffff;
+}
+
+@theme inline {
+  --color-brand: var(--bg-color);
+  --color-brand-subtle: hsl(from var(--bg-color) h s calc(l * 0.95));
+  --color-brand-muted: hsl(from var(--bg-color) h s calc(l * 0.85));
+  --color-border-brand: hsl(from var(--bg-color) h s calc(l * 0.75));
 }
 
 @layer base {
@@ -19,7 +29,7 @@
     @apply text-[16px] leading-6 font-medium;
   }
   .text-custom-xl {
-    @apply text-xl leading-6 font-normal tracking-[-0.1px] text-text-primary;
+    @apply text-xl leading-6 font-normal tracking-[-0.1px] text-text-primary dark-bg:text-white;
   }
 }
 
@@ -163,6 +173,36 @@ body {
     .callout__content {
       @apply font-medium text-sm leading-5.5;
     }
+  }
+}
+
+/* Dark background overrides for TipTap editor */
+.dark .tiptap {
+  @apply text-white;
+
+  hr {
+    @apply border-white/30;
+  }
+
+  p.is-empty::before {
+    @apply text-white/50;
+  }
+
+  table {
+    @apply bg-white/10;
+
+    td,
+    th {
+      @apply border-white/20;
+    }
+
+    th {
+      @apply bg-white/10;
+    }
+  }
+
+  .callout {
+    @apply bg-white/10;
   }
 }
 
