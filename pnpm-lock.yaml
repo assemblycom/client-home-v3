@@ -13,7 +13,7 @@ importers:
         version: 1.1.0
       '@assembly-js/node-sdk':
         specifier: ^3.19.1
-        version: 3.19.1(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 3.19.1(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@dnd-kit/core':
         specifier: ^6.3.1
         version: 6.3.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -25,7 +25,7 @@ importers:
         version: 3.2.2(react@19.2.4)
       '@sentry/nextjs':
         specifier: ^10.38.0
-        version: 10.40.0(@opentelemetry/context-async-hooks@2.5.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@2.5.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.5.1(@opentelemetry/api@1.9.0))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(webpack@5.105.2(esbuild@0.25.12))
+        version: 10.40.0(@opentelemetry/context-async-hooks@2.5.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@2.5.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.5.1(@opentelemetry/api@1.9.0))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(webpack@5.105.2(esbuild@0.25.12))
       '@supabase/supabase-js':
         specifier: ^2.94.1
         version: 2.97.0
@@ -109,7 +109,7 @@ importers:
         version: 4.17.23
       next:
         specifier: 16.1.6
-        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       p-retry:
         specifier: ^7.1.1
         version: 7.1.1
@@ -153,6 +153,9 @@ importers:
       '@commitlint/types':
         specifier: ^20.4.0
         version: 20.4.0
+      '@playwright/test':
+        specifier: ^1.58.2
+        version: 1.58.2
       '@svgr/webpack':
         specifier: ^8.1.0
         version: 8.1.0(typescript@5.9.3)
@@ -1919,6 +1922,11 @@ packages:
     peerDependencies:
       '@opentelemetry/api': ^1.1.0
 
+  '@playwright/test@1.58.2':
+    resolution: {integrity: sha512-akea+6bHYBBfA9uQqSYmlJXn61cTa+jbO87xVLCWbTqbWadRVmhxlXATaOjOgcBaWU4ePo0wB41KMFv3o35IXA==}
+    engines: {node: '>=18'}
+    hasBin: true
+
   '@popperjs/core@2.11.8':
     resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
 
@@ -3626,6 +3634,11 @@ packages:
   forwarded-parse@2.1.2:
     resolution: {integrity: sha512-alTFZZQDKMporBH77856pXgzhEzaUVmLCDk+egLgIgHst3Tpndzz8MnKe+GzRJRfvVdn69HhpW7cmXzvtLvJAw==}
 
+  fsevents@2.3.2:
+    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
+    engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
+    os: [darwin]
+
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
@@ -4168,6 +4181,16 @@ packages:
   pidtree@0.6.0:
     resolution: {integrity: sha512-eG2dWTVw5bzqGRztnHExczNxt5VGsE6OwTeCG3fdUf9KBsZzO3R5OIIIzWR+iZA0NtZ+RDVdaoE2dK1cn6jH4g==}
     engines: {node: '>=0.10'}
+    hasBin: true
+
+  playwright-core@1.58.2:
+    resolution: {integrity: sha512-yZkEtftgwS8CsfYo7nm0KE8jsvm6i/PTgVtB8DL726wNf6H2IMsDuxCpJj59KDaxCtSnrWan2AeDqM7JBaultg==}
+    engines: {node: '>=18'}
+    hasBin: true
+
+  playwright@1.58.2:
+    resolution: {integrity: sha512-vA30H8Nvkq/cPBnNw4Q8TWz1EJyqgpuinBcHET0YVJVFldr8JDNiU9LaWAE1KqSkRYazuaBhTpB5ZzShOezQ6A==}
+    engines: {node: '>=18'}
     hasBin: true
 
   postcss@8.4.31:
@@ -4743,7 +4766,7 @@ snapshots:
   '@assembly-js/node-sdk@3.19.1(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
       isomorphic-fetch: 3.0.0
-      next: 14.2.35(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      next: 14.2.35(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
     transitivePeerDependencies:
       - '@babel/core'
       - '@opentelemetry/api'
@@ -6423,6 +6446,10 @@ snapshots:
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/core': 2.5.1(@opentelemetry/api@1.9.0)
 
+  '@playwright/test@1.58.2':
+    dependencies:
+      playwright: 1.58.2
+
   '@popperjs/core@2.11.8': {}
 
   '@prisma/instrumentation@7.2.0(@opentelemetry/api@1.9.0)':
@@ -6796,7 +6823,7 @@ snapshots:
 
   '@sentry/core@10.40.0': {}
 
-  '@sentry/nextjs@10.40.0(@opentelemetry/context-async-hooks@2.5.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@2.5.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.5.1(@opentelemetry/api@1.9.0))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(webpack@5.105.2(esbuild@0.25.12))':
+  '@sentry/nextjs@10.40.0(@opentelemetry/context-async-hooks@2.5.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@2.5.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.5.1(@opentelemetry/api@1.9.0))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(webpack@5.105.2(esbuild@0.25.12))':
     dependencies:
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/semantic-conventions': 1.39.0
@@ -6809,7 +6836,7 @@ snapshots:
       '@sentry/react': 10.40.0(react@19.2.4)
       '@sentry/vercel-edge': 10.40.0
       '@sentry/webpack-plugin': 5.1.0(webpack@5.105.2(esbuild@0.25.12))
-      next: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      next: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       rollup: 4.59.0
       stacktrace-parser: 0.1.11
     transitivePeerDependencies:
@@ -8091,6 +8118,9 @@ snapshots:
 
   forwarded-parse@2.1.2: {}
 
+  fsevents@2.3.2:
+    optional: true
+
   fsevents@2.3.3:
     optional: true
 
@@ -8443,7 +8473,7 @@ snapshots:
 
   neo-async@2.6.2: {}
 
-  next@14.2.35(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  next@14.2.35(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:
       '@next/env': 14.2.35
       '@swc/helpers': 0.5.5
@@ -8465,11 +8495,12 @@ snapshots:
       '@next/swc-win32-ia32-msvc': 14.2.33
       '@next/swc-win32-x64-msvc': 14.2.33
       '@opentelemetry/api': 1.9.0
+      '@playwright/test': 1.58.2
     transitivePeerDependencies:
       - '@babel/core'
       - babel-plugin-macros
 
-  next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:
       '@next/env': 16.1.6
       '@swc/helpers': 0.5.15
@@ -8489,6 +8520,7 @@ snapshots:
       '@next/swc-win32-arm64-msvc': 16.1.6
       '@next/swc-win32-x64-msvc': 16.1.6
       '@opentelemetry/api': 1.9.0
+      '@playwright/test': 1.58.2
       sharp: 0.34.5
     transitivePeerDependencies:
       - '@babel/core'
@@ -8570,6 +8602,14 @@ snapshots:
   picomatch@4.0.3: {}
 
   pidtree@0.6.0: {}
+
+  playwright-core@1.58.2: {}
+
+  playwright@1.58.2:
+    dependencies:
+      playwright-core: 1.58.2
+    optionalDependencies:
+      fsevents: 2.3.2
 
   postcss@8.4.31:
     dependencies:
