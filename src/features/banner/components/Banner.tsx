@@ -35,11 +35,6 @@ export const Banner = ({
   const [dragStartPosition, setDragStartPosition] = useState({ x: positionX, y: positionY })
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: reset loading state when src changes
-  useEffect(() => {
-    setIsLoaded(false)
-  }, [src])
-
   useEffect(() => {
     setCurrentX(positionX)
     setCurrentY(positionY)
@@ -60,8 +55,8 @@ export const Banner = ({
       if (!dragStart || !containerRef.current) return
 
       const rect = containerRef.current.getBoundingClientRect()
-      const sensitivityX = 200 / rect.width
-      const sensitivityY = 200 / rect.height
+      const sensitivityX = 50 / rect.width
+      const sensitivityY = 50 / rect.height
 
       const deltaX = -(e.clientX - dragStart.x) * sensitivityX
       const deltaY = -(e.clientY - dragStart.y) * sensitivityY
@@ -107,11 +102,7 @@ export const Banner = ({
         src={src}
         alt={alt ?? ''}
         fill
-        className={cn(
-          'object-cover transition-opacity duration-300',
-          isLoaded ? 'opacity-100' : 'opacity-0',
-          isRepositioning && 'cursor-grab active:cursor-grabbing',
-        )}
+        className={cn('object-cover', isRepositioning && 'cursor-grab active:cursor-grabbing')}
         style={{ objectPosition: `${currentX}% ${currentY}%` }}
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
         priority
