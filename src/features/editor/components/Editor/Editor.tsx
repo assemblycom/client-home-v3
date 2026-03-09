@@ -7,6 +7,7 @@ import { EmbedBubbleInput } from '@extensions/Embed.ext/EmbedBubbleInput'
 import extensions from '@extensions/extensions'
 import { FileHandlerExt } from '@extensions/FileHandler.ext'
 import { ImageExt } from '@extensions/Image.ext'
+import { TableCellMenu } from '@extensions/Table.ext/TableCellMenu'
 import { SettingsContext } from '@settings/providers/settings.provider'
 import { EditorContent, useEditor } from '@tiptap/react'
 import { useContext, useEffect } from 'react'
@@ -63,6 +64,7 @@ export const Editor = ({ token, content, backgroundColor }: EditorProps) => {
       <BubbleMenu id="embed-bubble-menu" editor={editor} open={showEmbedInput}>
         <EmbedBubbleInput editor={editor} showEmbedInput={showEmbedInput} setShowEmbedInput={setShowEmbedInput} />
       </BubbleMenu>
+      <TableCellMenu editor={editor} />
       <EditorContent editor={editor} />
     </div>
   ) : null
