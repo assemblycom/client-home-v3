@@ -43,7 +43,7 @@ export const ClientEditorWrapper = () => {
   return (
     <div
       className={cn(
-        '@container mx-auto flex min-h-full w-full max-w-xl flex-col gap-5 overflow-auto px-12 py-11',
+        '@container mx-auto flex min-h-full w-full max-w-xl flex-col gap-5 overflow-auto px-4 py-5 min-[860px]:px-12 min-[860px]:py-11',
         isDark && 'dark',
       )}
       style={{ backgroundColor, '--bg-color': backgroundColor } as React.CSSProperties}
