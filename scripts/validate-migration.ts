@@ -151,6 +151,7 @@ const processWorkspace = async (
 
   const report: Record<string, WorkspaceReport> = {}
   const reportFile = `migration_report_${Date.now()}.json`
+  console.info('Writing to file', reportFile, '...')
   const saveReport = () => writeFileSync(reportFile, JSON.stringify(report, null, 2))
   const expiredResult: TestResult = { token: '', payload: null, status: 'expired', errors: 'Workspace returned 403' }
 
