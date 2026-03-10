@@ -6,7 +6,7 @@ import db from '@/db'
 import AssemblyClient from '@/lib/assembly/assembly-client'
 import { encodePayload } from '@/utils/crypto'
 
-const BASE_URL = 'http://localhost:3000'
+const BASE_URL = 'https://client-home-v3-git-out-3279-assemblycom.vercel.app'
 const CONCURRENCY = 4
 const apiKey = z.string().min(1).parse(process.env.ASSEMBLY_API_KEY)
 
