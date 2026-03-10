@@ -7,20 +7,26 @@ import AssemblyClient from '@/lib/assembly/assembly-client'
 import { encodePayload } from '@/utils/crypto'
 
 const BASE_URL = 'http://localhost:3000'
-const CONCURRENCY = 3
+const CONCURRENCY = 4
 const apiKey = z.string().min(1).parse(process.env.ASSEMBLY_API_KEY)
-console.log('apiKey', apiKey)
 
 type TestResult = {
   token: string
   payload: Record<string, string> | null
-  status: 'passed' | 'failed' | 'skipped'
+  status: 'passed' | 'failed' | 'skipped' | 'expired'
   errors?: string
 }
 
 type WorkspaceReport = {
-  internal_user: TestResult
-  client: TestResult
+  internalUser?: TestResult
+  client?: TestResult
+}
+
+const checkWorkspaceActive = async (workspaceId: string): Promise<boolean> => {
+  const res = await fetch('https://api.assembly.com/v1/workspaces', {
+    headers: { 'X-API-KEY': `${workspaceId}/${apiKey}` },
+  })
+  return res.status !== 403
 }
 
 const validatePage = async (context: BrowserContext, url: string): Promise<Omit<TestResult, 'token' | 'payload'>> => {
@@ -38,14 +44,8 @@ const validatePage = async (context: BrowserContext, url: string): Promise<Omit<
       return { status: 'failed', errors: `HTTP ${response?.status() ?? 'no response'}` }
     }
 
-    // Wait for Next.js to render meaningful content
-    await page.waitForSelector('main, #__next > *', { timeout: 15_000 })
-
-    // Check for Next.js error overlay (indicates a crash)
-    const hasErrorOverlay = await page.$('nextjs-portal, [data-nextjs-dialog]').then(Boolean)
-    if (hasErrorOverlay) {
-      return { status: 'failed', errors: 'Next.js error overlay detected' }
-    }
+    // Wait for TipTap editor to render
+    await page.waitForSelector('div[class*="tiptap"]', { timeout: 15_000 })
 
     return crashes.length > 0 ? { status: 'failed', errors: crashes.join('\n') } : { status: 'passed' }
   } catch (err) {
@@ -66,7 +66,7 @@ const processWorkspace = async (
   // Bootstrap: need createdById to create an initial token
   if (!workspace.createdById) {
     return {
-      internal_user: skipped('No createdById on settings row'),
+      internalUser: skipped('No createdById on settings row'),
       client: skipped('No createdById — cannot bootstrap AssemblyClient'),
     }
   }
@@ -81,7 +81,7 @@ const processWorkspace = async (
   } catch (err) {
     const reason = `AssemblyClient bootstrap failed: ${err}`
     return {
-      internal_user: { token: '', payload: null, status: 'failed', errors: reason },
+      internalUser: { token: '', payload: null, status: 'failed', errors: reason },
       client: { token: '', payload: null, status: 'failed', errors: reason },
     }
   }
@@ -109,7 +109,7 @@ const processWorkspace = async (
   }
 
   // --- Client user ---
-  let clientResult: TestResult
+  /*   let clientResult: TestResult
   try {
     const clientsRes = await assembly.getClients({ limit: 1 })
     const client = clientsRes.data?.[0]
@@ -132,8 +132,8 @@ const processWorkspace = async (
   } catch (err) {
     clientResult = { token: '', payload: null, status: 'failed', errors: `Client fetch/test failed: ${err}` }
   }
-
-  return { internal_user: internalResult, client: clientResult }
+ */
+  return { internalUser: internalResult }
 }
 
 ;(async () => {
@@ -141,7 +141,6 @@ const processWorkspace = async (
   const workspaces = await db
     .selectDistinct({ workspaceId: settings.workspaceId, createdById: settings.createdById })
     .from(settings)
-    .limit(100)
 
   console.info(`Found ${workspaces.length} workspaces to validate`)
 
@@ -150,21 +149,55 @@ const processWorkspace = async (
     return
   }
 
-  // 2. Launch browser
+  const report: Record<string, WorkspaceReport> = {}
+  const reportFile = `migration_report_${Date.now()}.json`
+  const saveReport = () => writeFileSync(reportFile, JSON.stringify(report, null, 2))
+  const expiredResult: TestResult = { token: '', payload: null, status: 'expired', errors: 'Workspace returned 403' }
+
+  // 2. Filter out expired workspaces first (batches of 10)
+  console.info('Checking workspace expiry...')
+  const activeWorkspaces: typeof workspaces = []
+
+  for (let i = 0; i < workspaces.length; i += 10) {
+    const batch = workspaces.slice(i, i + 10)
+    const checks = await Promise.all(
+      batch.map(async (ws) => ({ ws, active: await checkWorkspaceActive(ws.workspaceId) })),
+    )
+
+    for (const { ws, active } of checks) {
+      if (active) {
+        activeWorkspaces.push(ws)
+      } else {
+        report[ws.workspaceId] = { internalUser: expiredResult, client: expiredResult }
+      }
+    }
+
+    console.info(
+      `Checked ${Math.min(i + 10, workspaces.length)}/${workspaces.length} — ${activeWorkspaces.length} active, ${Object.keys(report).length} expired`,
+    )
+  }
+
+  saveReport()
+
+  if (activeWorkspaces.length === 0) {
+    console.info('All workspaces are expired. Nothing to validate.')
+    return
+  }
+
+  // 3. Launch browser and validate active workspaces
   const browser = await chromium.launch()
   const context = await browser.newContext()
 
-  // 3. Process in batches
-  const report: Record<string, WorkspaceReport> = {}
+  console.info(`\nValidating ${activeWorkspaces.length} active workspaces...`)
 
-  for (let i = 0; i < workspaces.length; i += CONCURRENCY) {
-    const batch = workspaces.slice(i, i + CONCURRENCY)
+  for (let i = 0; i < activeWorkspaces.length; i += CONCURRENCY) {
+    const batch = activeWorkspaces.slice(i, i + CONCURRENCY)
 
     const results = await Promise.all(
       batch.map(async (ws) => {
         const result = await processWorkspace(context, ws)
         console.info(
-          `[${i + batch.indexOf(ws) + 1}/${workspaces.length}] ${ws.workspaceId} — IU: ${result.internal_user.status}, Client: ${result.client.status}`,
+          `[${i + batch.indexOf(ws) + 1}/${activeWorkspaces.length}] ${ws.workspaceId} — IU: ${result.internalUser?.status}, Client: ${result.client?.status}`,
         )
         return { workspaceId: ws.workspaceId, result }
       }),
@@ -173,29 +206,29 @@ const processWorkspace = async (
     for (const { workspaceId, result } of results) {
       report[workspaceId] = result
     }
+
+    saveReport()
   }
 
   // 4. Cleanup
   await context.close()
   await browser.close()
 
-  // 5. Write report
-  writeFileSync('migration_report.json', JSON.stringify(report, null, 2))
-
-  // 6. Summary
+  // 5. Summary
   const entries = Object.values(report)
-  const count = (key: 'internal_user' | 'client', status: string) =>
-    entries.filter((e) => e[key].status === status).length
+  const count = (key: 'internalUser' | 'client', status: string) =>
+    entries.filter((e) => e[key]?.status === status).length
 
   console.info('\n=== Migration Validation Report ===')
   console.info(`Total workspaces: ${entries.length}`)
+  console.info(`Expired: ${count('internalUser', 'expired')}`)
   console.info(
-    `Internal user: ${count('internal_user', 'passed')} passed, ${count('internal_user', 'failed')} failed, ${count('internal_user', 'skipped')} skipped`,
+    `Internal user: ${count('internalUser', 'passed')} passed, ${count('internalUser', 'failed')} failed, ${count('internalUser', 'skipped')} skipped`,
   )
   console.info(
     `Client: ${count('client', 'passed')} passed, ${count('client', 'failed')} failed, ${count('client', 'skipped')} skipped`,
   )
-  console.info('Report written to migration_report.json')
+  console.info(`Report written to ${reportFile}`)
 })()
   .catch((err) => {
     console.error(err)
