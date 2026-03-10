@@ -41,14 +41,14 @@ export function EditorWrapper({ className }: EditorWrapperProps) {
   useAppControls()
 
   return (
-    <div className={cn('w-full grow overflow-x-hidden overflow-y-scroll', className)}>
+    <div
+      className={cn('w-full grow overflow-x-hidden overflow-y-scroll p-4 @md:p-6', isDark && 'dark', className)}
+      style={{ '--bg-color': backgroundColor } as React.CSSProperties}
+    >
       <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
         <div
-          className={cn(
-            'flex min-h-full max-w-full flex-col gap-5 @max-md:rounded-t-none px-6 pt-6.5 pb-6.5',
-            isDark && 'dark',
-          )}
-          style={{ backgroundColor, '--bg-color': backgroundColor } as React.CSSProperties}
+          className="@container flex min-h-full max-w-full flex-col gap-5 rounded-xl border border-border-gray @max-md:rounded-t-none px-6 py-5"
+          style={{ backgroundColor }}
         >
           <div className="flex flex-col gap-1.5">
             <Heading />
