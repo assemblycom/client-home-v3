@@ -9,6 +9,8 @@ import { ActionsCard } from '@/features/action-items/components/actions-card'
 import { Banner } from '@/features/banner'
 import { getImageUrl } from '@/features/banner/lib/utils'
 import { api } from '@/lib/core/axios.instance'
+import { isDarkColor } from '@/utils/color'
+import { cn } from '@/utils/tailwind'
 import { Heading } from './Heading'
 import { Subheading } from './Subheading'
 
@@ -36,10 +38,15 @@ export const ClientEditorWrapper = () => {
     refetchOnWindowFocus: false,
   })
 
+  const isDark = isDarkColor(backgroundColor)
+
   return (
     <div
-      className={`@container mx-auto flex min-h-full w-full max-w-xl flex-col gap-5 overflow-auto px-12 py-11`}
-      style={{ backgroundColor }}
+      className={cn(
+        '@container mx-auto flex min-h-full w-full max-w-xl flex-col gap-5 overflow-auto px-12 py-11',
+        isDark && 'dark',
+      )}
+      style={{ backgroundColor, '--bg-color': backgroundColor } as React.CSSProperties}
     >
       <div className="flex flex-col gap-1.5">
         <Heading readonly />

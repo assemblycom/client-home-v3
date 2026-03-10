@@ -16,10 +16,9 @@ import { useShallow } from 'zustand/shallow'
 interface EditorProps {
   token: string
   content: string
-  backgroundColor: string
 }
 
-export const Editor = ({ token, content, backgroundColor }: EditorProps) => {
+export const Editor = ({ token, content }: EditorProps) => {
   const settingsStoreApi = useContext(SettingsContext)
   const { setEditor, destroyEditor, showEmbedInput, setShowEmbedInput } = useEditorStore(
     useShallow((s) => ({
@@ -35,7 +34,7 @@ export const Editor = ({ token, content, backgroundColor }: EditorProps) => {
     extensions: [...extensions, ImageExt, FileHandlerExt.configure({ onPaste: handleFile })],
     content,
     immediatelyRender: false, // Avoid SSR & hydration issues
-    editorProps: { attributes: { class: `bg-[${backgroundColor}] text-custom-xs` } },
+    editorProps: { attributes: { class: 'text-custom-xs' } },
     onCreate({ editor }) {
       editor.storage.token.token = token
     },
@@ -45,12 +44,6 @@ export const Editor = ({ token, content, backgroundColor }: EditorProps) => {
       })
     },
   })
-
-  useEffect(() => {
-    if (!editor) return
-
-    editor.view.dom.style.backgroundColor = backgroundColor
-  }, [backgroundColor, editor])
 
   useEffect(() => {
     if (editor) {
