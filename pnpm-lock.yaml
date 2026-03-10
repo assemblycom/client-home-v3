@@ -4763,7 +4763,7 @@ snapshots:
 
   '@assembly-js/app-bridge@1.1.0': {}
 
-  '@assembly-js/node-sdk@3.19.1(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@assembly-js/node-sdk@3.19.1(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
       isomorphic-fetch: 3.0.0
       next: 14.2.35(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
