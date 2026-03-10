@@ -168,20 +168,21 @@ export default class AssemblyClient {
     // const limit = 100 // There is currently an issue that causes limit above 100 to throw error
     // return TasksResponseSchema.parse(await this.assembly.retrieveTasks({ clientId, companyId, status, limit }))
     // --- Keep this disabled for now, since assembly throws error saying Marketplace app not found
-    const tasksToken = encodePayload(env.TASKS_ASSEMBLY_API_KEY, {
-      clientId,
-      companyId,
-      workspaceId,
-    })
-    const tasksResponse = await fetch(
-      `https://tasks.assembly.com/api/tasks/public?token=${tasksToken}&limit=${MAX_FETCH_ASSEMBLY_RESOURCES}`,
-    )
-    const tasksParsed = TasksResponseSchema.safeParse(await tasksResponse.json())
-    if (!tasksParsed.success) {
-      console.error('Failed to parse tasks')
-      return [] // Fail safely so we don't crash the entire app lol
+    try {
+      const tasksToken = encodePayload(env.TASKS_ASSEMBLY_API_KEY, { clientId, companyId, workspaceId })
+      const tasksResponse = await fetch(
+        `https://tasks.assembly.com/api/tasks/public?token=${tasksToken}&limit=${MAX_FETCH_ASSEMBLY_RESOURCES}`,
+      )
+      const tasksParsed = TasksResponseSchema.safeParse(await tasksResponse.json())
+      if (!tasksParsed.success) {
+        console.warn('Failed to parse tasks')
+        return [] // Fail safely so we don't crash the entire app lol
+      }
+      return tasksParsed.data.data
+    } catch (e) {
+      console.warn('Failed to fetch tasks', e)
+      return []
     }
-    return tasksParsed.data.data
   }
 
   private async _listCustomFields({ entityType }: { entityType: CustomFieldEntityType }) {
