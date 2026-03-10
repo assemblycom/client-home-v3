@@ -60,12 +60,7 @@ export const EmbedBubbleInput = ({ editor, showEmbedInput, setShowEmbedInput }: 
         className="px-2 text-custom-xs focus:outline-none"
       />
       <button type="reset" onClick={handleInputUnload} className="p-1 hover:bg-background-primary">
-        <Icon
-          icon="Close"
-          width={12}
-          height={12}
-          className="text-text-primary transition-all duration-100 ease-in-out"
-        />
+        <Icon icon="Close" width={12} height={12} className="text-fg-primary transition-all duration-100 ease-in-out" />
       </button>
     </div>
   )

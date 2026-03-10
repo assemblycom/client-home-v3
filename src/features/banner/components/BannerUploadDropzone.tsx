@@ -40,9 +40,9 @@ export const BannerUploadDropzone = ({ isUploading, onFileSelect, onClickUpload 
       disabled={isUploading}
       className={`flex w-full cursor-pointer flex-col items-center gap-2 rounded-lg border-2 border-dashed py-10 transition-colors ${isDragging ? 'border-gray-400 bg-gray-100' : 'border-gray-200 bg-gray-50'}`}
     >
-      <Icon icon="Upload" width={24} height={24} className="text-gray-300" />
-      <span className="font-normal text-sm text-text-primary"> Click to upload or drag and drop </span>
-      <span className="text-text-secondary text-xs">1500 x 1600 recommended size</span>
+      <Icon icon="Upload" width={24} height={24} className="text-fg-placeholder" />
+      <span className="font-normal text-fg-primary text-sm"> Click to upload or drag and drop </span>
+      <span className="text-fg-secondary text-xs">1500 x 1600 recommended size</span>
     </button>
   )
 }

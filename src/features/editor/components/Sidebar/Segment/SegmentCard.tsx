@@ -6,7 +6,7 @@ export const SegmentCard = () => {
   return (
     <div className="rounded-sm border border-border-gray p-3">
       <div className="flex items-center justify-between">
-        <div className="text-text-secondary text-xs uppercase leading-5">Default</div>
+        <div className="text-fg-secondary text-xs uppercase leading-5">Default</div>
         <IconButton icon="Ellipsis" variant="minimal" />
       </div>
       <div className="mt-1 mb-4.5 font-medium text-xl leading-7">132 clients</div>

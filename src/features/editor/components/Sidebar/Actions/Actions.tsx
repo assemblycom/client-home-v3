@@ -22,7 +22,7 @@ export const Actions = () => {
 
   return (
     <>
-      <div className="text-[13px] text-text-secondary leading-5.25">
+      <div className="text-[13px] text-fg-secondary leading-5.25">
         Toggle each item below to control what's visible in the actions section.
       </div>
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>

@@ -14,7 +14,7 @@ export const Subheading = ({ readonly, className }: SubheadingProps) => {
 
   if (readonly) {
     if (!subheading) return null
-    return <div className={cn('text-sm text-text-secondary leading-5.5', className)}>{subheading}</div>
+    return <div className={cn('text-fg-secondary text-sm leading-5.5', className)}>{subheading}</div>
   }
 
   return (
@@ -25,7 +25,7 @@ export const Subheading = ({ readonly, className }: SubheadingProps) => {
         placeholder="Subheader"
         value={subheading}
         onChange={(e) => setSubheading(e.target.value)}
-        className={'block w-full border-none text-sm text-text-secondary leading-5.5 outline-none'}
+        className={'block w-full border-none text-fg-secondary text-sm leading-5.5 outline-none'}
       />
     </div>
   )

@@ -65,7 +65,7 @@ export function AutofillSuggestionMenu({ ref, ...props }: Props) {
   if (filteredItems.length === 0) {
     return (
       <div className="rounded-md border border-border-gray bg-white p-2 shadow-md">
-        <p className="px-2 py-1 text-text-secondary text-xs">No fields found</p>
+        <p className="px-2 py-1 text-fg-secondary text-xs">No fields found</p>
       </div>
     )
   }

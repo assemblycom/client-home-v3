@@ -21,8 +21,8 @@ export const DynamicFieldItem = ({ fieldContent, value, name, icon }: DynamicFie
       className="w-full cursor-pointer rounded-sm border border-border-gray px-3 py-1.5 text-left hover:bg-background-primary"
       onClick={handleClick}
     >
-      <div className="font-medium text-[13px] text-text-primary leading-5.25">{fieldContent}</div>
-      <div className="mt-1 flex items-baseline gap-1.5 text-body-xs text-gray-400">
+      <div className="font-medium text-[13px] text-fg-primary leading-5.25">{fieldContent}</div>
+      <div className="mt-1 flex items-baseline gap-1.5 text-body-xs text-fg-secondary">
         <Icon icon={icon} width={10} height={10} />
         <span>{name}</span>
       </div>

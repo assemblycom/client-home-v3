@@ -19,12 +19,12 @@
     @apply text-[16px] leading-6 font-medium;
   }
   .text-custom-xl {
-    @apply text-xl leading-6 font-normal tracking-[-0.1px] text-text-primary;
+    @apply text-xl leading-6 font-normal tracking-[-0.1px] text-fg-primary;
   }
 }
 
 body {
-  @apply bg-background text-foreground box-border;
+  @apply bg-background text-fg box-border;
 }
 
 .topbar-selector {
@@ -109,7 +109,7 @@ body {
 }
 
 .tiptap {
-  @apply text-text-primary min-h-[calc(100vh-116px)] rounded-xl;
+  @apply text-fg-primary min-h-[calc(100vh-116px)] rounded-xl;
 
   h1 {
     @apply text-xl leading-7 font-medium;
@@ -129,11 +129,11 @@ body {
   }
 
   hr {
-    @apply my-2 border-text-primary;
+    @apply my-2 border-fg-primary;
   }
 
   p.is-empty::before {
-    @apply text-text-placeholder float-left h-0 pointer-events-none;
+    @apply text-fg-placeholder float-left h-0 pointer-events-none;
     content: attr(data-placeholder);
   }
 
@@ -167,7 +167,7 @@ body {
 }
 
 @utility resize-bar {
-  @apply absolute transition-opacity duration-150 ease-out bg-text-placeholder rounded z-10 border border-gray-200;
+  @apply absolute transition-opacity duration-150 ease-out bg-fg-placeholder rounded z-10 border border-gray-200;
   @apply w-2 h-[50%] top-1/2 right-0 -translate-y-[50%] transform cursor-nw-resize;
 }
 

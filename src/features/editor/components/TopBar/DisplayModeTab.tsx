@@ -29,7 +29,7 @@ export function DisplayModeTab() {
         onClick={() => onClick(DisplayMode.MOBILE)}
         className={cn(
           'grid h-6.5 w-9.5 cursor-pointer place-content-center rounded-xs',
-          displayMode === DisplayMode.MOBILE ? 'bg-background-secondary text-text-secondary' : '',
+          displayMode === DisplayMode.MOBILE ? 'bg-background-secondary text-fg-secondary' : '',
         )}
       >
         <MobileIcon className="aspect-square w-3.5" />

@@ -59,12 +59,12 @@ export const ActionItem = ({ action, isLoading, mode, className, count }: Action
           <Icon icon={action.icon} className="size-4 transition-transform duration-300 group-hover:scale-110" />
           <h3 className="text-heading-md">{action.label}</h3>
         </div>
-        <Icon icon="ArrowRight" width={12.5} height={12.5} className="hidden text-text-secondary lg:block" />
+        <Icon icon="ArrowRight" width={12.5} height={12.5} className="hidden text-fg-secondary lg:block" />
       </div>
 
-      <div className="flex items-center gap-2 text-body-md text-text-secondary">
+      <div className="flex items-center gap-2 text-body-md text-fg-secondary">
         <HandleBarTemplate
-          className={cn(mode === ViewMode.PREVIEW ? 'text-text-primary' : '')}
+          className={cn(mode === ViewMode.PREVIEW ? 'text-fg-primary' : '')}
           mode={mode}
           template={action.template}
           fallbackValue={count ?? 0}

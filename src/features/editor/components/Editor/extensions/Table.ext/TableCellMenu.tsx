@@ -192,7 +192,7 @@ export const TableCellMenu = ({ editor }: { editor: Editor }) => {
                 handleAction(action)
               }}
               className={`flex w-full items-center gap-2 px-3 py-1.5 text-left text-sm transition-colors hover:bg-gray-100 ${
-                action.isDanger ? 'text-red-600 hover:bg-red-50' : 'text-gray-700'
+                action.isDanger ? 'text-red-600 hover:bg-red-50' : 'text-fg-primary'
               }`}
             >
               {action.icon}

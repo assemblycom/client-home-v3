@@ -35,7 +35,7 @@ export const BackgroundColor = () => {
         >
           <Colorful color={backgroundColor} disableAlpha={true} onChange={handleColorfulChange} />
         </Popper>
-        <span className="ml-3 text-sm text-text-primary uppercase leading-5 tracking-[-0.15px]">{backgroundColor}</span>
+        <span className="ml-3 text-fg-primary text-sm uppercase leading-5 tracking-[-0.15px]">{backgroundColor}</span>
       </div>
     </div>
   )

@@ -141,7 +141,7 @@ export const Banner = ({
             <button
               type="button"
               onClick={handleSave}
-              className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-border-gray bg-white py-[3px] pr-2 pl-2 font-medium text-sm text-text-primary shadow-sm hover:bg-gray-50"
+              className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-border-gray bg-white py-[3px] pr-2 pl-2 font-medium text-fg-primary text-sm shadow-sm hover:bg-gray-50"
             >
               <Icon icon="Check" width={14} height={14} />
               Save
@@ -149,14 +149,14 @@ export const Banner = ({
             <button
               type="button"
               onClick={handleCancel}
-              className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-border-gray bg-white py-[3px] pr-2 pl-2 font-medium text-sm text-text-primary shadow-sm hover:bg-gray-50"
+              className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-border-gray bg-white py-[3px] pr-2 pl-2 font-medium text-fg-primary text-sm shadow-sm hover:bg-gray-50"
             >
               <Icon icon="Close" width={14} height={14} />
               Cancel
             </button>
           </div>
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-            <div className="flex items-center gap-2 rounded-lg bg-white px-3 py-1.5 font-medium text-sm text-text-primary shadow-sm">
+            <div className="flex items-center gap-2 rounded-lg bg-white px-3 py-1.5 font-medium text-fg-primary text-sm shadow-sm">
               <Icon icon="Reposition" width={16} height={16} />
               Drag image to reposition
             </div>
@@ -170,7 +170,7 @@ export const Banner = ({
           <button
             type="button"
             onClick={onChangeBanner}
-            className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-border-gray bg-white py-[3px] pr-2 pl-2 font-medium text-sm text-text-primary shadow-sm hover:bg-gray-50"
+            className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-border-gray bg-white py-[3px] pr-2 pl-2 font-medium text-fg-primary text-sm shadow-sm hover:bg-gray-50"
           >
             <Icon icon="Edit" width={14} height={14} />
             Change
@@ -178,7 +178,7 @@ export const Banner = ({
           <button
             type="button"
             onClick={() => setIsRepositioning(true)}
-            className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-border-gray bg-white py-[3px] pr-2 pl-2 font-medium text-sm text-text-primary shadow-sm hover:bg-gray-50"
+            className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-border-gray bg-white py-[3px] pr-2 pl-2 font-medium text-fg-primary text-sm shadow-sm hover:bg-gray-50"
           >
             <Icon icon="Reposition" width={14} height={14} />
             Reposition

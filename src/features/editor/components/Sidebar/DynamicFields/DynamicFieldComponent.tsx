@@ -14,7 +14,7 @@ export const DynamicFieldComponent = ({ type, fields }: DynamicFieldComponentPro
     <div>
       <div className="flex w-full items-center gap-2">
         <div className="h-px flex-1 bg-border-gray" />
-        <span className="text-text-secondary text-xs uppercase leading-4 tracking-[0.3px]">{type}</span>
+        <span className="text-fg-secondary text-xs uppercase leading-4 tracking-[0.3px]">{type}</span>
         <div className="h-px flex-1 bg-border-gray" />
       </div>
       <div className="mt-3 flex flex-col space-y-3">

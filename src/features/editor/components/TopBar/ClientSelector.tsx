@@ -31,12 +31,12 @@ export const ClientSelector = () => {
         className="box-content flex min-h-7 items-center gap-2.5 rounded-sm border border-border-gray px-2 py-0.5 text-[13px] leading-[21px]"
       >
         <div>
-          <span className="text-text-secondary">Preview as: </span>
+          <span className="text-fg-secondary">Preview as: </span>
           <span>
             {previewClient?.firstName} {previewClient?.lastName}
           </span>
         </div>
-        <Icon icon="ChevronDown" name="arrow-down" height={10} width={10} className="text-text-primary" />
+        <Icon icon="ChevronDown" name="arrow-down" height={10} width={10} className="text-fg-primary" />
       </button>
       <Popper isOpen={isOpen} setIsOpen={setIsOpen} triggerRef={triggerRef} className="bg-white!">
         <div ref={selectorRef}>

@@ -8,13 +8,14 @@ import { Subheading } from '@editor/components/Subheading'
 import { useAppControls } from '@editor/hooks/useAppControls'
 import { useSettingsMutation } from '@settings/hooks/useSettingsMutation'
 import { useSettingsStore } from '@settings/providers/settings.provider'
-import { Activity } from 'react'
+import { Activity, type CSSProperties, useMemo } from 'react'
 import { ActionsCard } from '@/features/action-items/components/actions-card'
 import { Banner } from '@/features/banner'
 import { getImageUrl } from '@/features/banner/lib/utils'
 import { useSidebarStore } from '@/features/editor/stores/sidebarStore'
 import { useViewStore, ViewMode } from '@/features/editor/stores/viewStore'
 import { getActivityMode } from '@/utils/activity'
+import { isDarkBackground } from '@/utils/color'
 
 export function EditorWrapper() {
   const viewMode = useViewStore((store) => store.viewMode)
@@ -29,13 +30,14 @@ export function EditorWrapper() {
   const setSidebarView = useSidebarStore((store) => store.setSidebarView)
 
   const { mutate: updateSettings } = useSettingsMutation()
+  const isDark = useMemo(() => isDarkBackground(backgroundColor), [backgroundColor])
 
   useAppControls()
 
   return (
     <div
-      className="w-full grow overflow-x-hidden overflow-y-scroll @md:px-6 @md:pt-6.5 pb-6.5"
-      style={{ backgroundColor }}
+      className={`brand-override w-full grow overflow-x-hidden overflow-y-scroll @md:px-6 @md:pt-6.5 pb-6.5${isDark ? 'dark' : ''}`}
+      style={{ '--color-brand': backgroundColor || '#fff' } as CSSProperties}
     >
       <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
         <div className="flex max-w-full flex-col gap-5 @max-md:rounded-t-none" style={{ backgroundColor }}>
