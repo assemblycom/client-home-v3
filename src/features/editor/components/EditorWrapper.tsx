@@ -18,7 +18,11 @@ import { getActivityMode } from '@/utils/activity'
 import { isDarkColor } from '@/utils/color'
 import { cn } from '@/utils/tailwind'
 
-export function EditorWrapper() {
+interface EditorWrapperProps {
+  className?: string
+}
+
+export function EditorWrapper({ className }: EditorWrapperProps) {
   const viewMode = useViewStore((store) => store.viewMode)
   const token = useAuthStore((store) => store.token)
   const content = useSettingsStore((store) => store.content)
@@ -37,12 +41,15 @@ export function EditorWrapper() {
   useAppControls()
 
   return (
-    <div
-      className={cn('w-full grow overflow-x-hidden overflow-y-scroll @md:px-6 @md:pt-6.5 pb-6.5', isDark && 'dark')}
-      style={{ backgroundColor, '--bg-color': backgroundColor } as React.CSSProperties}
-    >
+    <div className={cn('w-full grow overflow-x-hidden overflow-y-scroll', className)}>
       <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
-        <div className="flex max-w-full flex-col gap-5 @max-md:rounded-t-none" style={{ backgroundColor }}>
+        <div
+          className={cn(
+            'flex min-h-full max-w-full flex-col gap-5 @max-md:rounded-t-none px-6 pt-6.5 pb-6.5',
+            isDark && 'dark',
+          )}
+          style={{ backgroundColor, '--bg-color': backgroundColor } as React.CSSProperties}
+        >
           <div className="flex flex-col gap-1.5">
             <Heading />
             <Subheading />
@@ -66,14 +73,16 @@ export function EditorWrapper() {
       </Activity>
 
       <Activity mode={getActivityMode(viewMode === ViewMode.PREVIEW)}>
-        <Preview
-          content={content}
-          token={token}
-          backgroundColor={backgroundColor}
-          bannerUrl={getImageUrl(bannerUrl?.path, token)}
-          bannerPositionX={bannerPositionX}
-          bannerPositionY={bannerPositionY}
-        />
+        <div className="h-full min-[860px]:px-6 min-[860px]:pt-6.5 min-[860px]:pb-6.5">
+          <Preview
+            content={content}
+            token={token}
+            backgroundColor={backgroundColor}
+            bannerUrl={getImageUrl(bannerUrl?.path, token)}
+            bannerPositionX={bannerPositionX}
+            bannerPositionY={bannerPositionY}
+          />
+        </div>
       </Activity>
     </div>
   )

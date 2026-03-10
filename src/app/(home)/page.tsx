@@ -1,11 +1,9 @@
 import { AssemblyNoTokenError } from '@assembly/errors'
-import { EditorWrapper } from '@editor/components/EditorWrapper'
-import { Sidebar } from '@editor/components/Sidebar'
-import { TopBar } from '@editor/components/TopBar'
 import { BannerImagesFetcher } from '@media/components/BannerImagesFetcher'
 import { UsersFetcher } from '@users/components/UsersFetcher'
 import { headers } from 'next/headers'
 import { Suspense } from 'react'
+import { HomeLayout } from '@/app/(home)/HomeLayout'
 import { AuthenticatedAPIHeaders } from '@/app/types'
 import { WorkspaceFetcher } from '@/features/workspace/components/WorkspaceFetcher'
 
@@ -26,13 +24,7 @@ export default async function Home() {
         <BannerImagesFetcher token={token} />
       </Suspense>
 
-      <div className="flex h-screen w-screen max-w-screen">
-        <div className="@container mx-auto flex h-screen max-w-xl flex-1 flex-col overflow-hidden">
-          <TopBar />
-          <EditorWrapper />
-        </div>
-        <Sidebar className="w-100 shrink-0" />
-      </div>
+      <HomeLayout />
     </>
   )
 }
