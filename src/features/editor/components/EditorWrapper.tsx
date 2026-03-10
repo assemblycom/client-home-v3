@@ -33,12 +33,12 @@ export function EditorWrapper() {
   useAppControls()
 
   return (
-    <div
-      className="w-full grow overflow-x-hidden overflow-y-scroll @md:px-6 @md:pt-6.5 pb-6.5"
-      style={{ backgroundColor }}
-    >
+    <div className="w-full grow overflow-x-hidden overflow-y-scroll @md:p-6 p-4">
       <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
-        <div className="flex max-w-full flex-col gap-5 @max-md:rounded-t-none" style={{ backgroundColor }}>
+        <div
+          className="@container flex max-w-full flex-col gap-5 rounded-xl border border-border-gray px-6 py-5"
+          style={{ backgroundColor }}
+        >
           <div className="flex flex-col gap-1.5">
             <Heading />
             <Subheading />
