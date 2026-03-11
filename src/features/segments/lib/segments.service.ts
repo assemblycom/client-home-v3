@@ -1,11 +1,19 @@
 import AssemblyClient from '@assembly/assembly-client'
+import { MAX_FETCH_ASSEMBLY_RESOURCES } from '@assembly/constants'
+import type { ClientResponse } from '@assembly/types'
 import { CustomFieldEntityType } from '@assembly/types'
 import type { User } from '@auth/lib/user.entity'
 import type { ConditionsRepository } from '@segments/lib/conditions/conditions.repository'
 import ConditionsDrizzleRepository from '@segments/lib/conditions/conditions.repository'
 import type { SegmentsRepository } from '@segments/lib/segments/segments.repository'
 import SegmentsDrizzleRepository from '@segments/lib/segments/segments.repository'
-import type { SegmentCreateDto, SegmentUpdateDto } from '@segments/lib/segments.dto'
+import { allocateSegmentColors } from '@segments/lib/segments.colors'
+import type {
+  SegmentCreateDto,
+  SegmentResponseDto,
+  SegmentStatsResponseDto,
+  SegmentUpdateDto,
+} from '@segments/lib/segments.dto'
 import httpStatus from 'http-status'
 import db from '@/db'
 import APIError from '@/errors/api.error'
@@ -81,6 +89,48 @@ export default class SegmentsService extends BaseService {
 
   async delete(segmentId: string) {
     return await this.segmentsRepository.softDelete(segmentId)
+  }
+
+  static clientBelongsToSegment(client: ClientResponse, segment: SegmentResponseDto): boolean {
+    const fieldValue = client.customFields?.[segment.customField]
+    if (fieldValue == null) return false
+
+    const compareValues = segment.conditions.map((c) => c.compareValue)
+
+    if (Array.isArray(fieldValue)) {
+      return fieldValue.some((v) => compareValues.includes(String(v)))
+    }
+
+    return compareValues.includes(String(fieldValue))
+  }
+
+  async getStats(): Promise<SegmentStatsResponseDto> {
+    const [segments, clientsResponse] = await Promise.all([
+      this.segmentsRepository.getAll(this.user.workspaceId),
+      this.assembly.getClients({ limit: MAX_FETCH_ASSEMBLY_RESOURCES }),
+    ])
+
+    const clients = clientsResponse.data ?? []
+    const colors = allocateSegmentColors(segments.length)
+
+    const segmentStats = segments.map((segment, index) => {
+      const count = clients.filter((client) => SegmentsService.clientBelongsToSegment(client, segment)).length
+
+      return {
+        name: segment.name,
+        color: colors[index],
+        count,
+      }
+    })
+
+    const segmentedCount = segmentStats.reduce((sum, s) => sum + s.count, 0)
+
+    const stats = [{ name: 'Default', color: '#E5E7EB', count: clients.length - segmentedCount }, ...segmentStats]
+
+    return {
+      totalClients: clients.length,
+      stats,
+    }
   }
 
   async create(payload: SegmentCreateDto) {
