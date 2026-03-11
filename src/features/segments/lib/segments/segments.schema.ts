@@ -14,6 +14,7 @@ export const segments = pgTable(
     name: varchar({ length: 255 }).notNull(),
 
     // The custom field key this segment evaluates against. All segments in a workspace must share the same customField.
+    //IMPORTANT: WE HAVE ADDED A TRIGGER IN THE MIGRATION FILE. THE TRIGGER ENFORCES SAME CUSTOM FIELD ON SEGMENTS: ensure all segments in a workspace share the same custom_field.
     customField: text().notNull(),
 
     ...timestamps,
