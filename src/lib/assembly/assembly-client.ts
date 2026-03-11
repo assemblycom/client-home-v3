@@ -175,7 +175,7 @@ export default class AssemblyClient {
       )
       const tasksParsed = TasksResponseSchema.safeParse(await tasksResponse.json())
       if (!tasksParsed.success) {
-        console.warn('Failed to parse tasks')
+        console.warn('Failed to parse tasks', tasksParsed.error)
         return [] // Fail safely so we don't crash the entire app lol
       }
       return tasksParsed.data.data
