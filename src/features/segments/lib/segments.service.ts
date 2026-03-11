@@ -44,6 +44,10 @@ export default class SegmentsService extends BaseService {
     }
   }
 
+  async getAll() {
+    return await this.segmentsRepository.getAll(this.user.workspaceId)
+  }
+
   async create(payload: SegmentCreateDto) {
     const { internalUserId } = this.user
     if (!internalUserId) {

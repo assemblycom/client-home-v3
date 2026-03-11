@@ -5,6 +5,15 @@ import httpStatus from 'http-status'
 import { type NextRequest, NextResponse } from 'next/server'
 import type { APIResponse } from '@/app/types'
 
+export const getSegments = async (req: NextRequest): Promise<NextResponse<APIResponse>> => {
+  const user = authenticateHeaders(req.headers)
+
+  const segmentsService = SegmentsService.new(user)
+  const segments = await segmentsService.getAll()
+
+  return NextResponse.json({ data: segments })
+}
+
 export const createSegment = async (req: NextRequest): Promise<NextResponse<APIResponse>> => {
   const user = authenticateHeaders(req.headers)
 
