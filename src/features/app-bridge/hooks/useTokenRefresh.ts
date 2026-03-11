@@ -13,11 +13,14 @@ export const useTokenRefresh = (portalUrl?: string) => {
     if (portalUrl) {
       AssemblyBridge.configure({ additionalOrigins: [portalUrl] })
     }
+  }, [portalUrl])
+
+  useEffect(() => {
     const unsubscribe = AssemblyBridge.sessionToken.onTokenUpdate((data) => {
       console.info('TOKEN UPDATE INVOCATION:', data)
       setToken(data.token)
     })
 
     return unsubscribe
-  }, [portalUrl, setToken])
+  }, [setToken])
 }
