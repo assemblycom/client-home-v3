@@ -45,7 +45,7 @@ export function EditorWrapper({ className }: EditorWrapperProps) {
       <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
         <div
           className={cn(
-            'flex min-h-full max-w-full flex-col gap-5 @max-md:rounded-t-none px-6 pt-6.5 pb-6.5',
+            'flex min-h-full max-w-xl flex-col gap-5 @max-md:rounded-t-none px-6 pt-6.5 pb-6.5',
             isDark && 'dark',
           )}
           style={{ backgroundColor, '--bg-color': backgroundColor } as React.CSSProperties}
