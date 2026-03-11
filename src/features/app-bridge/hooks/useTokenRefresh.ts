@@ -11,27 +11,13 @@ export const useTokenRefresh = (portalUrl?: string) => {
 
   useEffect(() => {
     if (portalUrl) {
-      AssemblyBridge.configure({ additionalOrigins: [portalUrl], debug: true })
+      AssemblyBridge.configure({ additionalOrigins: [portalUrl] })
     }
-  }, [portalUrl])
 
-  // DEBUG: log all postMessages from parent to see what's actually being sent
-  useEffect(() => {
-    const debugListener = (event: MessageEvent) => {
-      if (event.data?.type) {
-        console.info('[DEBUG] postMessage received:', event.origin, event.data.type, event.data)
-      }
-    }
-    window.addEventListener('message', debugListener)
-    return () => window.removeEventListener('message', debugListener)
-  }, [])
-
-  useEffect(() => {
     const unsubscribe = AssemblyBridge.sessionToken.onTokenUpdate((data) => {
-      console.info('TOKEN UPDATE INVOCATION:', data)
       setToken(data.token)
     })
 
     return unsubscribe
-  }, [setToken])
+  }, [portalUrl, setToken])
 }
