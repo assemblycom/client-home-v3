@@ -4,7 +4,7 @@ export const ClientsDtoSchema = z.object({
   id: z.uuid(),
   firstName: z.string(),
   lastName: z.string().optional(),
-  email: z.email(),
+  email: z.string(),
   customFields: z.record(z.string(), z.any()).optional(),
   companyId: z.uuid().optional(),
   avatarSrc: z.string().optional(),
