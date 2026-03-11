@@ -59,7 +59,7 @@ export const ClientResponseSchema = z.object({
   companyIds: z.array(z.uuid()).optional(),
   avatarImageUrl: z.string().nullable(),
   fallbackColor: z.string().nullable(),
-  customFields: z.record(z.string(), z.any()).optional(),
+  customFields: z.record(z.string(), z.any()).nullish(),
   createdAt: z.iso.datetime(),
 })
 export type ClientResponse = z.infer<typeof ClientResponseSchema>
@@ -77,7 +77,7 @@ export const CompanyResponseSchema = z.object({
   iconImageUrl: z.string().nullable(),
   fallbackColor: z.string().nullable(),
   isPlaceholder: z.boolean(),
-  customFields: z.record(z.string(), z.any()).optional(),
+  customFields: z.record(z.string(), z.any()).nullish(),
   createdAt: z.iso.datetime(),
 })
 export type CompanyResponse = z.infer<typeof CompanyResponseSchema>
