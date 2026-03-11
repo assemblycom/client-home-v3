@@ -5,7 +5,7 @@ export const ClientsDtoSchema = z.object({
   firstName: z.string(),
   lastName: z.string().optional(),
   email: z.string(),
-  customFields: z.record(z.string(), z.any()).optional(),
+  customFields: z.record(z.string(), z.any()).nullish(),
   companyId: z.uuid().optional(),
   avatarSrc: z.string().optional(),
   avatarFallbackColor: z.string().optional(),
@@ -14,7 +14,7 @@ export const ClientsDtoSchema = z.object({
 export const CompaniesDtoSchema = z.object({
   id: z.uuid(),
   name: z.string(),
-  customFields: z.record(z.string(), z.any()).optional(),
+  customFields: z.record(z.string(), z.any()).nullish(),
   avatarSrc: z.string().optional(),
   avatarFallbackColor: z.string().optional(),
 })
