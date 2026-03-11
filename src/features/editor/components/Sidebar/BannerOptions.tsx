@@ -1,8 +1,8 @@
 'use client'
 
+import { Button } from '@assembly-js/design-system'
 import { useAuthStore } from '@auth/providers/auth.provider'
 import { useSettingsStore } from '@settings/providers/settings.provider'
-import { Button } from 'copilot-design-system'
 import { Banner } from '@/features/banner'
 import { getImageUrl } from '@/features/banner/lib/utils'
 

@@ -1,4 +1,4 @@
-import { Icon } from 'copilot-design-system'
+import { Icon } from '@assembly-js/design-system'
 import Image from 'next/image'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { cn } from '@/utils/tailwind'

@@ -1,7 +1,7 @@
+import { Icon, UserCompanySelector } from '@assembly-js/design-system'
 import { Popper } from '@editor/components/Popper'
 import { useSelector } from '@editor/hooks/useSelector'
 import { useUsersStore } from '@users/stores/usersStore'
-import { Icon, UserCompanySelector } from 'copilot-design-system'
 import { useEffect, useRef, useState } from 'react'
 
 export const ClientSelector = () => {

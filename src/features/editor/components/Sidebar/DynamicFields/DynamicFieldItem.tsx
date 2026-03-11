@@ -1,5 +1,5 @@
+import { Icon, type IconType } from '@assembly-js/design-system'
 import { useEditorStore } from '@editor/stores/editorStore'
-import { Icon, type IconType } from 'copilot-design-system'
 
 type DynamicFieldItemProps = {
   fieldContent: string

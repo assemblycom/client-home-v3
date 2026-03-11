@@ -1,7 +1,7 @@
+import { Icon } from '@assembly-js/design-system'
 import { useAuthStore } from '@auth/providers/auth.provider'
 import type { ActionDefinition } from '@editor/components/Sidebar/Actions/constant'
 import { useViewStore, ViewMode } from '@editor/stores/viewStore'
-import { Icon } from 'copilot-design-system'
 import { HandleBarTemplate } from '@/features/handlebar-template/components/handle-bar-template'
 import { cn } from '@/utils/tailwind'
 
