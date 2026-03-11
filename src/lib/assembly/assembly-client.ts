@@ -158,7 +158,11 @@ export default class AssemblyClient {
     // const limit = 100 // There is currently an issue that causes limit above 100 to throw error
     // return TasksResponseSchema.parse(await this.assembly.retrieveTasks({ clientId, companyId, status, limit }))
     // --- Keep this disabled for now, since assembly throws error saying Marketplace app not found
-    const tasksToken = encodePayload(env.TASKS_ASSEMBLY_API_KEY, { clientId, companyId, workspaceId })
+    const tasksToken = encodePayload(env.TASKS_ASSEMBLY_API_KEY, {
+      clientId,
+      companyId,
+      workspaceId,
+    })
     const tasksResponse = await fetch(
       `https://tasks.assembly.com/api/tasks/public?token=${tasksToken}&limit=${MAX_FETCH_ASSEMBLY_RESOURCES}`,
     )
