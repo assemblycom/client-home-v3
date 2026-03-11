@@ -27,6 +27,7 @@
       "@extensions/*": ["./src/features/editor/components/Editor/extensions/*"],
       "@editor/*": ["./src/features/editor/*"],
       "@media/*": ["./src/features/media/*"],
+      "@segments/*": ["./src/features/segments/*"],
       "@settings/*": ["./src/features/settings/*"],
       "@users/*": ["./src/features/users/*"],
       "@notification-counts/*": ["./src/features/notification-counts/*"],
