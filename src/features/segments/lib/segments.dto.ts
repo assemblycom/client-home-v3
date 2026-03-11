@@ -7,6 +7,12 @@ export const SegmentCreateDtoSchema = SegmentCreateSchema.extend({
 })
 export type SegmentCreateDto = z.infer<typeof SegmentCreateDtoSchema>
 
+export const SegmentUpdateDtoSchema = z.object({
+  name: z.string().max(255).optional(),
+  conditions: z.array(ConditionCreateSchema).min(1, 'At least one condition is required').optional(),
+})
+export type SegmentUpdateDto = z.infer<typeof SegmentUpdateDtoSchema>
+
 export const SegmentResponseDtoSchema = SegmentSchema.extend({
   conditions: z.array(ConditionSchema),
 })

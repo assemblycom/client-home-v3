@@ -8,7 +8,10 @@ import BaseDrizzleRepository from '@/lib/core/base-drizzle.repository'
 
 export interface SegmentsRepository extends BaseRepository {
   createOne(workspaceId: string, createdById: string, payload: SegmentCreatePayload): Promise<Segment>
+  getOne(segmentId: string): Promise<SegmentResponseDto | undefined>
   getAll(workspaceId: string): Promise<SegmentResponseDto[]>
+  updateOne(segmentId: string, payload: { name?: string }): Promise<Segment>
+  softDelete(segmentId: string): Promise<Segment>
 }
 
 class SegmentsDrizzleRepository extends BaseDrizzleRepository implements SegmentsRepository {
@@ -20,11 +23,32 @@ class SegmentsDrizzleRepository extends BaseDrizzleRepository implements Segment
     return created
   }
 
+  async getOne(segmentId: string) {
+    return await this.db.query.segments.findFirst({
+      where: and(eq(segments.id, segmentId), isNull(segments.deletedAt)),
+      with: { conditions: true },
+    })
+  }
+
   async getAll(workspaceId: string) {
     return await this.db.query.segments.findMany({
       where: and(eq(segments.workspaceId, workspaceId), isNull(segments.deletedAt)),
       with: { conditions: true },
     })
+  }
+
+  async updateOne(segmentId: string, payload: { name?: string }) {
+    const [updated] = await this.db.update(segments).set(payload).where(eq(segments.id, segmentId)).returning()
+    return updated
+  }
+
+  async softDelete(segmentId: string) {
+    const [deleted] = await this.db
+      .update(segments)
+      .set({ deletedAt: new Date() })
+      .where(eq(segments.id, segmentId))
+      .returning()
+    return deleted
   }
 }
 
