@@ -28,6 +28,7 @@ import {
 } from '@assembly/types'
 import type { AssemblyAPI as SDK } from '@assembly-js/node-sdk'
 import { assemblyApi } from '@assembly-js/node-sdk'
+import type { z } from 'zod'
 import env from '@/config/env'
 import logger from '@/lib/logger'
 import { withRetry } from '@/lib/with-retry'
@@ -95,7 +96,16 @@ export default class AssemblyClient {
   async _getClients(args: AssemblyListArgs & { companyId?: string } = {}) {
     logger.info('AssemblyClient#_getClients', args)
     const assembly = await this.assemblyPromise
-    return ClientsResponseSchema.parse(await assembly.listClients(args))
+    return ClientsResponseSchema.parse(
+      await assembly.listClients(args).then((res) => {
+        if (!res.data) {
+          return {
+            data: [],
+          } as z.infer<typeof ClientsResponseSchema>
+        }
+        return res
+      }),
+    )
   }
 
   async _updateClient(id: string, requestBody: ClientCreateRequest): Promise<ClientResponse> {
@@ -107,7 +117,7 @@ export default class AssemblyClient {
   async _deleteClient(id: string) {
     logger.info('AssemblyClient#_deleteClient', id)
     const assembly = await this.assemblyPromise
-    return await assembly.deleteClient({ id })
+    return assembly.deleteClient({ id })
   }
 
   async _createCompany(requestBody: CompanyCreateRequest) {
@@ -177,7 +187,17 @@ export default class AssemblyClient {
   private async _listCustomFields({ entityType }: { entityType: CustomFieldEntityType }) {
     logger.info('AssemblyClient#_listCustomFields')
     const assembly = await this.assemblyPromise
-    return ListCustomFieldResponseSchema.parse(await assembly.listCustomFields({ entityType }))
+    return ListCustomFieldResponseSchema.parse(
+      await assembly.listCustomFields({ entityType }).then((res) => {
+        if (!res.data) {
+          return {
+            data: [],
+          } as z.infer<typeof ListCustomFieldResponseSchema>
+        }
+
+        return res
+      }),
+    )
   }
 
   private wrapWithRetry<Args extends unknown[], R>(fn: (...args: Args) => Promise<R>): (...args: Args) => Promise<R> {
