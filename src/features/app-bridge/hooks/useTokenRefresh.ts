@@ -11,7 +11,7 @@ export const useTokenRefresh = (portalUrl?: string) => {
 
   useEffect(() => {
     if (portalUrl) {
-      AssemblyBridge.configure({ additionalOrigins: [portalUrl] })
+      AssemblyBridge.configure({ additionalOrigins: [portalUrl], debug: true })
     }
   }, [portalUrl])
 
