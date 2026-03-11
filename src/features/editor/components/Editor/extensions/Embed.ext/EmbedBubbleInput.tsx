@@ -22,11 +22,13 @@ export const EmbedBubbleInput = ({ editor, showEmbedInput, setShowEmbedInput }: 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.code === 'Escape') {
       event.preventDefault()
+      event.stopPropagation()
       return handleInputUnload()
     }
 
     if (event.code === 'Enter') {
       event.preventDefault()
+      event.stopPropagation()
       editor
         .chain()
         .focus()
