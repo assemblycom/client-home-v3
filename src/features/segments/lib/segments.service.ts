@@ -5,7 +5,7 @@ import type { ConditionsRepository } from '@segments/lib/conditions/conditions.r
 import ConditionsDrizzleRepository from '@segments/lib/conditions/conditions.repository'
 import type { SegmentsRepository } from '@segments/lib/segments/segments.repository'
 import SegmentsDrizzleRepository from '@segments/lib/segments/segments.repository'
-import type { SegmentCreateDto } from '@segments/lib/segments.dto'
+import type { SegmentCreateDto, SegmentUpdateDto } from '@segments/lib/segments.dto'
 import httpStatus from 'http-status'
 import db from '@/db'
 import APIError from '@/errors/api.error'
@@ -46,6 +46,41 @@ export default class SegmentsService extends BaseService {
 
   async getAll() {
     return await this.segmentsRepository.getAll(this.user.workspaceId)
+  }
+
+  async update(segmentId: string, payload: SegmentUpdateDto) {
+    const { name, conditions: conditionPayloads } = payload
+
+    return await DBService.transaction(async (tx) => {
+      this.segmentsRepository.setTx(tx)
+      this.conditionsRepository.setTx(tx)
+
+      try {
+        if (name) {
+          await this.segmentsRepository.updateOne(segmentId, { name })
+        }
+
+        if (conditionPayloads) {
+          await this.conditionsRepository.deleteBySegmentId(segmentId)
+          await this.conditionsRepository.createMany(segmentId, conditionPayloads)
+        }
+
+        const updated = await this.segmentsRepository.getOne(segmentId)
+
+        if (!updated) {
+          throw new APIError('Segment not found', httpStatus.NOT_FOUND)
+        }
+
+        return updated
+      } finally {
+        this.segmentsRepository.unsetTx()
+        this.conditionsRepository.unsetTx()
+      }
+    })
+  }
+
+  async delete(segmentId: string) {
+    return await this.segmentsRepository.softDelete(segmentId)
   }
 
   async create(payload: SegmentCreateDto) {
