@@ -1,5 +1,5 @@
 'use client'
-import { Button } from 'copilot-design-system'
+import { Button } from '@assembly-js/design-system'
 import { SegmentCard } from '@/features/editor/components/Sidebar/Segment/SegmentCard'
 
 export const Segment = () => {

@@ -1,4 +1,4 @@
-import { IconButton } from 'copilot-design-system'
+import { IconButton } from '@assembly-js/design-system'
 
 // UI slicing with static dummy data
 

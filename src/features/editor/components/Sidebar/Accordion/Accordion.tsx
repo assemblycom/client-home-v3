@@ -1,6 +1,6 @@
 'use client'
 
-import { Icon } from 'copilot-design-system'
+import { Icon } from '@assembly-js/design-system'
 import type { ReactNode } from 'react'
 import type { PropsWithClassname } from '@/app/types'
 import { useAccordion } from '@/features/editor/components/Sidebar/Accordion/useAccordion'
