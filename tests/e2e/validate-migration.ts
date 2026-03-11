@@ -6,9 +6,13 @@ import db from '@/db'
 import AssemblyClient from '@/lib/assembly/assembly-client'
 import { encodePayload } from '@/utils/crypto'
 
-const BASE_URL = 'https://client-home-v3-git-out-3279-assemblycom.vercel.app'
+const BASE_URL = 'http://localhost:3000/'
 const CONCURRENCY = 4
 const apiKey = z.string().min(1).parse(process.env.ASSEMBLY_API_KEY)
+
+// To re-run only specific (e.g. previously failed) workspaces add their ids here
+// If its empty, we will run for all workspaces in settings table
+const workspaceIds: string[] = []
 
 type TestResult = {
   token: string
@@ -44,8 +48,13 @@ const validatePage = async (context: BrowserContext, url: string): Promise<Omit<
       return { status: 'failed', errors: `HTTP ${response?.status() ?? 'no response'}` }
     }
 
-    // Wait for TipTap editor to render
-    await page.waitForSelector('div[class*="tiptap"]', { timeout: 15_000 })
+    // Wait 5 seconds for the page to settle, then check for crash
+    await page.waitForTimeout(5_000)
+
+    const bodyText = await page.textContent('body')
+    if (bodyText?.includes('Application error')) {
+      return { status: 'failed', errors: 'Application error detected on page' }
+    }
 
     return crashes.length > 0 ? { status: 'failed', errors: crashes.join('\n') } : { status: 'passed' }
   } catch (err) {
@@ -109,7 +118,7 @@ const processWorkspace = async (
   }
 
   // --- Client user ---
-  /*   let clientResult: TestResult
+  let clientResult: TestResult
   try {
     const clientsRes = await assembly.getClients({ limit: 1 })
     const client = clientsRes.data?.[0]
@@ -132,17 +141,23 @@ const processWorkspace = async (
   } catch (err) {
     clientResult = { token: '', payload: null, status: 'failed', errors: `Client fetch/test failed: ${err}` }
   }
- */
-  return { internalUser: internalResult }
+  return { internalUser: internalResult, client: clientResult }
 }
 
 ;(async () => {
   // 1. Query all workspaces
-  const workspaces = await db
+  const allWorkspaces = await db
     .selectDistinct({ workspaceId: settings.workspaceId, createdById: settings.createdById })
     .from(settings)
 
-  console.info(`Found ${workspaces.length} workspaces to validate`)
+  const workspaces =
+    workspaceIds.length > 0 ? allWorkspaces.filter((ws) => workspaceIds.includes(ws.workspaceId)) : allWorkspaces
+
+  if (workspaceIds.length > 0) {
+    console.info(`Filtering to ${workspaces.length}/${allWorkspaces.length} workspaces from workspaceIds list`)
+  } else {
+    console.info(`Found ${workspaces.length} workspaces to validate`)
+  }
 
   if (workspaces.length === 0) {
     console.info('Nothing to validate.')
