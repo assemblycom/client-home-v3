@@ -50,6 +50,13 @@
       "when": 1772785895011,
       "tag": "20260306083135_added_bannerPosition_on_settings",
       "breakpoints": false
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1773220352797,
+      "tag": "20260311091232_add-segments-and-conditions",
+      "breakpoints": false
     }
   ]
 }
