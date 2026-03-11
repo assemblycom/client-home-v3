@@ -57,15 +57,22 @@ export const getImage = async (req: NextRequest): Promise<NextResponse<APIRespon
   }
 
   const mediaService = MediaService.new(user)
-  const signedUrl = await mediaService.getSignedFileUrl(removeBucketNameFromPath(filePath))
+
+  let signedUrl: string | null
+  try {
+    signedUrl = await mediaService.getSignedFileUrl(removeBucketNameFromPath(filePath))
+  } catch {
+    throw new APIError('Image not found', httpStatus.NOT_FOUND)
+  }
 
   if (!signedUrl) {
-    throw new APIError('SignedUrl not found', httpStatus.INTERNAL_SERVER_ERROR)
+    throw new APIError('Image not found', httpStatus.NOT_FOUND)
   }
+
   const imageResponse = await fetch(signedUrl)
 
   if (!imageResponse.ok) {
-    throw new APIError('Failed to fetch image', httpStatus.INTERNAL_SERVER_ERROR)
+    throw new APIError('Image not found', httpStatus.NOT_FOUND)
   }
 
   const headers: ResponseInit['headers'] = {
