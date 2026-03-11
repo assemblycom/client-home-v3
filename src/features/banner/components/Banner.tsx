@@ -28,6 +28,7 @@ export const Banner = ({
   onSavePosition,
 }: BannerProps) => {
   const [isLoaded, setIsLoaded] = useState(false)
+  const [hasError, setHasError] = useState(false)
   const [isRepositioning, setIsRepositioning] = useState(false)
   const [currentX, setCurrentX] = useState(positionX)
   const [currentY, setCurrentY] = useState(positionY)
@@ -93,6 +94,8 @@ export const Banner = ({
     setIsRepositioning(false)
   }
 
+  if (hasError) return null
+
   return (
     <div
       ref={containerRef}
@@ -110,6 +113,7 @@ export const Banner = ({
         draggable={false}
         onMouseDown={handleMouseDown}
         onLoad={() => setIsLoaded(true)}
+        onError={() => setHasError(true)}
       />
 
       {!isLoaded && <BannerSkeleton />}
