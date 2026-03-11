@@ -5,14 +5,19 @@ import { MenuMode } from '@editor/components/Menu/menuConfig'
 import { ClientSelector } from '@editor/components/TopBar/ClientSelector'
 import { DisplayModeTab } from '@editor/components/TopBar/DisplayModeTab'
 import { TabBtn } from '@editor/components/TopBar/TabBtn'
+import { useSidebarStore } from '@editor/stores/sidebarStore'
 import { useViewStore, ViewMode } from '@editor/stores/viewStore'
+import { Icon } from 'copilot-design-system'
 import { Activity, useEffect, useEffectEvent, useMemo } from 'react'
 import { getActivityMode } from '@/utils/activity'
 import { debounce } from '@/utils/debounce'
+import { cn } from '@/utils/tailwind'
 
 export const TopBar = () => {
   const viewMode = useViewStore((store) => store.viewMode)
   const changeView = useViewStore((store) => store.changeView)
+  const mobileSidebarOpen = useSidebarStore((store) => store.mobileSidebarOpen)
+  const toggleMobileSidebar = useSidebarStore((store) => store.toggleMobileSidebar)
   const changeViewInStore = useEffectEvent((viewMode: ViewMode) => changeView({ viewMode }))
   const changeViewModeDebounced = useMemo(() => debounce((view: ViewMode) => changeViewInStore(view), 100), [])
 
@@ -23,30 +28,55 @@ export const TopBar = () => {
   }, [changeViewModeDebounced])
 
   return (
-    <nav className="flex h-14 w-full shrink-0 cursor-default items-center justify-between border-border-gray border-b px-5 py-3">
-      <div className="flex items-center gap-2">
-        <div className="flex items-center gap-2 rounded-sm p-1 outline outline-border-gray">
-          <TabBtn
-            label="Editor"
-            active={viewMode === ViewMode.EDITOR}
-            handleClick={() => changeViewModeDebounced(ViewMode.EDITOR)}
-          />
-          <TabBtn
-            label="Preview"
-            active={viewMode === ViewMode.PREVIEW}
-            handleClick={() => changeViewModeDebounced(ViewMode.PREVIEW)}
-          />
+    <nav className="flex w-full shrink-0 cursor-default flex-col border-border-gray border-b">
+      <div className="flex h-14 items-center justify-between px-5 py-3">
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 rounded-sm p-1 outline outline-border-gray">
+            <TabBtn
+              label="Editor"
+              active={viewMode === ViewMode.EDITOR}
+              handleClick={() => changeViewModeDebounced(ViewMode.EDITOR)}
+            />
+            <TabBtn
+              label="Preview"
+              active={viewMode === ViewMode.PREVIEW}
+              handleClick={() => changeViewModeDebounced(ViewMode.PREVIEW)}
+            />
+          </div>
+          <Activity mode={getActivityMode(viewMode === ViewMode.PREVIEW)}>
+            <div className="h-5 w-px bg-border-gray" />
+            <ClientSelector />
+          </Activity>
         </div>
-        <Activity mode={getActivityMode(viewMode === ViewMode.PREVIEW)}>
-          <div className="h-5 w-px bg-border-gray" />
-          <ClientSelector />
-        </Activity>
+        <div className="flex items-center gap-2">
+          <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
+            <div className="hidden min-[860px]:block">
+              <Menu mode={MenuMode.TOOLBAR} />
+            </div>
+          </Activity>
+          <Activity mode={getActivityMode(viewMode === ViewMode.PREVIEW)}>
+            <div className="hidden min-[860px]:block">
+              <DisplayModeTab />
+            </div>
+          </Activity>
+          <button
+            type="button"
+            onClick={toggleMobileSidebar}
+            className="flex cursor-pointer items-center justify-center rounded-sm p-1 outline outline-border-gray min-[860px]:hidden"
+          >
+            <Icon icon="Sidebar" width={16} height={16} />
+          </button>
+        </div>
       </div>
       <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
-        <Menu mode={MenuMode.TOOLBAR} />
-      </Activity>
-      <Activity mode={getActivityMode(viewMode === ViewMode.PREVIEW)}>
-        <DisplayModeTab />
+        <div
+          className={cn(
+            'block border-border-gray border-t px-5 py-2 min-[860px]:hidden',
+            mobileSidebarOpen && 'hidden',
+          )}
+        >
+          <Menu mode={MenuMode.TOOLBAR} />
+        </div>
       </Activity>
     </nav>
   )

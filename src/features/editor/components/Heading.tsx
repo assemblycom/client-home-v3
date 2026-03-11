@@ -23,10 +23,10 @@ export const Heading = ({ readonly, className }: HeadingProps) => {
   const isPreviewMode = readonly || viewMode === ViewMode.PREVIEW
 
   return (
-    <div className={cn('flex font-medium text-custom-xl leading-7', className)}>
-      <div className="capitalize" suppressHydrationWarning>
+    <div className={cn('flex flex-wrap font-medium text-custom-xl leading-7', className)}>
+      <span className="capitalize" suppressHydrationWarning>
         Good {greeting},&nbsp;
-      </div>
+      </span>
       <span>
         <HandleBarTemplate
           template={TEMPLATE}

@@ -28,10 +28,10 @@ export const ClientSelector = () => {
         type="button"
         ref={triggerRef}
         onClick={togglePopper}
-        className="box-content flex min-h-7 items-center gap-2.5 rounded-sm border border-border-gray px-2 py-0.5 text-[13px] leading-[21px]"
+        className="box-content flex min-h-7 max-w-48 items-center gap-2.5 whitespace-nowrap rounded-sm border border-border-gray px-2 py-0.5 text-[13px] leading-[21px]"
       >
-        <div>
-          <span className="text-text-secondary">Preview as: </span>
+        <div className="truncate">
+          <span className="hidden text-text-secondary min-[860px]:inline">Preview as: </span>
           <span>
             {previewClient?.firstName} {previewClient?.lastName}
           </span>
