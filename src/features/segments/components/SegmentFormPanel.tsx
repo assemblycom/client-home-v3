@@ -2,10 +2,11 @@
 
 import { CustomFieldType } from '@assembly/types'
 import { useSidebarStore } from '@editor/stores/sidebarStore'
+import { Select } from '@segments/components/Select'
 import { useSegmentMutations } from '@segments/hooks/useSegmentMutations'
-import { useSegmentStats, useSegments } from '@segments/hooks/useSegments'
+import { useSegmentStats } from '@segments/hooks/useSegments'
 import { Button, Icon } from 'copilot-design-system'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useCustomFieldOptions } from '@/features/custom-fields/hooks/useCustomFieldOptions'
 import { useCustomFields } from '@/features/custom-fields/hooks/useCustomFields'
 
@@ -17,40 +18,34 @@ type ConditionRow = {
 let conditionIdCounter = 0
 const nextConditionId = () => `cond-${++conditionIdCounter}`
 
-export const SegmentFormPanel = () => {
-  const setSidebarView = useSidebarStore((s) => s.setSidebarView)
-  const editingSegmentId = useSidebarStore((s) => s.editingSegmentId)
-  const isEditing = editingSegmentId !== null
+const toConditionRows = (values: { compareValue: string }[]): ConditionRow[] =>
+  values.map((c) => ({ id: nextConditionId(), compareValue: c.compareValue }))
 
-  const { segments } = useSegments()
+export const SegmentFormPanel = () => {
+  const currentSegment = useSidebarStore((s) => s.currentSegment)
+  const setCurrentSegment = useSidebarStore((s) => s.setCurrentSegment)
+
+  const isEditing = !!currentSegment?.id
+  const customFieldKey = currentSegment?.customField ?? null
+
   const { stats } = useSegmentStats()
   const { createSegment, updateSegment } = useSegmentMutations()
   const { clientCustomFields } = useCustomFields()
 
-  const selectedCustomFieldKey = useSidebarStore((s) => s.selectedCustomFieldKey)
-  const editingSegment = isEditing ? segments.find((s) => s.id === editingSegmentId) : null
-  const lockedCustomFieldKey = segments.length > 0 ? segments[0].customField : null
-
-  const [name, setName] = useState('')
-  const [conditions, setConditions] = useState<ConditionRow[]>([{ id: nextConditionId(), compareValue: '' }])
-  const [errors, setErrors] = useState<{ name?: string; conditions?: string }>({})
-
-  // Resolve custom field metadata
-  const customFieldKey = editingSegment?.customField ?? selectedCustomFieldKey ?? lockedCustomFieldKey
   const customField = clientCustomFields.find((f) => f.key === customFieldKey)
   const isMultiSelect = customField?.type === CustomFieldType.TAGS
   const { options } = useCustomFieldOptions(isMultiSelect ? (customField?.id ?? null) : null)
 
-  // Populate form when editing
-  useEffect(() => {
-    if (editingSegment) {
-      setName(editingSegment.name)
-      setConditions(editingSegment.conditions.map((c) => ({ id: nextConditionId(), compareValue: c.compareValue })))
-    }
-  }, [editingSegment])
+  const [name, setName] = useState(currentSegment?.name ?? '')
+  const [conditions, setConditions] = useState<ConditionRow[]>(
+    currentSegment?.conditions?.length
+      ? toConditionRows(currentSegment.conditions)
+      : [{ id: nextConditionId(), compareValue: '' }],
+  )
+  const [errors, setErrors] = useState<{ name?: string; conditions?: string }>({})
 
   const handleBack = () => {
-    setSidebarView('default')
+    setCurrentSegment(null)
   }
 
   const addCondition = () => {
@@ -82,8 +77,8 @@ export const SegmentFormPanel = () => {
       .filter((c) => c.compareValue.trim())
       .map((c) => ({ compareValue: c.compareValue }))
 
-    if (isEditing && editingSegmentId) {
-      updateSegment.mutate({ id: editingSegmentId, name, conditions: validConditions }, { onSuccess: handleBack })
+    if (isEditing && currentSegment?.id) {
+      updateSegment.mutate({ id: currentSegment.id, name, conditions: validConditions }, { onSuccess: handleBack })
     } else {
       createSegment.mutate(
         { name, customField: customFieldKey, conditions: validConditions },
@@ -118,7 +113,7 @@ export const SegmentFormPanel = () => {
               <span className="text-text-primary">Total</span>
               <span className="text-text-secondary">{stats.totalClients} clients</span>
             </div>
-            <div className="flex h-4 overflow-hidden rounded-sm bg-[#dfe1e4]">
+            <div className="flex h-4 overflow-hidden rounded-sm bg-gray-200">
               {stats.stats.map((stat) => (
                 <div
                   key={stat.name}
@@ -157,7 +152,7 @@ export const SegmentFormPanel = () => {
             }}
             placeholder="e.g. Gold"
             className={`w-full rounded border bg-white px-3 py-2 text-sm text-text-primary outline-none ${
-              errors.name ? 'border-[#991a00]' : 'border-border-gray focus:border-[#212b36]'
+              errors.name ? 'border-[#991a00]' : 'border-border-gray focus:border-primary'
             }`}
           />
           {errors.name && <span className="text-[#991a00] text-sm">{errors.name}</span>}
@@ -174,25 +169,20 @@ export const SegmentFormPanel = () => {
                 {index > 0 && <span className="font-medium text-sm text-text-primary">Or</span>}
                 <div className="flex items-center gap-2">
                   {isMultiSelect ? (
-                    <select
+                    <Select
                       value={condition.compareValue}
-                      onChange={(e) => updateCondition(index, e.target.value)}
-                      className="flex-1 rounded border border-border-gray bg-white px-3 py-2 text-sm text-text-primary"
-                    >
-                      <option value="">Select value</option>
-                      {options.map((opt) => (
-                        <option key={opt.key} value={opt.key}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(value) => updateCondition(index, value)}
+                      options={options.map((opt) => ({ value: opt.key, label: opt.label }))}
+                      placeholder="Select value"
+                      className="flex-1"
+                    />
                   ) : (
                     <input
                       type="text"
                       value={condition.compareValue}
                       onChange={(e) => updateCondition(index, e.target.value)}
                       placeholder="Enter value"
-                      className="flex-1 rounded border border-border-gray bg-white px-3 py-2 text-sm text-text-primary outline-none focus:border-[#212b36]"
+                      className="flex-1 rounded border border-border-gray bg-white px-3 py-2 text-sm text-text-primary outline-none focus:border-primary"
                     />
                   )}
                   {conditions.length > 1 && (

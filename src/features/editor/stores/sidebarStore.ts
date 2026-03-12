@@ -1,14 +1,19 @@
 import { create } from 'zustand'
 
-type SidebarView = 'default' | 'change-banner' | 'create-segment' | 'edit-segment'
+type SidebarView = 'default' | 'change-banner'
+
+export type CurrentSegment = {
+  id?: string
+  name?: string
+  customField: string
+  conditions?: { compareValue: string }[]
+}
 
 interface SidebarStore {
   sidebarView: SidebarView
   setSidebarView: (view: SidebarView) => void
-  editingSegmentId: string | null
-  setEditingSegmentId: (id: string | null) => void
-  selectedCustomFieldKey: string | null
-  setSelectedCustomFieldKey: (key: string | null) => void
+  currentSegment: CurrentSegment | null
+  setCurrentSegment: (segment: CurrentSegment | null) => void
   mobileSidebarOpen: boolean
   toggleMobileSidebar: () => void
 }
@@ -16,10 +21,8 @@ interface SidebarStore {
 export const useSidebarStore = create<SidebarStore>()((set) => ({
   sidebarView: 'default',
   setSidebarView: (sidebarView: SidebarView) => set({ sidebarView }),
-  editingSegmentId: null,
-  setEditingSegmentId: (editingSegmentId: string | null) => set({ editingSegmentId }),
-  selectedCustomFieldKey: null,
-  setSelectedCustomFieldKey: (selectedCustomFieldKey: string | null) => set({ selectedCustomFieldKey }),
+  currentSegment: null,
+  setCurrentSegment: (currentSegment: CurrentSegment | null) => set({ currentSegment }),
   mobileSidebarOpen: false,
   toggleMobileSidebar: () => set((state) => ({ mobileSidebarOpen: !state.mobileSidebarOpen })),
 }))

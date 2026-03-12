@@ -3,7 +3,7 @@ import { authenticateHeaders } from '@auth/lib/authenticate'
 import { AuthProvider } from '@auth/providers/auth.provider'
 import { AppProvider } from '@common/providers/app.provider'
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Geist, Inter } from 'next/font/google'
 import { headers } from 'next/headers'
 import './globals.css'
 import { SETTINGS_QUERY_KEY } from '@settings/constants'
@@ -11,6 +11,9 @@ import SettingsActionsService from '@settings/lib/settings-actions.service'
 import { SettingsProvider } from '@settings/providers/settings.provider'
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import { getQueryClient } from '@/lib/core/query.utils'
+import { cn } from '@/lib/utils'
+
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' })
 
 const inter = Inter({
   subsets: ['latin'],
@@ -38,7 +41,7 @@ export default async function RootLayout({
   queryClient.setQueryData([SETTINGS_QUERY_KEY], settings)
 
   return (
-    <html lang="en">
+    <html lang="en" className={cn('font-sans', geist.variable)}>
       <body className={`${inter.className} antialiased`}>
         <AppProvider>
           <HydrationBoundary state={dehydrate(queryClient)}>

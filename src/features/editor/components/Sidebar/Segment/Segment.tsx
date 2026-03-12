@@ -9,15 +9,19 @@ import { useSegments } from '@segments/hooks/useSegments'
 export const Segment = () => {
   const { segments, isLoading } = useSegments()
   const { deleteSegment } = useSegmentMutations()
-  const setSidebarView = useSidebarStore((s) => s.setSidebarView)
-  const setEditingSegmentId = useSidebarStore((s) => s.setEditingSegmentId)
-  const setSelectedCustomFieldKey = useSidebarStore((s) => s.setSelectedCustomFieldKey)
+  const setCurrentSegment = useSidebarStore((s) => s.setCurrentSegment)
 
   const lockedCustomFieldKey = segments.length > 0 ? segments[0].customField : null
 
   const handleEdit = (id: string) => {
-    setEditingSegmentId(id)
-    setSidebarView('edit-segment')
+    const segment = segments.find((s) => s.id === id)
+    if (!segment) return
+    setCurrentSegment({
+      id: segment.id,
+      name: segment.name,
+      customField: segment.customField,
+      conditions: segment.conditions.map((c) => ({ compareValue: c.compareValue })),
+    })
   }
 
   const handleDelete = (id: string) => {
@@ -27,8 +31,7 @@ export const Segment = () => {
   }
 
   const handleCreateSegment = (customFieldKey: string) => {
-    setSelectedCustomFieldKey(customFieldKey)
-    setSidebarView('create-segment')
+    setCurrentSegment({ customField: customFieldKey })
   }
 
   if (isLoading) {

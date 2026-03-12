@@ -1,6 +1,8 @@
 'use client'
 
-import { Button, Icon } from 'copilot-design-system'
+import { Select } from '@segments/components/Select'
+import { useSegmentStats } from '@segments/hooks/useSegments'
+import { Button, Icon, Tooltip } from 'copilot-design-system'
 import { useState } from 'react'
 import { useCustomFields } from '@/features/custom-fields/hooks/useCustomFields'
 
@@ -18,6 +20,7 @@ export const SegmentCreationCard = ({
   onCreateSegment,
 }: SegmentCreationCardProps) => {
   const { clientCustomFields, isLoading } = useCustomFields()
+  const { stats } = useSegmentStats()
   const [selectedKey, setSelectedKey] = useState<string>(lockedCustomFieldKey ?? '')
   const [error, setError] = useState<string | null>(null)
 
@@ -25,6 +28,8 @@ export const SegmentCreationCard = ({
 
   const isLocked = lockedCustomFieldKey !== null
   const hasCustomFields = clientCustomFields.length > 0
+  const hasClients = (stats?.totalClients ?? 0) > 0
+  const isDisabled = !hasClients || !hasCustomFields
 
   const handleCreate = () => {
     if (!selectedKey) {
@@ -36,33 +41,47 @@ export const SegmentCreationCard = ({
   }
 
   return (
-    <div className="flex flex-col gap-2 rounded border border-border-gray bg-[#f8f9fb] p-3">
+    <div className="flex flex-col gap-2 rounded border border-border-gray bg-background-primary p-3">
       <span className="text-sm text-text-primary">Segment by</span>
 
-      {!hasCustomFields && !isLoading ? (
+      {isDisabled && !isLoading ? (
         <div className="flex items-center gap-3 rounded border border-border-gray bg-white px-3 py-2">
-          <span className="flex-1 text-sm text-text-secondary">No custom fields available</span>
-          <Icon icon="QuestionMark" width={14} height={14} className="text-text-secondary" />
+          <span className="flex-1 text-sm text-text-secondary">
+            {!hasClients ? 'No clients available' : 'No custom fields available'}
+          </span>
+          <Tooltip
+            content={
+              !hasClients
+                ? 'Add clients to your workspace to start segmenting.'
+                : 'Use CRM tags to decide who sees this segment.'
+            }
+            tooltipClassname={'text-body-sm max-w-[90dvw]'}
+            actionType="link"
+            actionProps={{
+              href: !hasClients
+                ? 'https://assembly.com/guide/intro-to-clients'
+                : 'https://assembly.com/guide/custom-fields',
+              target: '_blank',
+              children: <span className={'whitespace-nowrap'}>Help guide</span>,
+            }}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+          >
+            <Icon icon="QuestionMark" width={14} height={14} className="cursor-pointer text-text-secondary" />
+          </Tooltip>
         </div>
       ) : (
-        <select
+        <Select
           value={selectedKey}
-          onChange={(e) => {
-            setSelectedKey(e.target.value)
+          onChange={(value) => {
+            setSelectedKey(value)
             setError(null)
           }}
+          options={clientCustomFields.map((f) => ({ value: f.key, label: f.name }))}
+          placeholder="Select custom field"
           disabled={isLocked || isLoading}
-          className={`w-full rounded border bg-white px-3 py-2 text-sm ${
-            error ? 'border-[#991a00]' : 'border-border-gray'
-          } ${isLocked ? 'text-text-secondary' : 'text-text-primary'}`}
-        >
-          <option value="">Select custom field</option>
-          {clientCustomFields.map((field) => (
-            <option key={field.key} value={field.key}>
-              {field.name}
-            </option>
-          ))}
-        </select>
+          error={!!error}
+        />
       )}
 
       {error && (
@@ -77,7 +96,7 @@ export const SegmentCreationCard = ({
         variant="secondary"
         className="w-full"
         onClick={handleCreate}
-        disabled={!hasCustomFields}
+        disabled={isDisabled}
       />
     </div>
   )

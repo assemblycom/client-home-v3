@@ -45,13 +45,14 @@ export const Sidebar = ({ className }: SidebarProps) => {
   const viewMode = useViewStore((store) => store.viewMode)
   const sidebarView = useSidebarStore((store) => store.sidebarView)
   const setSidebarView = useSidebarStore((store) => store.setSidebarView)
+  const currentSegment = useSidebarStore((store) => store.currentSegment)
   const accordionItems = useMemo(() => createAccordionItems(() => setSidebarView('change-banner')), [setSidebarView])
   return (
     <aside className={cn('flex h-screen flex-col border-border-gray border-l', className)}>
       <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
         {sidebarView === 'change-banner' ? (
           <ChangeBannerPanel onBack={() => setSidebarView('default')} />
-        ) : sidebarView === 'create-segment' || sidebarView === 'edit-segment' ? (
+        ) : currentSegment ? (
           <SegmentFormPanel />
         ) : (
           <>
