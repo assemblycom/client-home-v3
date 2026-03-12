@@ -6,18 +6,20 @@ import { useRef, useState } from 'react'
 import { cn } from '@/utils/tailwind'
 
 export const SegmentSelector = () => {
-  const { stats } = useSegmentStats()
+  const { data } = useSegmentStats()
   const activeSegmentId = useViewStore((s) => s.activeSegmentId)
   const setActiveSegmentId = useViewStore((s) => s.setActiveSegmentId)
   const [isOpen, setIsOpen] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
 
-  const segmentSettings = stats?.settings.filter((s) => !!s.segment) ?? []
+  const segmentSettings = data?.settings || []
 
   if (segmentSettings.length === 0) return null
 
-  const activeSegment = segmentSettings.find((s) => s.segment!.id === activeSegmentId)
-  const label = activeSegment ? activeSegment.segment!.name : 'Default'
+  const activeSegment = segmentSettings.find((s) => s.segment?.id === activeSegmentId) as Required<
+    (typeof segmentSettings)[number]
+  >
+  const label = activeSegment ? activeSegment.segment.name : 'Default'
 
   const handleSelect = (segmentId: string | null) => {
     setActiveSegmentId(segmentId)
@@ -31,7 +33,7 @@ export const SegmentSelector = () => {
         type="button"
         ref={triggerRef}
         onClick={() => setIsOpen((prev) => !prev)}
-        className="box-content flex min-h-7 max-w-48 items-center gap-2.5 whitespace-nowrap rounded-sm border border-border-gray px-2 py-0.5 text-[13px] leading-[21px]"
+        className="box-content flex min-h-7 max-w-48 items-center gap-2.5 whitespace-nowrap rounded-sm border border-border-gray px-2 py-0.5 text-body-sm"
       >
         <div className="truncate">
           <span className="text-text-secondary">Editing: </span>
@@ -41,27 +43,17 @@ export const SegmentSelector = () => {
       </button>
       <Popper isOpen={isOpen} setIsOpen={setIsOpen} triggerRef={triggerRef} className="bg-white!">
         <div className="flex flex-col rounded-md border border-border-gray bg-white py-1 shadow-md">
-          <button
-            type="button"
-            onClick={() => handleSelect(null)}
-            className={cn(
-              'px-3 py-1.5 text-left text-[13px] leading-[21px] hover:bg-background-secondary',
-              activeSegmentId === null && 'bg-background-secondary',
-            )}
-          >
-            Default
-          </button>
           {segmentSettings.map((setting) => (
             <button
               type="button"
-              key={setting.segment!.id}
-              onClick={() => handleSelect(setting.segment!.id)}
+              key={setting.segment?.id || 'default'}
+              onClick={() => handleSelect(setting.segment?.id || null)}
               className={cn(
-                'px-3 py-1.5 text-left text-[13px] leading-[21px] hover:bg-background-secondary',
-                activeSegmentId === setting.segment!.id && 'bg-background-secondary',
+                'px-3 py-1.5 text-left text-body-sm hover:bg-background-secondary',
+                activeSegmentId === setting.segment?.id && 'bg-background-secondary',
               )}
             >
-              {setting.segment!.name}
+              {setting.segment?.name || 'Default'}
             </button>
           ))}
         </div>

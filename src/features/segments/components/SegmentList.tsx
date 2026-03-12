@@ -1,17 +1,17 @@
 import type { SegmentStatsSettings } from '@segments/lib/segments.dto'
 import { IconButton } from 'copilot-design-system'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 type SegmentRowProps = {
   name: string
   color: string
   count: number
-  isDefault?: boolean
   onEdit?: () => void
   onDelete?: () => void
+  id: string | null
 }
 
-const SegmentRow = ({ name, color, count, isDefault = false, onEdit, onDelete }: SegmentRowProps) => {
+const SegmentRow = ({ name, id, color, count, onEdit, onDelete }: SegmentRowProps) => {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -35,7 +35,7 @@ const SegmentRow = ({ name, color, count, isDefault = false, onEdit, onDelete }:
         </div>
         <span className="text-text-secondary text-xs leading-4">{countLabel}</span>
       </div>
-      {!isDefault && (
+      {!!id && (
         <div className="relative" ref={menuRef}>
           <IconButton
             icon="Ellipsis"
@@ -80,24 +80,19 @@ type SegmentListProps = {
 }
 
 export const SegmentList = ({ settings, onEdit, onDelete }: SegmentListProps) => {
-  const defaultSetting = settings.find((s) => !s.segment)
-  const segmentSettings = settings.flatMap((s) => (s.segment ? [s as Required<typeof s>] : []))
-
   return (
     <div className="overflow-visible rounded border border-border-gray">
-      {defaultSetting && (
-        <SegmentRow key="default" name="Default" color="#dfe1e4" count={defaultSetting.clientsCount} />
-      )}
-      {segmentSettings.map((setting) => {
+      {settings.map((setting) => {
         const segment = setting.segment
         return (
           <SegmentRow
-            key={segment.id}
-            name={segment.name}
-            color={segment.color}
+            key={segment?.id || 'default'}
+            id={segment?.id || null}
+            name={segment?.name || 'Default'}
+            color={segment?.color || '#dfe1e4'}
             count={setting.clientsCount}
-            onEdit={() => onEdit(segment.id)}
-            onDelete={() => onDelete(segment.id)}
+            onEdit={segment?.id ? () => onEdit(segment.id) : undefined}
+            onDelete={segment?.id ? () => onDelete(segment.id) : undefined}
           />
         )
       })}

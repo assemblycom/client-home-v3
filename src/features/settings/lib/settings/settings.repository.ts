@@ -120,19 +120,13 @@ class SettingsDrizzleRepository extends BaseDrizzleRepository implements Setting
         })
       }
 
-      const entry = settingsMap.get(row.id)!
-      if (row.condition && entry.segment) {
+      const entry = settingsMap.get(row.id)
+      if (row.condition && entry?.segment) {
         entry.segment.conditions.push(row.condition)
       }
     }
 
-    const result = Array.from(settingsMap.values())
-
-    return result.sort((a, b) => {
-      if (a.segmentId === null) return 1
-      if (b.segmentId === null) return -1
-      return 0
-    })
+    return Array.from(settingsMap.values())
   }
 }
 

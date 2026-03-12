@@ -121,28 +121,36 @@ export default class SegmentsService extends BaseService {
     return await this.segmentsRepository.delete(segmentId)
   }
 
-  static clientBelongsToSegment(client: ClientResponse, settings: SettingsWithSegment): boolean {
-    const segment = settings.segment
-    if (!segment) {
-      return true
-    }
-    const fieldValue = client.customFields?.[segment.customField]
-    if (fieldValue == null) return false
+  static resolveSettingForClient(
+    client: ClientResponse,
+    allSettings: SettingsWithSegment[],
+  ): SettingsWithSegment | null {
+    const settings =
+      allSettings.find((settings) => {
+        if (!settings.segment) {
+          return false
+        }
+        const segment = settings.segment
+        const fieldValue = client.customFields?.[segment.customField]
+        if (fieldValue == null) return false
 
-    const compareValues = segment.conditions.map((c) => c.compareValue)
+        const compareValues = segment.conditions.map((c) => c.compareValue)
 
-    // Array: check if any element matches a compareValue
-    if (Array.isArray(fieldValue)) {
-      return fieldValue.some((v) => compareValues.includes(String(v)))
-    }
+        // Array: check if any element matches a compareValue
+        if (Array.isArray(fieldValue)) {
+          return fieldValue.some((v) => compareValues.includes(String(v)))
+        }
 
-    // Object: check if any value in the object matches a compareValue
-    if (typeof fieldValue === 'object') {
-      return Object.values(fieldValue).some((v) => compareValues.includes(String(v)))
-    }
+        // Object: check if any value in the object matches a compareValue
+        if (typeof fieldValue === 'object') {
+          return Object.values(fieldValue).some((v) => compareValues.includes(String(v)))
+        }
 
-    // String / Number: direct comparison
-    return compareValues.includes(String(fieldValue))
+        // String / Number: direct comparison
+        return compareValues.includes(String(fieldValue))
+      }) || allSettings.at(0)
+
+    return settings ?? null
   }
 
   async getStats(): Promise<SegmentStatsResponseDto> {
@@ -155,9 +163,7 @@ export default class SegmentsService extends BaseService {
 
     const segmentStats = clients.reduce(
       (stats, client) => {
-        const settings = allSettings.find((settings) => {
-          return SegmentsService.clientBelongsToSegment(client, settings)
-        })
+        const settings = SegmentsService.resolveSettingForClient(client, allSettings)
 
         if (!settings) {
           // this should not be happening at all. capture error

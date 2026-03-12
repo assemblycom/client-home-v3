@@ -8,7 +8,7 @@ import { useSegmentMutations } from '@segments/hooks/useSegmentMutations'
 import { useSegmentStats } from '@segments/hooks/useSegments'
 
 export const Segment = () => {
-  const { stats, isLoading, isFetching } = useSegmentStats()
+  const { data, isLoading, isFetching } = useSegmentStats()
   const { deleteSegment } = useSegmentMutations()
   const setCurrentSegment = useSidebarStore((s) => s.setCurrentSegment)
   const { confirm, dialogComponent } = useConfirmationDialog({
@@ -19,11 +19,15 @@ export const Segment = () => {
     resolveText: 'Delete',
   })
 
-  const segmentSettings = stats?.settings.filter((s) => !!s.segment) ?? []
-  const lockedCustomFieldKey = segmentSettings.length > 0 ? segmentSettings[0].segment!.customField : null
+  const segmentSettings = data?.settings || []
+
+  const lockedCustomFieldKey =
+    segmentSettings.length > 0
+      ? segmentSettings.find(({ segment }) => !!segment?.customField)?.segment?.customField || null
+      : null
 
   const handleEdit = (segmentId: string) => {
-    const setting = segmentSettings.find((s) => s.segment!.id === segmentId)
+    const setting = segmentSettings.find((s) => s.segment?.id === segmentId)
     if (!setting?.segment) return
     setCurrentSegment({
       id: setting.segment.id,
@@ -72,15 +76,15 @@ export const Segment = () => {
       <p className="text-[13px] text-text-secondary leading-5.25">
         By default, all clients see the same content. Create segments to tailor your homepage for different clients.
       </p>
-      {stats && (
+      {data && (
         <div className={deleteSegment.isPending || isFetching ? 'pointer-events-none animate-pulse opacity-60' : ''}>
-          <SegmentList settings={stats.settings} onEdit={handleEdit} onDelete={handleDelete} />
+          <SegmentList settings={segmentSettings} onEdit={handleEdit} onDelete={handleDelete} />
         </div>
       )}
       <SegmentCreationCard
-        segmentCount={segmentSettings.length}
+        segmentCount={segmentSettings.length - 1}
         lockedCustomFieldKey={lockedCustomFieldKey}
-        hasClients={(stats?.totalClients ?? 0) > 0}
+        hasClients={(data?.totalClients ?? 0) > 0}
         onCreateSegment={handleCreateSegment}
       />
       {dialogComponent}
