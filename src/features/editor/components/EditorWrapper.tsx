@@ -6,6 +6,7 @@ import { Heading } from '@editor/components/Heading'
 import { Preview } from '@editor/components/Preview'
 import { Subheading } from '@editor/components/Subheading'
 import { useAppControls } from '@editor/hooks/useAppControls'
+import { useSegmentSettings } from '@settings/hooks/useSegmentSettings'
 import { useSettingsMutation } from '@settings/hooks/useSettingsMutation'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import { Activity } from 'react'
@@ -38,6 +39,7 @@ export function EditorWrapper({ className }: EditorWrapperProps) {
 
   const isDark = isDarkColor(backgroundColor)
 
+  useSegmentSettings()
   useAppControls()
 
   return (

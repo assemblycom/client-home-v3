@@ -16,6 +16,7 @@ interface ViewStoreState {
   displayMode: DisplayMode
   workspace: WorkspaceResponse | null
   tasksAppId: string | null
+  activeSegmentId: string | null
 }
 
 interface ViewStoreAction {
@@ -23,6 +24,7 @@ interface ViewStoreAction {
   changeView: (data: Partial<ViewStoreState>) => void
   setWorkspace: (workspace: WorkspaceResponse) => void
   setTasksAppId: (id: string) => void
+  setActiveSegmentId: (segmentId: string | null) => void
 }
 
 const defaultState = {
@@ -30,6 +32,7 @@ const defaultState = {
   displayMode: DisplayMode.DESKTOP,
   workspace: null,
   tasksAppId: null,
+  activeSegmentId: null,
 } as const satisfies Partial<ViewStoreState>
 
 type ViewStore = ViewStoreState & ViewStoreAction
@@ -39,6 +42,7 @@ export const useViewStore = create<ViewStore>()((set) => ({
   changeView: (data: Partial<ViewStoreState>) => set(data),
   setWorkspace: (workspace: WorkspaceResponse) => set({ workspace }),
   setTasksAppId: (tasksAppId: string | null) => set({ tasksAppId }),
+  setActiveSegmentId: (activeSegmentId: string | null) => set({ activeSegmentId }),
   reset: () => set(defaultState),
 }))
 
