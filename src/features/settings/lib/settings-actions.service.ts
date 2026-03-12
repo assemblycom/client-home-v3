@@ -52,8 +52,8 @@ export default class SettingsActionsService extends BaseService {
     )
   }
 
-  async getForWorkspace(): Promise<SettingsWithActions> {
-    const settingsAndActions = await this.queryRepository.getOne(this.user.workspaceId)
+  async getForWorkspace(segmentId?: string | null): Promise<SettingsWithActions> {
+    const settingsAndActions = await this.queryRepository.getOne(this.user.workspaceId, segmentId)
 
     // Handle missing settings and/or actions
     if (!settingsAndActions?.settings || !settingsAndActions?.actions) {
@@ -90,10 +90,10 @@ export default class SettingsActionsService extends BaseService {
     }
   }
 
-  async updateForWorkspace(payload: SettingsUpdateDto) {
+  async updateForWorkspace(payload: SettingsUpdateDto, segmentId?: string | null) {
     const settingsPayload = SettingsUpdateSchema.parse(payload) // parsed again just to retrieve necessary keys
     const actionsPayload = payload.actions || {}
-    const settingsAndActions = await this.queryRepository.getOne(this.user.workspaceId)
+    const settingsAndActions = await this.queryRepository.getOne(this.user.workspaceId, segmentId)
 
     return await DBService.transaction(async (tx) => {
       this.settingsRepository.setTx(tx)
@@ -101,12 +101,13 @@ export default class SettingsActionsService extends BaseService {
 
       try {
         const updatedSettings = Object.keys(settingsPayload).length
-          ? await this.settingsRepository.updateOne(this.user.workspaceId, settingsPayload)
+          ? await this.settingsRepository.updateOne(this.user.workspaceId, settingsPayload, segmentId)
           : settingsAndActions?.settings
 
-        const actions = Object.keys(actionsPayload).length
-          ? await this.actionsRepository.updateOne(this.user.workspaceId, actionsPayload)
-          : settingsAndActions?.actions
+        const actions =
+          Object.keys(actionsPayload).length && settingsAndActions?.settings
+            ? await this.actionsRepository.updateOne(settingsAndActions.settings.id, actionsPayload)
+            : settingsAndActions?.actions
 
         return { ...updatedSettings, actions }
       } finally {

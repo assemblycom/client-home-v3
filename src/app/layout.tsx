@@ -35,7 +35,7 @@ export default async function RootLayout({
   const settings = await settingsService.getForWorkspace()
 
   const queryClient = getQueryClient()
-  queryClient.setQueryData([SETTINGS_QUERY_KEY], settings)
+  queryClient.setQueryData([SETTINGS_QUERY_KEY, null], settings)
 
   return (
     <html lang="en">

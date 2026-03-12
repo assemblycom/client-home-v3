@@ -15,9 +15,10 @@ import db from '@/db'
  */
 export const getSettingsWithActions = async (req: NextRequest): Promise<NextResponse<APIResponse>> => {
   const user = authenticateHeaders(req.headers)
+  const segmentId = req.nextUrl.searchParams.get('segmentId') || undefined
 
   const settingsService = SettingsActionsService.new(user)
-  const settings = await settingsService.getForWorkspace()
+  const settings = await settingsService.getForWorkspace(segmentId)
 
   return NextResponse.json({
     data: settings,
@@ -26,6 +27,7 @@ export const getSettingsWithActions = async (req: NextRequest): Promise<NextResp
 
 export const updateSettingsWithActions = async (req: NextRequest): Promise<NextResponse<APIResponse>> => {
   const user = authenticateHeaders(req.headers)
+  const segmentId = req.nextUrl.searchParams.get('segmentId') || undefined
 
   const body = await req.json()
   const parsedBody = SettingsUpdateDtoSchema.parse(body)
@@ -46,7 +48,7 @@ export const updateSettingsWithActions = async (req: NextRequest): Promise<NextR
     mediaRepository,
   )
 
-  const settings = await settingsService.updateForWorkspace(parsedBody)
+  const settings = await settingsService.updateForWorkspace(parsedBody, segmentId)
 
   return NextResponse.json({
     data: settings,

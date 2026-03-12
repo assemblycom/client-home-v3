@@ -12,8 +12,10 @@ import BaseDrizzleRepository from '@/lib/core/base-drizzle.repository'
  */
 export interface ActionsRepository extends BaseRepository {
   getOne(workspaceId: string): Promise<Actions | null>
+  getBySettingsId(settingsId: string): Promise<Actions | null>
   createOne(workspaceId: string, payload: ActionsCreatePayload): Promise<Actions>
-  updateOne(workspaceId: string, payload: ActionsUpdatePayload): Promise<Actions>
+  createForSettings(workspaceId: string, payload: ActionsCreatePayload): Promise<Actions>
+  updateOne(settingsId: string, payload: ActionsUpdatePayload): Promise<Actions>
 }
 
 /**
@@ -43,14 +45,33 @@ class ActionsDrizzleRepository extends BaseDrizzleRepository implements ActionsR
     })
   }
 
-  async updateOne(workspaceId: string, payload: ActionsUpdatePayload) {
-    const [updated] = await this.db.update(actions).set(payload).where(eq(actions.workspaceId, workspaceId)).returning()
+  async updateOne(settingsId: string, payload: ActionsUpdatePayload) {
+    const [updated] = await this.db.update(actions).set(payload).where(eq(actions.settingsId, settingsId)).returning()
     return updated
   }
 
   async getOne(workspaceId: string) {
     const [result] = await this.db.select().from(actions).where(eq(actions.workspaceId, workspaceId)).limit(1)
     return result || null
+  }
+
+  async getBySettingsId(settingsId: string) {
+    const [result] = await this.db.select().from(actions).where(eq(actions.settingsId, settingsId)).limit(1)
+    return result || null
+  }
+
+  async createForSettings(workspaceId: string, payload: ActionsCreatePayload) {
+    const [created] = await this.db
+      .insert(actions)
+      .values({ ...payload, workspaceId })
+      .onConflictDoNothing()
+      .returning()
+
+    if (!created) {
+      throw new APIError('Failed to create segment actions', httpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    return created
   }
 }
 
