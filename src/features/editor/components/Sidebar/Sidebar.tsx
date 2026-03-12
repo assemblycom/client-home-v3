@@ -75,7 +75,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
         {sidebarView === 'change-banner' ? (
           <ChangeBannerPanel onBack={() => setSidebarView('default')} />
         ) : currentSegment ? (
-          <SegmentFormPanel />
+          <SegmentFormPanel key={currentSegment.id ?? 'new'} />
         ) : (
           <>
             <div className="flex h-14 items-center border-border-gray border-b px-6 text-custom-xl">Customization</div>

@@ -1,7 +1,6 @@
 'use client'
 
 import { Select } from '@segments/components/Select'
-import { useSegmentStats } from '@segments/hooks/useSegments'
 import { Button, Icon, Tooltip } from 'copilot-design-system'
 import { useState } from 'react'
 import { useCustomFields } from '@/features/custom-fields/hooks/useCustomFields'
@@ -9,6 +8,7 @@ import { useCustomFields } from '@/features/custom-fields/hooks/useCustomFields'
 type SegmentCreationCardProps = {
   segmentCount: number
   lockedCustomFieldKey: string | null
+  hasClients: boolean
   onCreateSegment: (customFieldKey: string) => void
 }
 
@@ -17,10 +17,10 @@ const MAX_SEGMENTS = 5
 export const SegmentCreationCard = ({
   segmentCount,
   lockedCustomFieldKey,
+  hasClients,
   onCreateSegment,
 }: SegmentCreationCardProps) => {
   const { clientCustomFields, isLoading } = useCustomFields()
-  const { stats } = useSegmentStats()
   const [selectedKey, setSelectedKey] = useState<string>(lockedCustomFieldKey ?? '')
   const [error, setError] = useState<string | null>(null)
 
@@ -28,7 +28,6 @@ export const SegmentCreationCard = ({
 
   const isLocked = lockedCustomFieldKey !== null
   const hasCustomFields = clientCustomFields.length > 0
-  const hasClients = (stats?.totalClients ?? 0) > 0
   const isDisabled = !hasClients || !hasCustomFields
 
   const handleCreate = () => {
@@ -86,8 +85,8 @@ export const SegmentCreationCard = ({
 
       {error && (
         <div className="flex items-center gap-1">
-          <Icon icon="Warning" width={12} height={12} className="text-[#991a00]" />
-          <span className="text-[#991a00] text-sm">{error}</span>
+          <Icon icon="Warning" width={12} height={12} className="text-error" />
+          <span className="text-error text-sm">{error}</span>
         </div>
       )}
 

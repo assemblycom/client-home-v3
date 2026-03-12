@@ -6,20 +6,11 @@ import { Select } from '@segments/components/Select'
 import { useSegmentMutations } from '@segments/hooks/useSegmentMutations'
 import { useSegmentStats } from '@segments/hooks/useSegments'
 import { Button, Icon } from 'copilot-design-system'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useCustomFieldOptions } from '@/features/custom-fields/hooks/useCustomFieldOptions'
 import { useCustomFields } from '@/features/custom-fields/hooks/useCustomFields'
 
-type ConditionRow = {
-  id: string
-  compareValue: string
-}
-
-let conditionIdCounter = 0
-const nextConditionId = () => `cond-${++conditionIdCounter}`
-
-const toConditionRows = (values: { compareValue: string }[]): ConditionRow[] =>
-  values.map((c) => ({ id: nextConditionId(), compareValue: c.compareValue }))
+type ConditionRow = { id: number; compareValue: string }
 
 export const SegmentFormPanel = () => {
   const currentSegment = useSidebarStore((s) => s.currentSegment)
@@ -37,11 +28,12 @@ export const SegmentFormPanel = () => {
   const isMultiSelect = customField?.type === CustomFieldType.TAGS
   const { options } = useCustomFieldOptions(isMultiSelect ? (customField?.id ?? null) : null)
 
+  const nextId = useRef(currentSegment?.conditions?.length ?? 1)
   const [name, setName] = useState(currentSegment?.name ?? '')
   const [conditions, setConditions] = useState<ConditionRow[]>(
     currentSegment?.conditions?.length
-      ? toConditionRows(currentSegment.conditions)
-      : [{ id: nextConditionId(), compareValue: '' }],
+      ? currentSegment.conditions.map((c, i) => ({ id: i, compareValue: c.compareValue }))
+      : [{ id: 0, compareValue: '' }],
   )
   const [errors, setErrors] = useState<{ name?: string; conditions?: string }>({})
 
@@ -51,7 +43,7 @@ export const SegmentFormPanel = () => {
   }
 
   const addCondition = () => {
-    setConditions([...conditions, { id: nextConditionId(), compareValue: '' }])
+    setConditions([...conditions, { id: nextId.current++, compareValue: '' }])
   }
 
   const updateCondition = (index: number, value: string) => {
@@ -155,10 +147,10 @@ export const SegmentFormPanel = () => {
             }}
             placeholder="e.g. Gold"
             className={`w-full rounded border bg-white px-3 py-2 text-sm text-text-primary outline-none ${
-              errors.name ? 'border-[#991a00]' : 'border-border-gray focus:border-primary'
+              errors.name ? 'border-error' : 'border-border-gray focus:border-primary'
             }`}
           />
-          {errors.name && <span className="text-[#991a00] text-sm">{errors.name}</span>}
+          {errors.name && <span className="text-error text-sm">{errors.name}</span>}
         </div>
 
         {/* Assignment rules */}
@@ -199,7 +191,7 @@ export const SegmentFormPanel = () => {
               </div>
             </div>
           ))}
-          {errors.conditions && <span className="text-[#991a00] text-sm">{errors.conditions}</span>}
+          {errors.conditions && <span className="text-error text-sm">{errors.conditions}</span>}
 
           <button
             type="button"

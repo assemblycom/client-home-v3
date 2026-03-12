@@ -69,6 +69,7 @@ export const Segment = () => {
       <SegmentCreationCard
         segmentCount={segments.length}
         lockedCustomFieldKey={lockedCustomFieldKey}
+        hasClients={(stats?.totalClients ?? 0) > 0}
         onCreateSegment={handleCreateSegment}
       />
     </div>
