@@ -7,19 +7,23 @@ import type { ConditionsRepository } from '@segments/lib/conditions/conditions.r
 import ConditionsDrizzleRepository from '@segments/lib/conditions/conditions.repository'
 import type { SegmentsRepository } from '@segments/lib/segments/segments.repository'
 import SegmentsDrizzleRepository from '@segments/lib/segments/segments.repository'
-import { allocateSegmentColors } from '@segments/lib/segments.colors'
+import { CATEGORICAL_COLORS } from '@segments/lib/segments.colors'
 import type {
+  FormattedSegmentData,
   SegmentCreateDto,
   SegmentResponseDto,
   SegmentStatsResponseDto,
+  SegmentStatsSettings,
   SegmentUpdateDto,
 } from '@segments/lib/segments.dto'
 import type { ActionsRepository } from '@settings/lib/actions/actions.repository'
 import ActionsDrizzleRepository from '@settings/lib/actions/actions.repository'
 import type { SettingsRepository } from '@settings/lib/settings/settings.repository'
 import SettingsDrizzleRepository from '@settings/lib/settings/settings.repository'
+import type { SettingsWithSegment } from '@settings/lib/types'
 import httpStatus from 'http-status'
 import db from '@/db'
+import { workspaceId } from '@/db/helpers'
 import APIError from '@/errors/api.error'
 import BaseService from '@/lib/core/base.service'
 import DBService from '@/lib/core/db.service'
@@ -69,8 +73,8 @@ export default class SegmentsService extends BaseService {
     }
   }
 
-  async getAll() {
-    return await this.segmentsRepository.getAll(this.user.workspaceId)
+  async getAll(): Promise<FormattedSegmentData[]> {
+    return this.formatSegmentData(await this.settingsRepository.getSegments(this.user.workspaceId))
   }
 
   async update(segmentId: string, payload: SegmentUpdateDto) {
@@ -114,10 +118,14 @@ export default class SegmentsService extends BaseService {
   }
 
   async delete(segmentId: string) {
-    return await this.segmentsRepository.softDelete(segmentId)
+    return await this.segmentsRepository.delete(segmentId)
   }
 
-  static clientBelongsToSegment(client: ClientResponse, segment: SegmentResponseDto): boolean {
+  static clientBelongsToSegment(client: ClientResponse, settings: SettingsWithSegment): boolean {
+    const segment = settings.segment
+    if (!segment) {
+      return true
+    }
     const fieldValue = client.customFields?.[segment.customField]
     if (fieldValue == null) return false
 
@@ -138,32 +146,65 @@ export default class SegmentsService extends BaseService {
   }
 
   async getStats(): Promise<SegmentStatsResponseDto> {
-    const [segments, clientsResponse] = await Promise.all([
-      this.segmentsRepository.getAll(this.user.workspaceId),
+    const [allSettings, clientsResponse] = await Promise.all([
+      this.settingsRepository.getSegments(this.user.workspaceId),
       this.assembly.getClients({ limit: MAX_FETCH_ASSEMBLY_RESOURCES }),
     ])
 
     const clients = clientsResponse.data ?? []
-    const colors = allocateSegmentColors(segments.length)
 
-    const segmentStats = segments.map((segment, index) => {
-      const count = clients.filter((client) => SegmentsService.clientBelongsToSegment(client, segment)).length
+    const segmentStats = clients.reduce(
+      (stats, client) => {
+        const settings = allSettings.find((settings) => {
+          return SegmentsService.clientBelongsToSegment(client, settings)
+        })
 
-      return {
-        name: segment.name,
-        color: colors[index],
-        count,
-      }
-    })
+        if (!settings) {
+          // this should not be happening at all. capture error
+          console.error(
+            `Some of the clients did match even the default segment for some reason: workspace id "{${workspaceId}, clientId "${client.id}"`,
+          )
+          return stats
+        }
+        stats[settings.id] = (stats[settings.id] ?? 0) + 1
 
-    const segmentedCount = segmentStats.reduce((sum, s) => sum + s.count, 0)
-
-    const stats = [{ name: 'Default', color: '#E5E7EB', count: clients.length - segmentedCount }, ...segmentStats]
+        return stats
+      },
+      {} as Record<string, number>,
+    )
 
     return {
       totalClients: clients.length,
-      stats,
+      settings: this.formatSegmentData(allSettings).map<SegmentStatsSettings>((settings) => {
+        return {
+          ...settings,
+          clientsCount: segmentStats[settings.settingId],
+        }
+      }),
     }
+  }
+
+  formatSegmentData(allSettings: SettingsWithSegment[]): FormattedSegmentData[] {
+    return allSettings.map((settings, index) => {
+      const segment = settings.segment
+      return {
+        settingId: settings.id,
+        segment: !segment
+          ? undefined
+          : {
+              id: segment.id,
+              name: segment.name,
+              color: CATEGORICAL_COLORS[index],
+              customField: segment.customField,
+              conditions: segment.conditions.map((condition) => {
+                return {
+                  id: condition.id,
+                  compareValue: condition.compareValue,
+                }
+              }),
+            },
+      }
+    })
   }
 
   async create(payload: SegmentCreateDto) {

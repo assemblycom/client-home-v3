@@ -24,3 +24,16 @@ export const listCustomFields = async (
 
   return NextResponse.json(response)
 }
+
+export const listCustomFieldOptions = async (
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+): Promise<NextResponse<APIResponse>> => {
+  const user = authenticateHeaders(req.headers)
+
+  const { id } = await params
+  const assembly = new AssemblyClient(user.token)
+  const response = await assembly.listCustomFieldOptions({ id })
+
+  return NextResponse.json(response)
+}
