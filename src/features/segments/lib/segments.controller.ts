@@ -35,19 +35,6 @@ export const createSegment = async (req: NextRequest): Promise<NextResponse<APIR
   return NextResponse.json({ data: segment }, { status: httpStatus.CREATED })
 }
 
-export const getSegment = async (
-  req: NextRequest,
-  { params }: { params: Promise<{ segmentId: string }> },
-): Promise<NextResponse<APIResponse>> => {
-  const user = authenticateHeaders(req.headers)
-  const { segmentId } = await params
-
-  const segmentsService = SegmentsService.new(user)
-  const segment = await segmentsService.getOne(segmentId)
-
-  return NextResponse.json({ data: segment })
-}
-
 export const updateSegment = async (
   req: NextRequest,
   { params }: { params: Promise<{ segmentId: string }> },

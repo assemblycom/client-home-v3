@@ -52,14 +52,6 @@ export default class SegmentsService extends BaseService {
     }
   }
 
-  async getOne(segmentId: string) {
-    const segment = await this.segmentsRepository.getOne(segmentId)
-    if (!segment) {
-      throw new APIError('Segment not found', httpStatus.NOT_FOUND)
-    }
-    return segment
-  }
-
   async getAll() {
     return await this.segmentsRepository.getAll(this.user.workspaceId)
   }
@@ -125,7 +117,6 @@ export default class SegmentsService extends BaseService {
       const count = clients.filter((client) => SegmentsService.clientBelongsToSegment(client, segment)).length
 
       return {
-        id: segment.id as string | null,
         name: segment.name,
         color: colors[index],
         count,
@@ -134,14 +125,10 @@ export default class SegmentsService extends BaseService {
 
     const segmentedCount = segmentStats.reduce((sum, s) => sum + s.count, 0)
 
-    const stats = [
-      { name: 'Default', color: '#E5E7EB', count: clients.length - segmentedCount, id: null },
-      ...segmentStats,
-    ]
+    const stats = [{ name: 'Default', color: '#E5E7EB', count: clients.length - segmentedCount }, ...segmentStats]
 
     return {
       totalClients: clients.length,
-      customField: segments.length > 0 ? segments[0].customField : null,
       stats,
     }
   }
