@@ -76,6 +76,15 @@ export default class SegmentsService extends BaseService {
   async update(segmentId: string, payload: SegmentUpdateDto) {
     const { name, conditions: conditionPayloads } = payload
 
+    if (conditionPayloads) {
+      const existingSegments = await this.segmentsRepository.getAll(this.user.workspaceId)
+      this.validateUniqueCompareValues(
+        existingSegments,
+        conditionPayloads.map((c) => c.compareValue),
+        segmentId,
+      )
+    }
+
     return await DBService.transaction(async (tx) => {
       this.segmentsRepository.setTx(tx)
       this.conditionsRepository.setTx(tx)
@@ -114,10 +123,17 @@ export default class SegmentsService extends BaseService {
 
     const compareValues = segment.conditions.map((c) => c.compareValue)
 
+    // Array: check if any element matches a compareValue
     if (Array.isArray(fieldValue)) {
       return fieldValue.some((v) => compareValues.includes(String(v)))
     }
 
+    // Object: check if any value in the object matches a compareValue
+    if (typeof fieldValue === 'object') {
+      return Object.values(fieldValue).some((v) => compareValues.includes(String(v)))
+    }
+
+    // String / Number: direct comparison
     return compareValues.includes(String(fieldValue))
   }
 
@@ -167,6 +183,10 @@ export default class SegmentsService extends BaseService {
     }
 
     await this.validateCustomField(segmentPayload.customField)
+    this.validateUniqueCompareValues(
+      existingSegments,
+      conditionPayloads.map((c) => c.compareValue),
+    )
 
     return await DBService.transaction(async (tx) => {
       this.segmentsRepository.setTx(tx)
@@ -189,6 +209,25 @@ export default class SegmentsService extends BaseService {
         this.actionsRepository.unsetTx()
       }
     })
+  }
+
+  private validateUniqueCompareValues(
+    existingSegments: SegmentResponseDto[],
+    newCompareValues: string[],
+    excludeSegmentId?: string,
+  ) {
+    const existingCompareValues = existingSegments
+      .filter((s) => s.id !== excludeSegmentId)
+      .flatMap((s) => s.conditions.map((c) => c.compareValue))
+
+    const duplicates = newCompareValues.filter((v) => existingCompareValues.includes(v))
+
+    if (duplicates.length > 0) {
+      throw new APIError(
+        `Compare values must be unique across segments. Duplicates: ${duplicates.join(', ')}`,
+        httpStatus.UNPROCESSABLE_ENTITY,
+      )
+    }
   }
 
   private async duplicateDefaultSettings(segmentId: string) {
