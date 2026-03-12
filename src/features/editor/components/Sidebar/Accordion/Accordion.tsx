@@ -21,12 +21,7 @@ export const Accordion = ({ title, content, className }: AccordionProps) => {
         className="flex w-full items-center justify-between py-3.5 text-left focus:outline-none"
       >
         <span className="font-medium text-gray-900 leading-6">{title}</span>
-        <Icon
-          icon={isOpen ? 'ChevronDown' : 'ChevronRight'}
-          width={16}
-          height={16}
-          className="m-1.5 text-text-primary"
-        />
+        <Icon icon="ChevronRight" width={16} height={16} className="m-1.5 text-text-primary" />
       </button>
       <div
         className={cn(
