@@ -7,6 +7,8 @@ interface SidebarStore {
   setSidebarView: (view: SidebarView) => void
   editingSegmentId: string | null
   setEditingSegmentId: (id: string | null) => void
+  selectedCustomFieldKey: string | null
+  setSelectedCustomFieldKey: (key: string | null) => void
   mobileSidebarOpen: boolean
   toggleMobileSidebar: () => void
 }
@@ -16,6 +18,8 @@ export const useSidebarStore = create<SidebarStore>()((set) => ({
   setSidebarView: (sidebarView: SidebarView) => set({ sidebarView }),
   editingSegmentId: null,
   setEditingSegmentId: (editingSegmentId: string | null) => set({ editingSegmentId }),
+  selectedCustomFieldKey: null,
+  setSelectedCustomFieldKey: (selectedCustomFieldKey: string | null) => set({ selectedCustomFieldKey }),
   mobileSidebarOpen: false,
   toggleMobileSidebar: () => set((state) => ({ mobileSidebarOpen: !state.mobileSidebarOpen })),
 }))

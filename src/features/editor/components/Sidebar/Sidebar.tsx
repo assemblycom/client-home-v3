@@ -8,6 +8,7 @@ import { DynamicFields } from '@editor/components/Sidebar/DynamicFields'
 import { Segment } from '@editor/components/Sidebar/Segment'
 import { useSidebarStore } from '@editor/stores/sidebarStore'
 import { useViewStore, ViewMode } from '@editor/stores/viewStore'
+import { SegmentFormPanel } from '@segments/components/SegmentFormPanel'
 import { Activity, useMemo } from 'react'
 import type { PropsWithClassname } from '@/app/types'
 import { getActivityMode } from '@/utils/activity'
@@ -50,6 +51,8 @@ export const Sidebar = ({ className }: SidebarProps) => {
       <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
         {sidebarView === 'change-banner' ? (
           <ChangeBannerPanel onBack={() => setSidebarView('default')} />
+        ) : sidebarView === 'create-segment' || sidebarView === 'edit-segment' ? (
+          <SegmentFormPanel />
         ) : (
           <>
             <div className="flex h-14 items-center border-border-gray border-b px-6 text-custom-xl">Customization</div>

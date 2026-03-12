@@ -11,6 +11,7 @@ export const Segment = () => {
   const { deleteSegment } = useSegmentMutations()
   const setSidebarView = useSidebarStore((s) => s.setSidebarView)
   const setEditingSegmentId = useSidebarStore((s) => s.setEditingSegmentId)
+  const setSelectedCustomFieldKey = useSidebarStore((s) => s.setSelectedCustomFieldKey)
 
   const lockedCustomFieldKey = segments.length > 0 ? segments[0].customField : null
 
@@ -25,7 +26,8 @@ export const Segment = () => {
     }
   }
 
-  const handleCreateSegment = (_customFieldKey: string) => {
+  const handleCreateSegment = (customFieldKey: string) => {
+    setSelectedCustomFieldKey(customFieldKey)
     setSidebarView('create-segment')
   }
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useAuthStore } from '@auth/providers/auth.provider'
-import { SEGMENTS_QUERY_KEY } from '@segments/hooks/useSegments'
+import { SEGMENT_STATS_QUERY_KEY, SEGMENTS_QUERY_KEY } from '@segments/hooks/useSegments'
 import type { SegmentCreateDto } from '@segments/lib/segments.dto'
 import { useMutation } from '@tanstack/react-query'
 import { api } from '@/lib/core/axios.instance'
@@ -13,6 +13,7 @@ export const useSegmentMutations = () => {
 
   const invalidateSegments = () => {
     queryClient.invalidateQueries({ queryKey: [SEGMENTS_QUERY_KEY] })
+    queryClient.invalidateQueries({ queryKey: [SEGMENT_STATS_QUERY_KEY] })
   }
 
   const createSegment = useMutation({
