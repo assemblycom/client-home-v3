@@ -114,10 +114,17 @@ export default class SegmentsService extends BaseService {
 
     const compareValues = segment.conditions.map((c) => c.compareValue)
 
+    // Array: check if any element matches a compareValue
     if (Array.isArray(fieldValue)) {
       return fieldValue.some((v) => compareValues.includes(String(v)))
     }
 
+    // Object: check if any value in the object matches a compareValue
+    if (typeof fieldValue === 'object') {
+      return Object.values(fieldValue).some((v) => compareValues.includes(String(v)))
+    }
+
+    // String / Number: direct comparison
     return compareValues.includes(String(fieldValue))
   }
 
