@@ -18,9 +18,11 @@ const CUSTOM_FIELD_TYPE_ICON: Record<CustomFieldType, IconType> = {
   [CustomFieldType.TAGS]: 'Tag',
 }
 
-type CustomFieldItem = {
+export type CustomFieldItem = {
+  id: string
   key: string
   name: string
+  type: CustomFieldType
   icon: IconType
 }
 
@@ -34,7 +36,7 @@ export function useCustomFields() {
       const parsed = ListCustomFieldResponseSchema.parse(res.data)
       return parsed.data
         .sort((a, b) => a.order - b.order)
-        .map(({ key, name, type }) => ({ key, name, icon: CUSTOM_FIELD_TYPE_ICON[type] }))
+        .map(({ id, key, name, type }) => ({ id, key, name, type, icon: CUSTOM_FIELD_TYPE_ICON[type] }))
     },
   })
 
@@ -45,7 +47,7 @@ export function useCustomFields() {
       const parsed = ListCustomFieldResponseSchema.parse(res.data)
       return parsed.data
         .sort((a, b) => a.order - b.order)
-        .map(({ key, name, type }) => ({ key, name, icon: CUSTOM_FIELD_TYPE_ICON[type] }))
+        .map(({ id, key, name, type }) => ({ id, key, name, type, icon: CUSTOM_FIELD_TYPE_ICON[type] }))
     },
   })
 

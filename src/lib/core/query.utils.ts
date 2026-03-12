@@ -17,14 +17,14 @@ function makeQueryClient() {
   })
 }
 
+let browserQueryClient: QueryClient | undefined
+
 export function getQueryClient() {
-  let browserQueryClient: QueryClient | undefined
   if (isServer) {
     // Server: always make a new query client
     return makeQueryClient()
-  } else {
-    // Browser: prevent recreation of neq query client in browser
-    if (!browserQueryClient) browserQueryClient = makeQueryClient()
-    return browserQueryClient
   }
+  // Browser: reuse the same query client
+  if (!browserQueryClient) browserQueryClient = makeQueryClient()
+  return browserQueryClient
 }

@@ -27,6 +27,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  console.time('layout-start')
   const requestHeaders = await headers()
   const user = authenticateHeaders(requestHeaders)
 
@@ -35,6 +36,8 @@ export default async function RootLayout({
 
   const queryClient = getQueryClient()
   queryClient.setQueryData([SETTINGS_QUERY_KEY, null], settings)
+
+  console.time('layout-end')
 
   return (
     <html lang="en">

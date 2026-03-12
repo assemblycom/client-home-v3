@@ -11,7 +11,7 @@ export interface SegmentsRepository extends BaseRepository {
   getOne(segmentId: string): Promise<SegmentResponseDto | undefined>
   getAll(workspaceId: string): Promise<SegmentResponseDto[]>
   updateOne(segmentId: string, payload: { name?: string }): Promise<Segment>
-  softDelete(segmentId: string): Promise<Segment>
+  delete(segmentId: string): Promise<Segment>
 }
 
 class SegmentsDrizzleRepository extends BaseDrizzleRepository implements SegmentsRepository {
@@ -42,12 +42,8 @@ class SegmentsDrizzleRepository extends BaseDrizzleRepository implements Segment
     return updated
   }
 
-  async softDelete(segmentId: string) {
-    const [deleted] = await this.db
-      .update(segments)
-      .set({ deletedAt: new Date() })
-      .where(eq(segments.id, segmentId))
-      .returning()
+  async delete(segmentId: string) {
+    const [deleted] = await this.db.delete(segments).where(eq(segments.id, segmentId)).returning()
     return deleted
   }
 }
