@@ -11,9 +11,11 @@ export const useSegmentMutations = () => {
   const token = useAuthStore((s) => s.token)
   const queryClient = getQueryClient()
 
-  const invalidateSegments = () => {
-    queryClient.invalidateQueries({ queryKey: [SEGMENTS_QUERY_KEY] })
-    queryClient.invalidateQueries({ queryKey: [SEGMENT_STATS_QUERY_KEY] })
+  const invalidateSegments = async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: [SEGMENTS_QUERY_KEY], refetchType: 'all' }),
+      queryClient.invalidateQueries({ queryKey: [SEGMENT_STATS_QUERY_KEY], refetchType: 'all' }),
+    ])
   }
 
   const createSegment = useMutation({

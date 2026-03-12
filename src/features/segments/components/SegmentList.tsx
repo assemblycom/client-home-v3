@@ -1,6 +1,6 @@
 'use client'
 
-import type { SegmentResponseDto } from '@segments/lib/segments.dto'
+import type { SegmentResponseDto, SegmentStatsResponseDto } from '@segments/lib/segments.dto'
 import { IconButton } from 'copilot-design-system'
 import { useEffect, useRef, useState } from 'react'
 
@@ -10,12 +10,13 @@ const DEFAULT_COLOR = '#E3E5E8'
 type SegmentRowProps = {
   name: string
   color: string
+  count?: number
   isDefault?: boolean
   onEdit?: () => void
   onDelete?: () => void
 }
 
-const SegmentRow = ({ name, color, isDefault = false, onEdit, onDelete }: SegmentRowProps) => {
+const SegmentRow = ({ name, color, count, isDefault = false, onEdit, onDelete }: SegmentRowProps) => {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -30,11 +31,10 @@ const SegmentRow = ({ name, color, isDefault = false, onEdit, onDelete }: Segmen
 
   return (
     <div className="group flex items-center justify-between border-border-gray border-b px-4 py-3 last:border-b-0">
-      <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-2">
-          <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: color }} />
-          <span className="text-sm text-text-primary leading-5">{name}</span>
-        </div>
+      <div className="flex items-center gap-2">
+        <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: color }} />
+        <span className="text-sm text-text-primary leading-5">{name}</span>
+        {count !== undefined && <span className="text-sm text-text-secondary leading-5">{count}</span>}
       </div>
       {!isDefault && (
         <div className="relative" ref={menuRef}>
@@ -76,23 +76,40 @@ const SegmentRow = ({ name, color, isDefault = false, onEdit, onDelete }: Segmen
 
 type SegmentListProps = {
   segments: SegmentResponseDto[]
+  stats: SegmentStatsResponseDto | null
   onEdit: (id: string) => void
   onDelete: (id: string) => void
 }
 
-export const SegmentList = ({ segments, onEdit, onDelete }: SegmentListProps) => {
+export const SegmentList = ({ segments, stats, onEdit, onDelete }: SegmentListProps) => {
+  const statsByName = stats ? new Map(stats.stats.map((s) => [s.name, s])) : null
+
+  const getSegmentStat = (name: string, index: number) => {
+    const stat = statsByName?.get(name)
+    return {
+      color: stat?.color ?? SEGMENT_COLORS[index % SEGMENT_COLORS.length],
+      count: stat?.count,
+    }
+  }
+
+  const defaultCount = stats ? stats.totalClients - stats.stats.reduce((sum, s) => sum + s.count, 0) : undefined
+
   return (
-    <div className="overflow-hidden rounded border border-border-gray">
-      <SegmentRow name="Default" color={DEFAULT_COLOR} isDefault />
-      {segments.map((segment, index) => (
-        <SegmentRow
-          key={segment.id}
-          name={segment.name}
-          color={SEGMENT_COLORS[index % SEGMENT_COLORS.length]}
-          onEdit={() => onEdit(segment.id)}
-          onDelete={() => onDelete(segment.id)}
-        />
-      ))}
+    <div className="overflow-visible rounded border border-border-gray">
+      <SegmentRow name="Default" color={DEFAULT_COLOR} count={defaultCount} isDefault />
+      {segments.map((segment, index) => {
+        const { color, count } = getSegmentStat(segment.name, index)
+        return (
+          <SegmentRow
+            key={segment.id}
+            name={segment.name}
+            color={color}
+            count={count}
+            onEdit={() => onEdit(segment.id)}
+            onDelete={() => onDelete(segment.id)}
+          />
+        )
+      })}
     </div>
   )
 }

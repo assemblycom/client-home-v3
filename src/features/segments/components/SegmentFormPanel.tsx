@@ -24,6 +24,7 @@ const toConditionRows = (values: { compareValue: string }[]): ConditionRow[] =>
 export const SegmentFormPanel = () => {
   const currentSegment = useSidebarStore((s) => s.currentSegment)
   const setCurrentSegment = useSidebarStore((s) => s.setCurrentSegment)
+  const setExpandSegments = useSidebarStore((s) => s.setExpandSegments)
 
   const isEditing = !!currentSegment?.id
   const customFieldKey = currentSegment?.customField ?? null
@@ -45,6 +46,7 @@ export const SegmentFormPanel = () => {
   const [errors, setErrors] = useState<{ name?: string; conditions?: string }>({})
 
   const handleBack = () => {
+    setExpandSegments(true)
     setCurrentSegment(null)
   }
 
@@ -54,6 +56,7 @@ export const SegmentFormPanel = () => {
 
   const updateCondition = (index: number, value: string) => {
     setConditions(conditions.map((c, i) => (i === index ? { ...c, compareValue: value } : c)))
+    setErrors((prev) => ({ ...prev, conditions: undefined }))
   }
 
   const removeCondition = (index: number) => {
@@ -159,54 +162,52 @@ export const SegmentFormPanel = () => {
         </div>
 
         {/* Assignment rules */}
-        <div className="flex flex-col gap-3">
-          <span className="font-medium text-sm text-text-primary">Show this segment if</span>
-          <div className="flex flex-col gap-3 rounded border border-border-gray p-4">
-            <span className="text-sm text-text-secondary">{customField?.name ?? customFieldKey}</span>
-
-            {conditions.map((condition, index) => (
-              <div key={condition.id} className="flex flex-col gap-1">
-                {index > 0 && <span className="font-medium text-sm text-text-primary">Or</span>}
-                <div className="flex items-center gap-2">
-                  {isMultiSelect ? (
-                    <Select
-                      value={condition.compareValue}
-                      onChange={(value) => updateCondition(index, value)}
-                      options={options.map((opt) => ({ value: opt.key, label: opt.label }))}
-                      placeholder="Select value"
-                      className="flex-1"
-                    />
-                  ) : (
-                    <input
-                      type="text"
-                      value={condition.compareValue}
-                      onChange={(e) => updateCondition(index, e.target.value)}
-                      placeholder="Enter value"
-                      className="flex-1 rounded border border-border-gray bg-white px-3 py-2 text-sm text-text-primary outline-none focus:border-primary"
-                    />
-                  )}
-                  {conditions.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeCondition(index)}
-                      className="shrink-0 rounded p-1 text-text-secondary hover:bg-gray-100"
-                    >
-                      <Icon icon="Close" width={14} height={14} />
-                    </button>
-                  )}
-                </div>
+        <div className="flex flex-col gap-1">
+          <span className="text-heading-md">
+            Show this segment if <b>{customField?.name || customFieldKey}</b> is
+          </span>
+          {conditions.map((condition, index) => (
+            <div key={condition.id} className="flex flex-col gap-1">
+              {index > 0 && <span className="font-medium text-sm text-text-primary">Or</span>}
+              <div className="flex items-center gap-2">
+                {isMultiSelect ? (
+                  <Select
+                    value={condition.compareValue}
+                    onChange={(value) => updateCondition(index, value)}
+                    options={options.map((opt) => ({ value: opt.key, label: opt.label }))}
+                    placeholder="Select value"
+                    className="flex-1"
+                  />
+                ) : (
+                  <input
+                    type="text"
+                    value={condition.compareValue}
+                    onChange={(e) => updateCondition(index, e.target.value)}
+                    placeholder="Enter value"
+                    className="flex-1 rounded border border-border-gray bg-white px-3 py-2 text-sm text-text-primary outline-none focus:border-primary"
+                  />
+                )}
+                {conditions.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeCondition(index)}
+                    className="shrink-0 rounded p-1 text-text-secondary hover:text-text-primary"
+                  >
+                    <Icon icon="Trash" width={16} height={16} />
+                  </button>
+                )}
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
           {errors.conditions && <span className="text-[#991a00] text-sm">{errors.conditions}</span>}
 
           <button
             type="button"
             onClick={addCondition}
-            className="flex items-center gap-2 py-0.5 font-medium text-sm text-text-primary"
+            className="mt-3 flex items-center gap-2 py-0.5 font-medium text-sm text-text-primary"
           >
             <Icon icon="Plus" width={12} height={12} />
-            OR rule
+            OR
           </button>
         </div>
       </div>

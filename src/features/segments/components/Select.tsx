@@ -28,62 +28,62 @@ export const Select = ({
   error = false,
   className,
 }: SelectProps) => {
-  const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
+  const [isOpen, setIsOpen] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
 
-  const selectedOption = options.find((opt) => opt.value === value)
+  const selectedLabel = options.find((o) => o.value === value)?.label
 
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false)
+    if (!isOpen) return
+    const handleClick = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false)
       }
     }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [isOpen])
 
   return (
-    <div ref={ref} className={cn('relative', className)}>
+    <div ref={containerRef} className={cn('relative', className)}>
       <button
         type="button"
-        onClick={() => !disabled && setOpen(!open)}
+        onClick={() => !disabled && setIsOpen((prev) => !prev)}
         className={cn(
-          'flex w-full items-center justify-between rounded border bg-white py-2 pr-2.5 pl-3 text-sm outline-none',
+          'flex w-full items-center justify-between rounded border bg-white py-2 pr-2.5 pl-3 text-left text-sm outline-none',
           error ? 'border-[#991a00]' : 'border-border-gray',
-          !error && !disabled && 'hover:border-[#212b36]',
-          disabled ? 'cursor-not-allowed text-text-secondary opacity-70' : 'cursor-pointer text-text-primary',
+          disabled ? 'cursor-not-allowed text-text-secondary opacity-70' : 'text-text-primary',
+          isOpen && !error && 'border-primary',
         )}
       >
-        <span className={cn(!selectedOption && 'text-text-secondary')}>{selectedOption?.label ?? placeholder}</span>
+        <span className={cn('truncate', !selectedLabel && 'text-text-secondary')}>{selectedLabel || placeholder}</span>
         <Icon
           icon="ChevronDown"
           width={16}
           height={16}
-          className={cn('shrink-0 text-text-secondary transition-transform', open && 'rotate-180')}
+          className={cn('shrink-0 text-text-secondary transition-transform', isOpen && 'rotate-180')}
         />
       </button>
 
-      {open && (
-        <ul className="absolute z-10 mt-1 max-h-48 w-full overflow-y-auto rounded border border-border-gray bg-white py-1 shadow-md">
+      {isOpen && (
+        <div className="absolute z-10 mt-1 max-h-32 w-full overflow-y-auto rounded border border-border-popper bg-white pb-1 shadow-[0px_6px_20px_rgba(0,0,0,0.07)]">
           {options.map((opt) => (
-            <li key={opt.value}>
-              <button
-                type="button"
-                onClick={() => {
-                  onChange(opt.value)
-                  setOpen(false)
-                }}
-                className={cn(
-                  'w-full px-3 py-2 text-left text-sm hover:bg-[#f4f5f7]',
-                  opt.value === value ? 'font-medium text-text-primary' : 'text-text-primary',
-                )}
-              >
-                {opt.label}
-              </button>
-            </li>
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => {
+                onChange(opt.value)
+                setIsOpen(false)
+              }}
+              className={cn(
+                'w-full truncate px-3 py-[5px] text-left text-sm text-text-primary hover:bg-background-primary',
+                opt.value === value && 'bg-background-primary',
+              )}
+            >
+              {opt.label}
+            </button>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   )

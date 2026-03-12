@@ -4,10 +4,11 @@ import { useSidebarStore } from '@editor/stores/sidebarStore'
 import { SegmentCreationCard } from '@segments/components/SegmentCreationCard'
 import { SegmentList } from '@segments/components/SegmentList'
 import { useSegmentMutations } from '@segments/hooks/useSegmentMutations'
-import { useSegments } from '@segments/hooks/useSegments'
+import { useSegmentStats, useSegments } from '@segments/hooks/useSegments'
 
 export const Segment = () => {
-  const { segments, isLoading } = useSegments()
+  const { segments, isLoading, isFetching } = useSegments()
+  const { stats } = useSegmentStats()
   const { deleteSegment } = useSegmentMutations()
   const setCurrentSegment = useSidebarStore((s) => s.setCurrentSegment)
 
@@ -36,9 +37,23 @@ export const Segment = () => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         <div className="h-4 w-3/4 animate-pulse rounded bg-gray-200" />
-        <div className="h-20 animate-pulse rounded bg-gray-200" />
+        <div className="overflow-hidden rounded border border-border-gray">
+          <div className="flex items-center gap-2 border-border-gray border-b px-4 py-3">
+            <div className="size-2 shrink-0 animate-pulse rounded-full bg-gray-200" />
+            <div className="h-4 w-20 animate-pulse rounded bg-gray-200" />
+          </div>
+          <div className="flex items-center gap-2 border-border-gray border-b px-4 py-3">
+            <div className="size-2 shrink-0 animate-pulse rounded-full bg-gray-200" />
+            <div className="h-4 w-16 animate-pulse rounded bg-gray-200" />
+          </div>
+          <div className="flex items-center gap-2 px-4 py-3">
+            <div className="size-2 shrink-0 animate-pulse rounded-full bg-gray-200" />
+            <div className="h-4 w-24 animate-pulse rounded bg-gray-200" />
+          </div>
+        </div>
+        <div className="h-24 animate-pulse rounded border border-border-gray bg-background-primary" />
       </div>
     )
   }
@@ -48,7 +63,9 @@ export const Segment = () => {
       <p className="text-[13px] text-text-secondary leading-5.25">
         By default, all clients see the same content. Create segments to tailor your homepage for different clients.
       </p>
-      <SegmentList segments={segments} onEdit={handleEdit} onDelete={handleDelete} />
+      <div className={isFetching && !isLoading ? 'animate-pulse' : ''}>
+        <SegmentList segments={segments} stats={stats} onEdit={handleEdit} onDelete={handleDelete} />
+      </div>
       <SegmentCreationCard
         segmentCount={segments.length}
         lockedCustomFieldKey={lockedCustomFieldKey}
