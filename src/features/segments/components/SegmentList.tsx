@@ -1,10 +1,8 @@
 'use client'
 
-import type { SegmentResponseDto, SegmentStatsResponseDto } from '@segments/lib/segments.dto'
+import type { SegmentStatsResponseDto } from '@segments/lib/segments.dto'
 import { IconButton } from 'copilot-design-system'
 import { useEffect, useRef, useState } from 'react'
-
-const DEFAULT_COLOR = '#DFE1E4'
 
 type SegmentRowProps = {
   name: string
@@ -78,29 +76,27 @@ const SegmentRow = ({ name, color, count, isDefault = false, onEdit, onDelete }:
 }
 
 type SegmentListProps = {
-  segments: SegmentResponseDto[]
   stats: SegmentStatsResponseDto | null
   onEdit: (id: string) => void
   onDelete: (id: string) => void
 }
 
-export const SegmentList = ({ segments, stats, onEdit, onDelete }: SegmentListProps) => {
-  const statsByName = stats ? new Map(stats.stats.map((s) => [s.name, s])) : null
-  const defaultCount = stats ? stats.totalClients - stats.stats.reduce((sum, s) => sum + s.count, 0) : undefined
+export const SegmentList = ({ stats, onEdit, onDelete }: SegmentListProps) => {
+  if (!stats) return null
 
   return (
     <div className="overflow-visible rounded border border-border-gray">
-      <SegmentRow name="Default" color={DEFAULT_COLOR} count={defaultCount} isDefault />
-      {segments.map((segment) => {
-        const stat = statsByName?.get(segment.name)
+      {stats.stats.map((stat) => {
+        const id = stat.id
         return (
           <SegmentRow
-            key={segment.id}
-            name={segment.name}
-            color={stat?.color ?? DEFAULT_COLOR}
-            count={stat?.count}
-            onEdit={() => onEdit(segment.id)}
-            onDelete={() => onDelete(segment.id)}
+            key={id ?? 'default'}
+            name={stat.name}
+            color={stat.color}
+            count={stat.count}
+            isDefault={id === null}
+            onEdit={id ? () => onEdit(id) : undefined}
+            onDelete={id ? () => onDelete(id) : undefined}
           />
         )
       })}

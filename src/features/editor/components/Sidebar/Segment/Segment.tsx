@@ -1,22 +1,26 @@
 'use client'
 
+import { useAuthStore } from '@auth/providers/auth.provider'
 import { useSidebarStore } from '@editor/stores/sidebarStore'
 import { SegmentCreationCard } from '@segments/components/SegmentCreationCard'
 import { SegmentList } from '@segments/components/SegmentList'
 import { useSegmentMutations } from '@segments/hooks/useSegmentMutations'
-import { useSegmentStats, useSegments } from '@segments/hooks/useSegments'
+import { useSegmentStats } from '@segments/hooks/useSegments'
+import type { SegmentResponseDto } from '@segments/lib/segments.dto'
+import { api } from '@/lib/core/axios.instance'
 
 export const Segment = () => {
-  const { segments, isLoading, isFetching } = useSegments()
-  const { stats } = useSegmentStats()
+  const token = useAuthStore((s) => s.token)
+  const { stats, isLoading, isFetching } = useSegmentStats()
   const { deleteSegment } = useSegmentMutations()
   const setCurrentSegment = useSidebarStore((s) => s.setCurrentSegment)
 
-  const lockedCustomFieldKey = segments.length > 0 ? segments[0].customField : null
+  const segments = stats?.stats.filter((s) => s.id !== null) ?? []
+  const segmentCount = segments.length
 
-  const handleEdit = (id: string) => {
-    const segment = segments.find((s) => s.id === id)
-    if (!segment) return
+  const handleEdit = async (id: string) => {
+    const res = await api.get<{ data: SegmentResponseDto }>(`/api/segments/${id}?token=${token}`)
+    const segment = res.data.data
     setCurrentSegment({
       id: segment.id,
       name: segment.name,
@@ -64,11 +68,11 @@ export const Segment = () => {
         By default, all clients see the same content. Create segments to tailor your homepage for different clients.
       </p>
       <div className={isFetching && !isLoading ? 'animate-pulse' : ''}>
-        <SegmentList segments={segments} stats={stats} onEdit={handleEdit} onDelete={handleDelete} />
+        <SegmentList stats={stats} onEdit={handleEdit} onDelete={handleDelete} />
       </div>
       <SegmentCreationCard
-        segmentCount={segments.length}
-        lockedCustomFieldKey={lockedCustomFieldKey}
+        segmentCount={segmentCount}
+        lockedCustomFieldKey={stats?.customField ?? null}
         onCreateSegment={handleCreateSegment}
       />
     </div>

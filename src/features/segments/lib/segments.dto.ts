@@ -19,6 +19,7 @@ export const SegmentResponseDtoSchema = SegmentSchema.extend({
 export type SegmentResponseDto = z.infer<typeof SegmentResponseDtoSchema>
 
 export const SegmentStatSchema = z.object({
+  id: z.string().nullable(),
   name: z.string(),
   color: z.string(),
   count: z.number(),
@@ -26,6 +27,7 @@ export const SegmentStatSchema = z.object({
 
 export const SegmentStatsResponseDtoSchema = z.object({
   totalClients: z.number(),
+  customField: z.string().nullable(),
   stats: z.array(SegmentStatSchema),
 })
 export type SegmentStatsResponseDto = z.infer<typeof SegmentStatsResponseDtoSchema>
