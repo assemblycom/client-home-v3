@@ -17,6 +17,7 @@ import {
   InternalUserResponseSchema,
   type InternalUsersResponse,
   InternalUsersResponseSchema,
+  ListCustomFieldOptionsResponseSchema,
   ListCustomFieldResponseSchema,
   type NotificationsResponse,
   NotificationsResponseSchema,
@@ -201,6 +202,19 @@ export default class AssemblyClient {
     )
   }
 
+  private async _listCustomFieldOptions({ id }: { id: string }) {
+    logger.info('AssemblyClient#_listCustomFieldOptions', { id })
+    const assembly = await this.assemblyPromise
+    return ListCustomFieldOptionsResponseSchema.parse(
+      await assembly.listCustomFieldOptions({ id }).then((res) => {
+        if (!res.data) {
+          return { data: [] } as z.infer<typeof ListCustomFieldOptionsResponseSchema>
+        }
+        return res
+      }),
+    )
+  }
+
   private wrapWithRetry<Args extends unknown[], R>(fn: (...args: Args) => Promise<R>): (...args: Args) => Promise<R> {
     return (...args: Args): Promise<R> => withRetry(fn.bind(this), args)
   }
@@ -222,5 +236,6 @@ export default class AssemblyClient {
   getNotifications = this.wrapWithRetry(this._getNotifications)
   getTasks = this.wrapWithRetry(this._getTasks)
   listCustomFields = this.wrapWithRetry(this._listCustomFields)
+  listCustomFieldOptions = this.wrapWithRetry(this._listCustomFieldOptions)
   getAppId = this.wrapWithRetry(this._getAppId)
 }
