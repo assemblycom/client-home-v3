@@ -1,7 +1,9 @@
+import { conditions } from '@segments/lib/conditions/conditions.schema'
+import { segments } from '@segments/lib/segments/segments.schema'
 import type { Settings } from '@settings/lib/settings/settings.entity'
 import { settings } from '@settings/lib/settings/settings.schema'
 import type { SettingsCreatePayload, SettingsUpdatePayload, SettingsWithSegment } from '@settings/lib/types'
-import { and, eq, isNull } from 'drizzle-orm'
+import { and, asc, eq, isNull } from 'drizzle-orm'
 import httpStatus from 'http-status'
 import APIError from '@/errors/api.error'
 import type { BaseRepository } from '@/lib/core/base.repository'
@@ -86,22 +88,45 @@ class SettingsDrizzleRepository extends BaseDrizzleRepository implements Setting
   }
 
   async getSegments(workspaceId: string): Promise<SettingsWithSegment[]> {
-    const result = await this.db.query.settings.findMany({
-      where: eq(settings.workspaceId, workspaceId),
-      columns: {
-        id: true,
-        workspaceId: true,
-        segmentId: true,
-      },
-      with: {
-        segment: {
-          with: {
-            conditions: true,
-          },
-        },
-      },
-      orderBy: (s, { asc }) => asc(s.createdAt),
-    })
+    const rows = await this.db
+      .select({
+        id: settings.id,
+        workspaceId: settings.workspaceId,
+        segmentId: settings.segmentId,
+        createdAt: settings.createdAt,
+        segment: segments,
+        condition: conditions,
+      })
+      .from(settings)
+      .leftJoin(segments, eq(settings.segmentId, segments.id))
+      .leftJoin(conditions, eq(segments.id, conditions.segmentId))
+      .where(eq(settings.workspaceId, workspaceId))
+      .orderBy(asc(settings.createdAt))
+
+    const settingsMap = new Map<string, SettingsWithSegment>()
+
+    for (const row of rows) {
+      if (!settingsMap.has(row.id)) {
+        settingsMap.set(row.id, {
+          id: row.id,
+          workspaceId: row.workspaceId,
+          segmentId: row.segmentId,
+          segment: row.segment
+            ? {
+                ...row.segment,
+                conditions: [],
+              }
+            : null,
+        })
+      }
+
+      const entry = settingsMap.get(row.id)!
+      if (row.condition && entry.segment) {
+        entry.segment.conditions.push(row.condition)
+      }
+    }
+
+    const result = Array.from(settingsMap.values())
 
     return result.sort((a, b) => {
       if (a.segmentId === null) return 1

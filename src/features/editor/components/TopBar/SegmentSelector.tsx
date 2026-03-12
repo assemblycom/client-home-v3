@@ -1,21 +1,23 @@
 import { Popper } from '@editor/components/Popper'
 import { useViewStore } from '@editor/stores/viewStore'
-import { useSegments } from '@segments/hooks/useSegments'
+import { useSegmentStats } from '@segments/hooks/useSegments'
 import { Icon } from 'copilot-design-system'
 import { useRef, useState } from 'react'
 import { cn } from '@/utils/tailwind'
 
 export const SegmentSelector = () => {
-  const { segments } = useSegments()
+  const { stats } = useSegmentStats()
   const activeSegmentId = useViewStore((s) => s.activeSegmentId)
   const setActiveSegmentId = useViewStore((s) => s.setActiveSegmentId)
   const [isOpen, setIsOpen] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
 
-  if (segments.length === 0) return null
+  const segmentSettings = stats?.settings.filter((s) => !!s.segment) ?? []
 
-  const activeSegment = segments.find((s) => s.id === activeSegmentId)
-  const label = activeSegment ? activeSegment.name : 'Default'
+  if (segmentSettings.length === 0) return null
+
+  const activeSegment = segmentSettings.find((s) => s.segment!.id === activeSegmentId)
+  const label = activeSegment ? activeSegment.segment!.name : 'Default'
 
   const handleSelect = (segmentId: string | null) => {
     setActiveSegmentId(segmentId)
@@ -49,17 +51,17 @@ export const SegmentSelector = () => {
           >
             Default
           </button>
-          {segments.map((segment) => (
+          {segmentSettings.map((setting) => (
             <button
               type="button"
-              key={segment.id}
-              onClick={() => handleSelect(segment.id)}
+              key={setting.segment!.id}
+              onClick={() => handleSelect(setting.segment!.id)}
               className={cn(
                 'px-3 py-1.5 text-left text-[13px] leading-[21px] hover:bg-background-secondary',
-                activeSegmentId === segment.id && 'bg-background-secondary',
+                activeSegmentId === setting.segment!.id && 'bg-background-secondary',
               )}
             >
-              {segment.name}
+              {setting.segment!.name}
             </button>
           ))}
         </div>

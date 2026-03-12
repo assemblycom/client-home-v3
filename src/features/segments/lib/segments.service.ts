@@ -118,7 +118,7 @@ export default class SegmentsService extends BaseService {
   }
 
   async delete(segmentId: string) {
-    return await this.segmentsRepository.softDelete(segmentId)
+    return await this.segmentsRepository.delete(segmentId)
   }
 
   static clientBelongsToSegment(client: ClientResponse, settings: SettingsWithSegment): boolean {
@@ -166,11 +166,7 @@ export default class SegmentsService extends BaseService {
           )
           return stats
         }
-        if (!stats[settings.id]) {
-          stats[settings.id] = 0
-        } else {
-          stats[settings.id]++
-        }
+        stats[settings.id] = (stats[settings.id] ?? 0) + 1
 
         return stats
       },

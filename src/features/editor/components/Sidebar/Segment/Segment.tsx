@@ -1,33 +1,42 @@
 'use client'
 
+import { useConfirmationDialog } from '@common/hooks/useConfirmationDialog'
 import { useSidebarStore } from '@editor/stores/sidebarStore'
 import { SegmentCreationCard } from '@segments/components/SegmentCreationCard'
 import { SegmentList } from '@segments/components/SegmentList'
 import { useSegmentMutations } from '@segments/hooks/useSegmentMutations'
-import { useSegmentStats, useSegments } from '@segments/hooks/useSegments'
+import { useSegmentStats } from '@segments/hooks/useSegments'
 
 export const Segment = () => {
-  const { segments, isLoading } = useSegments()
-  const { stats, isFetching } = useSegmentStats()
+  const { stats, isLoading, isFetching } = useSegmentStats()
   const { deleteSegment } = useSegmentMutations()
   const setCurrentSegment = useSidebarStore((s) => s.setCurrentSegment)
+  const { confirm, dialogComponent } = useConfirmationDialog({
+    title: 'Delete Segment',
+    description:
+      'Are you sure you want to delete this segment? All associated settings will be removed. This action cannot be undone.',
+    isDangerous: true,
+    resolveText: 'Delete',
+  })
 
-  const lockedCustomFieldKey = segments.length > 0 ? segments[0].customField : null
+  const segmentSettings = stats?.settings.filter((s) => !!s.segment) ?? []
+  const lockedCustomFieldKey = segmentSettings.length > 0 ? segmentSettings[0].segment!.customField : null
 
-  const handleEdit = (id: string) => {
-    const segment = segments.find((s) => s.id === id)
-    if (!segment) return
+  const handleEdit = (segmentId: string) => {
+    const setting = segmentSettings.find((s) => s.segment!.id === segmentId)
+    if (!setting?.segment) return
     setCurrentSegment({
-      id: segment.id,
-      name: segment.name,
-      customField: segment.customField,
-      conditions: segment.conditions.map((c) => ({ compareValue: c.compareValue })),
+      id: setting.segment.id,
+      name: setting.segment.name,
+      customField: setting.segment.customField,
+      conditions: setting.segment.conditions.map((c) => ({ compareValue: c.compareValue })),
     })
   }
 
-  const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to delete this segment?')) {
-      deleteSegment.mutate(id)
+  const handleDelete = async (segmentId: string) => {
+    const confirmed = await confirm()
+    if (confirmed) {
+      deleteSegment.mutate(segmentId)
     }
   }
 
@@ -63,15 +72,18 @@ export const Segment = () => {
       <p className="text-[13px] text-text-secondary leading-5.25">
         By default, all clients see the same content. Create segments to tailor your homepage for different clients.
       </p>
-      <div className={isFetching ? 'animate-pulse' : ''}>
-        <SegmentList segments={segments} stats={stats} onEdit={handleEdit} onDelete={handleDelete} />
-      </div>
+      {stats && (
+        <div className={deleteSegment.isPending || isFetching ? 'pointer-events-none animate-pulse opacity-60' : ''}>
+          <SegmentList settings={stats.settings} onEdit={handleEdit} onDelete={handleDelete} />
+        </div>
+      )}
       <SegmentCreationCard
-        segmentCount={segments.length}
+        segmentCount={segmentSettings.length}
         lockedCustomFieldKey={lockedCustomFieldKey}
         hasClients={(stats?.totalClients ?? 0) > 0}
         onCreateSegment={handleCreateSegment}
       />
+      {dialogComponent}
     </div>
   )
 }

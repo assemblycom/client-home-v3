@@ -109,24 +109,27 @@ export const SegmentFormPanel = () => {
               <span className="text-text-secondary">{stats.totalClients} clients</span>
             </div>
             <div className="flex h-4 overflow-hidden rounded-sm bg-gray-200">
-              {stats.stats.map((stat) => (
+              {stats.settings.map((setting) => (
                 <div
-                  key={stat.name}
+                  key={setting.settingId}
                   className="h-full"
                   style={{
-                    backgroundColor: stat.color,
-                    width: stats.totalClients > 0 ? `${(stat.count / stats.totalClients) * 100}%` : '0%',
+                    backgroundColor: setting.segment?.color ?? '#DFE1E4',
+                    width: stats.totalClients > 0 ? `${(setting.clientsCount / stats.totalClients) * 100}%` : '0%',
                   }}
                 />
               ))}
             </div>
-            {stats.stats.map((stat) => (
-              <div key={stat.name} className="flex items-center justify-between">
+            {stats.settings.map((setting) => (
+              <div key={setting.settingId} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: stat.color }} />
-                  <span className="text-sm text-text-primary">{stat.name}</span>
+                  <span
+                    className="size-2 shrink-0 rounded-full"
+                    style={{ backgroundColor: setting.segment?.color ?? '#DFE1E4' }}
+                  />
+                  <span className="text-sm text-text-primary">{setting.segment?.name ?? 'Default'}</span>
                 </div>
-                <span className="text-sm text-text-secondary">{stat.count}</span>
+                <span className="text-sm text-text-secondary">{setting.clientsCount}</span>
               </div>
             ))}
           </div>

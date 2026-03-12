@@ -1,11 +1,11 @@
-import type { SegmentResponseDto, SegmentStatsResponseDto } from '@segments/lib/segments.dto'
+import type { SegmentStatsSettings } from '@segments/lib/segments.dto'
 import { IconButton } from 'copilot-design-system'
 import { useEffect, useRef, useState } from 'react'
 
 type SegmentRowProps = {
   name: string
   color: string
-  count?: number
+  count: number
   isDefault?: boolean
   onEdit?: () => void
   onDelete?: () => void
@@ -24,7 +24,7 @@ const SegmentRow = ({ name, color, count, isDefault = false, onEdit, onDelete }:
     return () => document.removeEventListener('mousedown', handleClick)
   }, [menuOpen])
 
-  const countLabel = count !== undefined ? `${count} ${count === 1 ? 'client' : 'clients'}` : undefined
+  const countLabel = `${count} ${count === 1 ? 'client' : 'clients'}`
 
   return (
     <div className="group flex items-start justify-between border-border-gray border-t px-4 pt-4 pb-3 first:border-t-0">
@@ -33,7 +33,7 @@ const SegmentRow = ({ name, color, count, isDefault = false, onEdit, onDelete }:
           <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: color }} />
           <span className="text-sm text-text-primary leading-5">{name}</span>
         </div>
-        {countLabel && <span className="text-text-secondary text-xs leading-4">{countLabel}</span>}
+        <span className="text-text-secondary text-xs leading-4">{countLabel}</span>
       </div>
       {!isDefault && (
         <div className="relative" ref={menuRef}>
@@ -74,32 +74,28 @@ const SegmentRow = ({ name, color, count, isDefault = false, onEdit, onDelete }:
 }
 
 type SegmentListProps = {
-  segments: SegmentResponseDto[]
-  stats: SegmentStatsResponseDto | null
-  onEdit: (id: string) => void
-  onDelete: (id: string) => void
+  settings: SegmentStatsSettings[]
+  onEdit: (segmentId: string) => void
+  onDelete: (segmentId: string) => void
 }
 
-export const SegmentList = ({ segments, stats, onEdit, onDelete }: SegmentListProps) => {
-  const statsByName = stats ? new Map(stats.stats.map((s) => [s.name, s])) : null
-  const defaultStat = statsByName?.get('Default')
+export const SegmentList = ({ settings, onEdit, onDelete }: SegmentListProps) => {
+  const defaultSetting = settings.find((s) => !s.segment)
+  const segmentSettings = settings.filter((s) => !!s.segment)
 
   return (
     <div className="overflow-visible rounded border border-border-gray">
-      <SegmentRow name="Default" color={defaultStat?.color ?? '#DFE1E4'} count={defaultStat?.count} isDefault />
-      {segments.map((segment) => {
-        const stat = statsByName?.get(segment.name)
-        return (
-          <SegmentRow
-            key={segment.id}
-            name={segment.name}
-            color={stat?.color ?? '#DFE1E4'}
-            count={stat?.count}
-            onEdit={() => onEdit(segment.id)}
-            onDelete={() => onDelete(segment.id)}
-          />
-        )
-      })}
+      {defaultSetting && <SegmentRow name="Default" color="#DFE1E4" count={defaultSetting.clientsCount} isDefault />}
+      {segmentSettings.map((setting) => (
+        <SegmentRow
+          key={setting.segment!.id}
+          name={setting.segment!.name}
+          color={setting.segment!.color}
+          count={setting.clientsCount}
+          onEdit={() => onEdit(setting.segment!.id)}
+          onDelete={() => onDelete(setting.segment!.id)}
+        />
+      ))}
     </div>
   )
 }
