@@ -37,20 +37,20 @@ import { MAX_FETCH_ASSEMBLY_RESOURCES } from './constants'
 import { AssemblyInvalidTokenError } from './errors'
 
 export default class AssemblyClient {
-  readonly assemblyPromise: Promise<SDK>
+  readonly assembly: SDK
 
   constructor(
     private readonly token: string,
     readonly customApiKey?: string,
   ) {
-    this.assemblyPromise = Promise.resolve(
-      assemblyApi({
+    try {
+      this.assembly = assemblyApi({
         apiKey: customApiKey ?? env.ASSEMBLY_API_KEY,
         token,
-      }),
-    ).catch(() => {
+      })
+    } catch {
       throw new AssemblyInvalidTokenError()
-    })
+    }
   }
 
   // NOTE: Any method prefixed with _ is a API method that doesn't implement retry & delay
@@ -58,8 +58,7 @@ export default class AssemblyClient {
 
   // Get Token Payload from assembly request token
   async _getTokenPayload(): Promise<Token | null> {
-    const assembly = await this.assemblyPromise
-    const getTokenPayload = assembly.getTokenPayload
+    const getTokenPayload = this.assembly.getTokenPayload
     if (!getTokenPayload) {
       logger.error(`AssemblyClient#getTokenPayload | Could not parse token payload for token ${this.token}`)
       return null
@@ -71,33 +70,28 @@ export default class AssemblyClient {
 
   async _getWorkspace(): Promise<WorkspaceResponse> {
     logger.info('AssemblyClient#_getWorkspace')
-    const assembly = await this.assemblyPromise
-    return WorkspaceResponseSchema.parse(await assembly.retrieveWorkspace())
+    return WorkspaceResponseSchema.parse(await this.assembly.retrieveWorkspace())
   }
 
   async _getAppId(appDeploymentId: string): Promise<string | null> {
-    const assembly = await this.assemblyPromise
-    const installedApps = AppInstallsResponseSchema.parse(await assembly.listAppInstalls())
+    const installedApps = AppInstallsResponseSchema.parse(await this.assembly.listAppInstalls())
     return installedApps.find((app) => app.appId === appDeploymentId)?.id || null
   }
 
   async _createClient(requestBody: ClientCreateRequest, sendInvite: boolean = false): Promise<ClientResponse> {
     logger.info('AssemblyClient#_createClient', requestBody, sendInvite)
-    const assembly = await this.assemblyPromise
-    return ClientResponseSchema.parse(await assembly.createClient({ sendInvite, requestBody }))
+    return ClientResponseSchema.parse(await this.assembly.createClient({ sendInvite, requestBody }))
   }
 
   async _getClient(id: string): Promise<ClientResponse> {
     logger.info('AssemblyClient#_getClient', id)
-    const assembly = await this.assemblyPromise
-    return ClientResponseSchema.parse(await assembly.retrieveClient({ id }))
+    return ClientResponseSchema.parse(await this.assembly.retrieveClient({ id }))
   }
 
   async _getClients(args: AssemblyListArgs & { companyId?: string } = {}) {
     logger.info('AssemblyClient#_getClients', args)
-    const assembly = await this.assemblyPromise
     return ClientsResponseSchema.parse(
-      await assembly.listClients(args).then((res) => {
+      await this.assembly.listClients(args).then((res) => {
         if (!res.data) {
           return {
             data: [],
@@ -110,32 +104,27 @@ export default class AssemblyClient {
 
   async _updateClient(id: string, requestBody: ClientCreateRequest): Promise<ClientResponse> {
     logger.info('AssemblyClient#_updateClient', id)
-    const assembly = await this.assemblyPromise
-    return ClientResponseSchema.parse(await assembly.updateClient({ id, requestBody }))
+    return ClientResponseSchema.parse(await this.assembly.updateClient({ id, requestBody }))
   }
 
   async _deleteClient(id: string) {
     logger.info('AssemblyClient#_deleteClient', id)
-    const assembly = await this.assemblyPromise
-    return assembly.deleteClient({ id })
+    return await this.assembly.deleteClient({ id })
   }
 
   async _createCompany(requestBody: CompanyCreateRequest) {
     logger.info('AssemblyClient#_createCompany', requestBody)
-    const assembly = await this.assemblyPromise
-    return CompanyResponseSchema.parse(await assembly.createCompany({ requestBody }))
+    return CompanyResponseSchema.parse(await this.assembly.createCompany({ requestBody }))
   }
 
   async _getCompany(id: string): Promise<CompanyResponse> {
     logger.info('AssemblyClient#_getCompany', id)
-    const assembly = await this.assemblyPromise
-    return CompanyResponseSchema.parse(await assembly.retrieveCompany({ id }))
+    return CompanyResponseSchema.parse(await this.assembly.retrieveCompany({ id }))
   }
 
   async _getCompanies(args: AssemblyListArgs & { isPlaceholder?: boolean } = {}): Promise<CompaniesResponse> {
     logger.info('AssemblyClient#_getCompanies', args)
-    const assembly = await this.assemblyPromise
-    return CompaniesResponseSchema.parse(await assembly.listCompanies(args))
+    return CompaniesResponseSchema.parse(await this.assembly.listCompanies(args))
   }
 
   async _getCompanyClients(companyId: string): Promise<ClientResponse[]> {
@@ -145,22 +134,19 @@ export default class AssemblyClient {
 
   async _getInternalUsers(args: AssemblyListArgs = {}): Promise<InternalUsersResponse> {
     logger.info('AssemblyClient#_getInternalUsers', args)
-    const assembly = await this.assemblyPromise
-    return InternalUsersResponseSchema.parse(await assembly.listInternalUsers(args))
+    return InternalUsersResponseSchema.parse(await this.assembly.listInternalUsers(args))
   }
 
   async _getInternalUser(id: string): Promise<InternalUser> {
     logger.info('AssemblyClient#_getInternalUser', id)
-    const assembly = await this.assemblyPromise
-    return InternalUserResponseSchema.parse(await assembly.retrieveInternalUser({ id }))
+    return InternalUserResponseSchema.parse(await this.assembly.retrieveInternalUser({ id }))
   }
 
   async _getNotifications(
     { includeRead, recipientClientId }: Parameters<SDK['listNotifications']>[0] = { includeRead: false },
   ): Promise<NotificationsResponse> {
     logger.info('AssemblyClient#_getNotifications', { includeRead, recipientClientId })
-    const assembly = await this.assemblyPromise
-    return NotificationsResponseSchema.parse(await assembly.listNotifications({ includeRead, recipientClientId }))
+    return NotificationsResponseSchema.parse(await this.assembly.listNotifications({ includeRead, recipientClientId }))
   }
 
   async _getTasks({ workspaceId, clientId, companyId }: { workspaceId: string; clientId: string; companyId?: string }) {
@@ -187,9 +173,8 @@ export default class AssemblyClient {
 
   private async _listCustomFields({ entityType }: { entityType: CustomFieldEntityType }) {
     logger.info('AssemblyClient#_listCustomFields')
-    const assembly = await this.assemblyPromise
     return ListCustomFieldResponseSchema.parse(
-      await assembly.listCustomFields({ entityType }).then((res) => {
+      await this.assembly.listCustomFields({ entityType }).then((res) => {
         if (!res.data) {
           return {
             data: [],
