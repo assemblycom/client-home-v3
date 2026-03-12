@@ -1,5 +1,5 @@
 import { conditions } from '@segments/lib/conditions/conditions.schema'
-import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
+import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'drizzle-zod'
 import type z from 'zod'
 
 export const ConditionSchema = createSelectSchema(conditions)
@@ -12,3 +12,12 @@ export const ConditionCreateSchema = createInsertSchema(conditions).omit({
   deletedAt: true,
 })
 export type ConditionCreatePayload = z.infer<typeof ConditionCreateSchema>
+
+export const ConditionUpdateSchema = createUpdateSchema(conditions).omit({
+  id: true,
+  segmentId: true,
+  createdAt: true,
+  updatedAt: true,
+  deletedAt: true,
+})
+export type ConditionUpdatePayload = z.infer<typeof ConditionUpdateSchema>
