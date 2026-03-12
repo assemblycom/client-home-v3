@@ -2,13 +2,11 @@ import AssemblyClient from '@assembly/assembly-client'
 import type { User } from '@auth/lib/user.entity'
 import { DEFAULT_BANNER_IMAGE_PATH } from '@media/constants'
 import MediaDrizzleRepository, { type MediaRepository } from '@media/lib/media.repository'
-import type { SegmentsRepository } from '@segments/lib/segments/segments.repository'
-import SegmentsDrizzleRepository from '@segments/lib/segments/segments.repository'
 import SegmentsService from '@segments/lib/segments.service'
 import { defaultContent } from '@settings/constants'
 import type { ActionsRepository } from '@settings/lib/actions/actions.repository'
 import ActionsDrizzleRepository from '@settings/lib/actions/actions.repository'
-import type SettingsRepository from '@settings/lib/settings/settings.repository'
+import type { SettingsRepository } from '@settings/lib/settings/settings.repository'
 import SettingsDrizzleRepository from '@settings/lib/settings/settings.repository'
 import type { SettingsUpdateDto } from '@settings/lib/settings-actions.dto'
 import type { SettingsWithActions } from '@settings/lib/settings-actions.entity'
@@ -29,7 +27,6 @@ export default class SettingsActionsService extends BaseService {
     private readonly settingsRepository: SettingsRepository,
     private readonly actionsRepository: ActionsRepository,
     private readonly mediaRepository: MediaRepository,
-    private readonly segmentsRepository: SegmentsRepository,
   ) {
     super(user, assembly)
   }
@@ -40,7 +37,6 @@ export default class SettingsActionsService extends BaseService {
     const actionsRepository = new ActionsDrizzleRepository(db)
     const settingsActionsQueryRepository = new SettingsActionsDrizzleQueryRepository(db)
     const mediaRepository = new MediaDrizzleRepository(db)
-    const segmentsRepository = new SegmentsDrizzleRepository(db)
 
     return new SettingsActionsService(
       user,
@@ -49,7 +45,6 @@ export default class SettingsActionsService extends BaseService {
       settingsRepository,
       actionsRepository,
       mediaRepository,
-      segmentsRepository,
     )
   }
 
@@ -97,14 +92,14 @@ export default class SettingsActionsService extends BaseService {
       return this.getForWorkspace()
     }
 
-    const [client, segments] = await Promise.all([
+    const [client, allSettings] = await Promise.all([
       this.assembly.getClient(clientId),
-      this.segmentsRepository.getAll(this.user.workspaceId),
+      this.settingsRepository.getSegments(this.user.workspaceId),
     ])
 
-    const matchedSegment = segments.find((segment) => SegmentsService.clientBelongsToSegment(client, segment))
+    const matchedSetting = allSettings.find((setting) => SegmentsService.clientBelongsToSegment(client, setting))
 
-    return this.getForWorkspace(matchedSegment?.id)
+    return this.getForWorkspace(matchedSetting?.segmentId)
   }
 
   async updateForWorkspace(payload: SettingsUpdateDto, segmentId?: string | null) {

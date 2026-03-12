@@ -94,7 +94,9 @@ export default class AssemblyClient {
     return ClientResponseSchema.parse(await assembly.retrieveClient({ id }))
   }
 
-  async _getClients(args: AssemblyListArgs & { companyId?: string } = {}) {
+  async _getClients(
+    args: AssemblyListArgs & { companyId?: string } = {},
+  ): Promise<z.infer<typeof ClientsResponseSchema>> {
     logger.info('AssemblyClient#_getClients', args)
     const assembly = await this.assemblyPromise
     return ClientsResponseSchema.parse(

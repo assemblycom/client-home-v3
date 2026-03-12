@@ -1,5 +1,6 @@
 import { ConditionCreateSchema, ConditionSchema } from '@segments/lib/conditions/types'
 import { SegmentCreateSchema, SegmentSchema } from '@segments/lib/segments/types'
+import { SettingsSchema } from '@settings/lib/types'
 import z from 'zod'
 
 export const SegmentCreateDtoSchema = SegmentCreateSchema.extend({
@@ -18,14 +19,33 @@ export const SegmentResponseDtoSchema = SegmentSchema.extend({
 })
 export type SegmentResponseDto = z.infer<typeof SegmentResponseDtoSchema>
 
-export const SegmentStatSchema = z.object({
-  name: z.string(),
-  color: z.string(),
-  count: z.number(),
+const ConditionSummarySchema = ConditionSchema.pick({
+  id: true,
+  compareValue: true,
 })
+
+const ActiveSegmentDataSchema = SegmentSchema.pick({
+  id: true,
+  name: true,
+  customField: true,
+}).extend({
+  color: z.string(),
+  conditions: z.array(ConditionSummarySchema),
+})
+
+export const FormattedSegmentDataSchema = z.object({
+  settingId: SettingsSchema.shape.id,
+  segment: ActiveSegmentDataSchema.optional(),
+})
+export type FormattedSegmentData = z.infer<typeof FormattedSegmentDataSchema>
+
+export const SegmentStatsSettingsSchema = FormattedSegmentDataSchema.extend({
+  clientsCount: z.number(),
+})
+export type SegmentStatsSettings = z.infer<typeof SegmentStatsSettingsSchema>
 
 export const SegmentStatsResponseDtoSchema = z.object({
   totalClients: z.number(),
-  stats: z.array(SegmentStatSchema),
+  settings: z.array(SegmentStatsSettingsSchema),
 })
 export type SegmentStatsResponseDto = z.infer<typeof SegmentStatsResponseDtoSchema>
