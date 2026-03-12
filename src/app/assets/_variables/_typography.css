@@ -13,4 +13,7 @@
   --text-body-xs: 0.75rem;
   --text-body-xs--font-weight: 400;
   --text-body-xs--line-height: 1.6667;
+
+  --text-body-sm: 0.8125rem;
+  --text-body-sm--line-height: 1.3125rem;
 }
