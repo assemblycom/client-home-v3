@@ -2,6 +2,9 @@ import AssemblyClient from '@assembly/assembly-client'
 import type { User } from '@auth/lib/user.entity'
 import { DEFAULT_BANNER_IMAGE_PATH } from '@media/constants'
 import MediaDrizzleRepository, { type MediaRepository } from '@media/lib/media.repository'
+import type { SegmentsRepository } from '@segments/lib/segments/segments.repository'
+import SegmentsDrizzleRepository from '@segments/lib/segments/segments.repository'
+import SegmentsService from '@segments/lib/segments.service'
 import { defaultContent } from '@settings/constants'
 import type { ActionsRepository } from '@settings/lib/actions/actions.repository'
 import ActionsDrizzleRepository from '@settings/lib/actions/actions.repository'
@@ -26,21 +29,18 @@ export default class SettingsActionsService extends BaseService {
     private readonly settingsRepository: SettingsRepository,
     private readonly actionsRepository: ActionsRepository,
     private readonly mediaRepository: MediaRepository,
+    private readonly segmentsRepository: SegmentsRepository,
   ) {
     super(user, assembly)
   }
 
-  /**
-   * Scaffold a new SettingsActionsService with wired dependencies
-   * @param user
-   * @returns
-   */
   static new(user: User) {
     const assembly = new AssemblyClient(user.token)
     const settingsRepository = new SettingsDrizzleRepository(db)
     const actionsRepository = new ActionsDrizzleRepository(db)
     const settingsActionsQueryRepository = new SettingsActionsDrizzleQueryRepository(db)
     const mediaRepository = new MediaDrizzleRepository(db)
+    const segmentsRepository = new SegmentsDrizzleRepository(db)
 
     return new SettingsActionsService(
       user,
@@ -49,11 +49,12 @@ export default class SettingsActionsService extends BaseService {
       settingsRepository,
       actionsRepository,
       mediaRepository,
+      segmentsRepository,
     )
   }
 
-  async getForWorkspace(): Promise<SettingsWithActions> {
-    const settingsAndActions = await this.queryRepository.getOne(this.user.workspaceId)
+  async getForWorkspace(segmentId?: string | null): Promise<SettingsWithActions> {
+    const settingsAndActions = await this.queryRepository.getOne(this.user.workspaceId, segmentId)
 
     // Handle missing settings and/or actions
     if (!settingsAndActions?.settings || !settingsAndActions?.actions) {
@@ -90,10 +91,26 @@ export default class SettingsActionsService extends BaseService {
     }
   }
 
-  async updateForWorkspace(payload: SettingsUpdateDto) {
+  async getForClient(): Promise<SettingsWithActions> {
+    const { clientId } = this.user
+    if (!clientId) {
+      return this.getForWorkspace()
+    }
+
+    const [client, segments] = await Promise.all([
+      this.assembly.getClient(clientId),
+      this.segmentsRepository.getAll(this.user.workspaceId),
+    ])
+
+    const matchedSegment = segments.find((segment) => SegmentsService.clientBelongsToSegment(client, segment))
+
+    return this.getForWorkspace(matchedSegment?.id)
+  }
+
+  async updateForWorkspace(payload: SettingsUpdateDto, segmentId?: string | null) {
     const settingsPayload = SettingsUpdateSchema.parse(payload) // parsed again just to retrieve necessary keys
     const actionsPayload = payload.actions || {}
-    const settingsAndActions = await this.queryRepository.getOne(this.user.workspaceId)
+    const settingsAndActions = await this.queryRepository.getOne(this.user.workspaceId, segmentId)
 
     return await DBService.transaction(async (tx) => {
       this.settingsRepository.setTx(tx)
@@ -101,12 +118,13 @@ export default class SettingsActionsService extends BaseService {
 
       try {
         const updatedSettings = Object.keys(settingsPayload).length
-          ? await this.settingsRepository.updateOne(this.user.workspaceId, settingsPayload)
+          ? await this.settingsRepository.updateOne(this.user.workspaceId, settingsPayload, segmentId)
           : settingsAndActions?.settings
 
-        const actions = Object.keys(actionsPayload).length
-          ? await this.actionsRepository.updateOne(this.user.workspaceId, actionsPayload)
-          : settingsAndActions?.actions
+        const actions =
+          Object.keys(actionsPayload).length && settingsAndActions?.settings
+            ? await this.actionsRepository.updateOne(settingsAndActions.settings.id, actionsPayload)
+            : settingsAndActions?.actions
 
         return { ...updatedSettings, actions }
       } finally {

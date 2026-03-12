@@ -14,11 +14,17 @@ import type {
   SegmentStatsResponseDto,
   SegmentUpdateDto,
 } from '@segments/lib/segments.dto'
+import type { ActionsRepository } from '@settings/lib/actions/actions.repository'
+import ActionsDrizzleRepository from '@settings/lib/actions/actions.repository'
+import type { SettingsRepository } from '@settings/lib/settings/settings.repository'
+import SettingsDrizzleRepository from '@settings/lib/settings/settings.repository'
 import httpStatus from 'http-status'
 import db from '@/db'
 import APIError from '@/errors/api.error'
 import BaseService from '@/lib/core/base.service'
 import DBService from '@/lib/core/db.service'
+
+const MAX_SEGMENTS_PER_WORKSPACE = 5
 
 export default class SegmentsService extends BaseService {
   constructor(
@@ -26,6 +32,8 @@ export default class SegmentsService extends BaseService {
     readonly assembly: AssemblyClient,
     private readonly segmentsRepository: SegmentsRepository,
     private readonly conditionsRepository: ConditionsRepository,
+    private readonly settingsRepository: SettingsRepository,
+    private readonly actionsRepository: ActionsRepository,
   ) {
     super(user, assembly)
   }
@@ -34,8 +42,17 @@ export default class SegmentsService extends BaseService {
     const assembly = new AssemblyClient(user.token)
     const segmentsRepository = new SegmentsDrizzleRepository(db)
     const conditionsRepository = new ConditionsDrizzleRepository(db)
+    const settingsRepository = new SettingsDrizzleRepository(db)
+    const actionsRepository = new ActionsDrizzleRepository(db)
 
-    return new SegmentsService(user, assembly, segmentsRepository, conditionsRepository)
+    return new SegmentsService(
+      user,
+      assembly,
+      segmentsRepository,
+      conditionsRepository,
+      settingsRepository,
+      actionsRepository,
+    )
   }
 
   private async validateCustomField(customField: string) {
@@ -58,6 +75,15 @@ export default class SegmentsService extends BaseService {
 
   async update(segmentId: string, payload: SegmentUpdateDto) {
     const { name, conditions: conditionPayloads } = payload
+
+    if (conditionPayloads) {
+      const existingSegments = await this.segmentsRepository.getAll(this.user.workspaceId)
+      this.validateUniqueCompareValues(
+        existingSegments,
+        conditionPayloads.map((c) => c.compareValue),
+        segmentId,
+      )
+    }
 
     return await DBService.transaction(async (tx) => {
       this.segmentsRepository.setTx(tx)
@@ -97,10 +123,17 @@ export default class SegmentsService extends BaseService {
 
     const compareValues = segment.conditions.map((c) => c.compareValue)
 
+    // Array: check if any element matches a compareValue
     if (Array.isArray(fieldValue)) {
       return fieldValue.some((v) => compareValues.includes(String(v)))
     }
 
+    // Object: check if any value in the object matches a compareValue
+    if (typeof fieldValue === 'object') {
+      return Object.values(fieldValue).some((v) => compareValues.includes(String(v)))
+    }
+
+    // String / Number: direct comparison
     return compareValues.includes(String(fieldValue))
   }
 
@@ -141,22 +174,87 @@ export default class SegmentsService extends BaseService {
 
     const { conditions: conditionPayloads, ...segmentPayload } = payload
 
+    const existingSegments = await this.segmentsRepository.getAll(this.user.workspaceId)
+    if (existingSegments.length >= MAX_SEGMENTS_PER_WORKSPACE) {
+      throw new APIError(
+        `A workspace cannot have more than ${MAX_SEGMENTS_PER_WORKSPACE} segments`,
+        httpStatus.UNPROCESSABLE_ENTITY,
+      )
+    }
+
     await this.validateCustomField(segmentPayload.customField)
+    this.validateUniqueCompareValues(
+      existingSegments,
+      conditionPayloads.map((c) => c.compareValue),
+    )
 
     return await DBService.transaction(async (tx) => {
       this.segmentsRepository.setTx(tx)
       this.conditionsRepository.setTx(tx)
+      this.settingsRepository.setTx(tx)
+      this.actionsRepository.setTx(tx)
 
       try {
         const segment = await this.segmentsRepository.createOne(this.user.workspaceId, internalUserId, segmentPayload)
 
         const conditions = await this.conditionsRepository.createMany(segment.id, conditionPayloads)
 
+        await this.duplicateDefaultSettings(segment.id)
+
         return { ...segment, conditions }
       } finally {
         this.segmentsRepository.unsetTx()
         this.conditionsRepository.unsetTx()
+        this.settingsRepository.unsetTx()
+        this.actionsRepository.unsetTx()
       }
+    })
+  }
+
+  private validateUniqueCompareValues(
+    existingSegments: SegmentResponseDto[],
+    newCompareValues: string[],
+    excludeSegmentId?: string,
+  ) {
+    const existingCompareValues = existingSegments
+      .filter((s) => s.id !== excludeSegmentId)
+      .flatMap((s) => s.conditions.map((c) => c.compareValue))
+
+    const duplicates = newCompareValues.filter((v) => existingCompareValues.includes(v))
+
+    if (duplicates.length > 0) {
+      throw new APIError(
+        `Compare values must be unique across segments. Duplicates: ${duplicates.join(', ')}`,
+        httpStatus.UNPROCESSABLE_ENTITY,
+      )
+    }
+  }
+
+  private async duplicateDefaultSettings(segmentId: string) {
+    const defaultSettings = await this.settingsRepository.getDefault(this.user.workspaceId)
+    if (!defaultSettings) return
+
+    const segmentSettings = await this.settingsRepository.createForSegment(this.user.workspaceId, {
+      segmentId,
+      subheading: defaultSettings.subheading,
+      content: defaultSettings.content,
+      backgroundColor: defaultSettings.backgroundColor,
+      bannerImageId: defaultSettings.bannerImageId,
+      bannerPositionX: defaultSettings.bannerPositionX,
+      bannerPositionY: defaultSettings.bannerPositionY,
+      createdById: this.user.internalUserId,
+    })
+
+    const defaultActions = await this.actionsRepository.getBySettingsId(defaultSettings.id)
+    if (!defaultActions) return
+
+    await this.actionsRepository.createForSettings(this.user.workspaceId, {
+      settingsId: segmentSettings.id,
+      invoices: defaultActions.invoices,
+      contracts: defaultActions.contracts,
+      tasks: defaultActions.tasks,
+      forms: defaultActions.forms,
+      order: defaultActions.order,
     })
   }
 }
