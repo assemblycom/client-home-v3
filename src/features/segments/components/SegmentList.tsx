@@ -4,8 +4,7 @@ import type { SegmentResponseDto, SegmentStatsResponseDto } from '@segments/lib/
 import { IconButton } from 'copilot-design-system'
 import { useEffect, useRef, useState } from 'react'
 
-const SEGMENT_COLORS = ['#E7B04A', '#56C6BE', '#E9728B', '#7B68EE', '#4CAF50'] as const
-const DEFAULT_COLOR = '#E3E5E8'
+const DEFAULT_COLOR = '#DFE1E4'
 
 type SegmentRowProps = {
   name: string
@@ -29,12 +28,16 @@ const SegmentRow = ({ name, color, count, isDefault = false, onEdit, onDelete }:
     return () => document.removeEventListener('mousedown', handleClick)
   }, [menuOpen])
 
+  const countLabel = count !== undefined ? `${count} ${count === 1 ? 'client' : 'clients'}` : undefined
+
   return (
-    <div className="group flex items-center justify-between border-border-gray border-b px-4 py-3 last:border-b-0">
-      <div className="flex items-center gap-2">
-        <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: color }} />
-        <span className="text-sm text-text-primary leading-5">{name}</span>
-        {count !== undefined && <span className="text-sm text-text-secondary leading-5">{count}</span>}
+    <div className="group flex items-start justify-between border-border-gray border-t px-4 pt-4 pb-3 first:border-t-0">
+      <div className="flex flex-1 flex-col gap-1">
+        <div className="flex items-center gap-2">
+          <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: color }} />
+          <span className="text-sm text-text-primary leading-5">{name}</span>
+        </div>
+        {countLabel && <span className="text-text-secondary text-xs leading-4">{countLabel}</span>}
       </div>
       {!isDefault && (
         <div className="relative" ref={menuRef}>
@@ -83,28 +86,19 @@ type SegmentListProps = {
 
 export const SegmentList = ({ segments, stats, onEdit, onDelete }: SegmentListProps) => {
   const statsByName = stats ? new Map(stats.stats.map((s) => [s.name, s])) : null
-
-  const getSegmentStat = (name: string, index: number) => {
-    const stat = statsByName?.get(name)
-    return {
-      color: stat?.color ?? SEGMENT_COLORS[index % SEGMENT_COLORS.length],
-      count: stat?.count,
-    }
-  }
-
   const defaultCount = stats ? stats.totalClients - stats.stats.reduce((sum, s) => sum + s.count, 0) : undefined
 
   return (
     <div className="overflow-visible rounded border border-border-gray">
       <SegmentRow name="Default" color={DEFAULT_COLOR} count={defaultCount} isDefault />
-      {segments.map((segment, index) => {
-        const { color, count } = getSegmentStat(segment.name, index)
+      {segments.map((segment) => {
+        const stat = statsByName?.get(segment.name)
         return (
           <SegmentRow
             key={segment.id}
             name={segment.name}
-            color={color}
-            count={count}
+            color={stat?.color ?? DEFAULT_COLOR}
+            count={stat?.count}
             onEdit={() => onEdit(segment.id)}
             onDelete={() => onDelete(segment.id)}
           />

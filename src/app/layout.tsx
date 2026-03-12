@@ -2,14 +2,14 @@ import 'copilot-design-system/dist/styles/main.css'
 import { authenticateHeaders } from '@auth/lib/authenticate'
 import { AuthProvider } from '@auth/providers/auth.provider'
 import { AppProvider } from '@common/providers/app.provider'
+import { SETTINGS_QUERY_KEY } from '@settings/constants'
 import type { Metadata } from 'next'
 import { Geist, Inter } from 'next/font/google'
 import { headers } from 'next/headers'
 import './globals.css'
-import { SETTINGS_QUERY_KEY } from '@settings/constants'
 import SettingsActionsService from '@settings/lib/settings-actions.service'
 import { SettingsProvider } from '@settings/providers/settings.provider'
-import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
 import { getQueryClient } from '@/lib/core/query.utils'
 import { cn } from '@/lib/utils'
 
@@ -37,6 +37,7 @@ export default async function RootLayout({
   const settingsService = SettingsActionsService.new(user)
   const settings = await settingsService.getForWorkspace()
 
+  // Prefetch into a server-side QueryClient, then dehydrate for client hydration
   const queryClient = getQueryClient()
   queryClient.setQueryData([SETTINGS_QUERY_KEY], settings)
 
