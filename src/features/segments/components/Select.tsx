@@ -1,5 +1,3 @@
-'use client'
-
 import { Icon } from 'copilot-design-system'
 import { useEffect, useRef, useState } from 'react'
 import { cn } from '@/utils/tailwind'

@@ -1,5 +1,3 @@
-'use client'
-
 import type { SegmentStatsResponseDto } from '@segments/lib/segments.dto'
 import { IconButton } from 'copilot-design-system'
 import { useEffect, useRef, useState } from 'react'
