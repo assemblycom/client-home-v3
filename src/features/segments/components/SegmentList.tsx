@@ -1,6 +1,6 @@
 import type { SegmentStatsSettings } from '@segments/lib/segments.dto'
 import { IconButton } from 'copilot-design-system'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 type SegmentRowProps = {
   name: string
@@ -81,21 +81,26 @@ type SegmentListProps = {
 
 export const SegmentList = ({ settings, onEdit, onDelete }: SegmentListProps) => {
   const defaultSetting = settings.find((s) => !s.segment)
-  const segmentSettings = settings.filter((s) => !!s.segment)
+  const segmentSettings = settings.flatMap((s) => (s.segment ? [s as Required<typeof s>] : []))
 
   return (
     <div className="overflow-visible rounded border border-border-gray">
-      {defaultSetting && <SegmentRow name="Default" color="#DFE1E4" count={defaultSetting.clientsCount} isDefault />}
-      {segmentSettings.map((setting) => (
-        <SegmentRow
-          key={setting.segment!.id}
-          name={setting.segment!.name}
-          color={setting.segment!.color}
-          count={setting.clientsCount}
-          onEdit={() => onEdit(setting.segment!.id)}
-          onDelete={() => onDelete(setting.segment!.id)}
-        />
-      ))}
+      {defaultSetting && (
+        <SegmentRow key="default" name="Default" color="#dfe1e4" count={defaultSetting.clientsCount} />
+      )}
+      {segmentSettings.map((setting) => {
+        const segment = setting.segment
+        return (
+          <SegmentRow
+            key={segment.id}
+            name={segment.name}
+            color={segment.color}
+            count={setting.clientsCount}
+            onEdit={() => onEdit(segment.id)}
+            onDelete={() => onDelete(segment.id)}
+          />
+        )
+      })}
     </div>
   )
 }
