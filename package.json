@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "bun --bun next dev",
+    "build": "bun --bun next build",
     "build:all": "sh scripts/build/build.sh",
-    "start": "next start",
+    "start": "bun --bun next start",
     "start:clean": "next build && next start",
     "typecheck": "tsc --noEmit",
     "lint": "biome check",
