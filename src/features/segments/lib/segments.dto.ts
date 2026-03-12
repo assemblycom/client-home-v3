@@ -24,10 +24,6 @@ const ConditionSummarySchema = ConditionSchema.pick({
   compareValue: true,
 })
 
-const DefaultSegmentDataSchema = z.object({
-  name: z.literal('Default'),
-})
-
 const ActiveSegmentDataSchema = SegmentSchema.pick({
   id: true,
   name: true,
