@@ -20,28 +20,13 @@ interface SidebarStore {
   toggleMobileSidebar: () => void
 }
 
-const createStore = () =>
-  create<SidebarStore>()((set) => ({
-    sidebarView: 'default',
-    setSidebarView: (sidebarView: SidebarView) => set({ sidebarView }),
-    currentSegment: null,
-    setCurrentSegment: (currentSegment: CurrentSegment | null) => set({ currentSegment }),
-    expandSegments: false,
-    setExpandSegments: (expandSegments: boolean) => set({ expandSegments }),
-    mobileSidebarOpen: false,
-    toggleMobileSidebar: () => set((state) => ({ mobileSidebarOpen: !state.mobileSidebarOpen })),
-  }))
-
-// Preserve Zustand state across HMR
-type HMR = { data: Record<string, unknown> }
-let store = createStore()
-const hot = (import.meta as unknown as { hot?: HMR }).hot
-if (hot) {
-  const prev = hot.data.sidebarStore as ReturnType<typeof createStore> | undefined
-  if (prev) {
-    store = prev
-  }
-  hot.data.sidebarStore = store
-}
-
-export const useSidebarStore = store
+export const useSidebarStore = create<SidebarStore>()((set) => ({
+  sidebarView: 'default',
+  setSidebarView: (sidebarView: SidebarView) => set({ sidebarView }),
+  currentSegment: null,
+  setCurrentSegment: (currentSegment: CurrentSegment | null) => set({ currentSegment }),
+  expandSegments: false,
+  setExpandSegments: (expandSegments: boolean) => set({ expandSegments }),
+  mobileSidebarOpen: false,
+  toggleMobileSidebar: () => set((state) => ({ mobileSidebarOpen: !state.mobileSidebarOpen })),
+}))
