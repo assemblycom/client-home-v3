@@ -1,6 +1,6 @@
 import type { Settings } from '@settings/lib/settings/settings.entity'
 import { settings } from '@settings/lib/settings/settings.schema'
-import type { SettingsCreatePayload, SettingsUpdatePayload } from '@settings/lib/types'
+import type { SettingsCreatePayload, SettingsUpdatePayload, SettingsWithSegment } from '@settings/lib/types'
 import { and, eq, isNull } from 'drizzle-orm'
 import httpStatus from 'http-status'
 import APIError from '@/errors/api.error'
@@ -16,6 +16,7 @@ export interface SettingsRepository extends BaseRepository {
   createOne(workspaceId: string, payload: SettingsCreatePayload): Promise<Settings>
   createForSegment(workspaceId: string, payload: SettingsCreatePayload): Promise<Settings>
   updateOne(workspaceId: string, payload: SettingsUpdatePayload, segmentId?: string | null): Promise<Settings>
+  getSegments(workspaceId: string): Promise<SettingsWithSegment[]>
 }
 
 /**
@@ -82,6 +83,31 @@ class SettingsDrizzleRepository extends BaseDrizzleRepository implements Setting
     }
 
     return created
+  }
+
+  async getSegments(workspaceId: string): Promise<SettingsWithSegment[]> {
+    const result = await this.db.query.settings.findMany({
+      where: eq(settings.workspaceId, workspaceId),
+      columns: {
+        id: true,
+        workspaceId: true,
+        segmentId: true,
+      },
+      with: {
+        segment: {
+          with: {
+            conditions: true,
+          },
+        },
+      },
+      orderBy: (s, { asc }) => asc(s.createdAt),
+    })
+
+    return result.sort((a, b) => {
+      if (a.segmentId === null) return 1
+      if (b.segmentId === null) return -1
+      return 0
+    })
   }
 }
 
