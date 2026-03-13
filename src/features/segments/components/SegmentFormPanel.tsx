@@ -6,7 +6,7 @@ import { useSidebarStore } from '@editor/stores/sidebarStore'
 import { Select } from '@segments/components/Select'
 import { useSegmentMutations } from '@segments/hooks/useSegmentMutations'
 import { useSegmentStats } from '@segments/hooks/useSegments'
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useCustomFieldOptions } from '@/features/custom-fields/hooks/useCustomFieldOptions'
 import { useCustomFields } from '@/features/custom-fields/hooks/useCustomFields'
 
@@ -28,10 +28,6 @@ export const SegmentFormPanel = () => {
   const isMultiSelect = customField?.type === CustomFieldType.TAGS
   const { options } = useCustomFieldOptions(isMultiSelect ? (customField?.id ?? null) : null)
 
-  const usedValues = new Set(
-    segments?.filter((s) => s.id !== currentSegment?.id).flatMap((s) => s.conditions.map((c) => c.compareValue)) ?? [],
-  )
-
   const nextId = useRef(currentSegment?.conditions?.length ?? 1)
   const [name, setName] = useState(currentSegment?.name ?? '')
   const [conditions, setConditions] = useState<ConditionRow[]>(
@@ -40,6 +36,17 @@ export const SegmentFormPanel = () => {
       : [{ id: 0, compareValue: '' }],
   )
   const [errors, setErrors] = useState<{ name?: string; conditions?: string }>({})
+
+  const availableOptions = useMemo(() => {
+    const usedByOtherSegments = new Set(
+      segments?.filter((s) => s.id !== currentSegment?.id).flatMap((s) => s.conditions.map((c) => c.compareValue)) ??
+        [],
+    )
+    const usedByCurrentConditions = new Set(conditions.map((c) => c.compareValue))
+    return options
+      .filter((opt) => !usedByOtherSegments.has(opt.key) && !usedByCurrentConditions.has(opt.key))
+      .map((opt) => ({ value: opt.key, label: opt.label }))
+  }, [options, segments, currentSegment?.id, conditions])
 
   const handleBack = () => {
     setExpandSegments(true)
@@ -161,47 +168,40 @@ export const SegmentFormPanel = () => {
           <span className="text-heading-md">
             Show this segment if <b>{customField?.name || customFieldKey}</b> is
           </span>
-          {conditions.map((condition, index) => {
-            const currentValues = new Set(conditions.filter((_, i) => i !== index).map((c) => c.compareValue))
-            const availableOptions = options
-              .filter((opt) => !usedValues.has(opt.key) && !currentValues.has(opt.key))
-              .map((opt) => ({ value: opt.key, label: opt.label }))
-
-            return (
-              <div key={condition.id} className="flex flex-col gap-1">
-                {index > 0 && <span className="font-medium text-sm text-text-primary">Or</span>}
-                <div className="flex items-center gap-2">
-                  {isMultiSelect ? (
-                    <Select
-                      value={condition.compareValue}
-                      onChange={(value) => updateCondition(index, value)}
-                      options={availableOptions}
-                      placeholder="Select value"
-                      className="flex-1"
-                      disabled={availableOptions.length === 0 && !condition.compareValue}
-                    />
-                  ) : (
-                    <input
-                      type="text"
-                      value={condition.compareValue}
-                      onChange={(e) => updateCondition(index, e.target.value)}
-                      placeholder="Enter value"
-                      className="flex-1 rounded border border-border-gray bg-white px-3 py-2 text-sm text-text-primary outline-none focus:border-primary"
-                    />
-                  )}
-                  {conditions.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeCondition(index)}
-                      className="shrink-0 cursor-pointer rounded p-1 text-text-secondary hover:bg-background-secondary hover:text-text-primary"
-                    >
-                      <Icon icon="Trash" width={16} height={16} />
-                    </button>
-                  )}
-                </div>
+          {conditions.map((condition, index) => (
+            <div key={condition.id} className="flex flex-col gap-1">
+              {index > 0 && <span className="font-medium text-sm text-text-primary">Or</span>}
+              <div className="flex items-center gap-2">
+                {isMultiSelect ? (
+                  <Select
+                    value={condition.compareValue}
+                    onChange={(value) => updateCondition(index, value)}
+                    options={availableOptions}
+                    placeholder="Select value"
+                    className="flex-1"
+                    disabled={availableOptions.length === 0 && !condition.compareValue}
+                  />
+                ) : (
+                  <input
+                    type="text"
+                    value={condition.compareValue}
+                    onChange={(e) => updateCondition(index, e.target.value)}
+                    placeholder="Enter value"
+                    className="flex-1 rounded border border-border-gray bg-white px-3 py-2 text-sm text-text-primary outline-none focus:border-primary"
+                  />
+                )}
+                {conditions.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeCondition(index)}
+                    className="shrink-0 cursor-pointer rounded p-1 text-text-secondary hover:bg-background-secondary hover:text-text-primary"
+                  >
+                    <Icon icon="Trash" width={16} height={16} />
+                  </button>
+                )}
               </div>
-            )
-          })}
+            </div>
+          ))}
           {errors.conditions && <span className="text-error text-sm">{errors.conditions}</span>}
 
           <button
