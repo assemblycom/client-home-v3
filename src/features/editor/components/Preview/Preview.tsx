@@ -33,7 +33,7 @@ export function Preview({
   return (
     <div
       className={cn(
-        'mx-auto flex h-full flex-col overflow-hidden rounded-lg border-gray-200 bg-white max-[860px]:rounded-none max-[860px]:border-0 max-[860px]:shadow-none min-[860px]:border min-[860px]:shadow-sm',
+        'mx-auto flex h-full flex-col overflow-hidden rounded-lg border-border-gray bg-white max-[860px]:rounded-none max-[860px]:border-0 max-[860px]:shadow-none min-[860px]:border min-[860px]:shadow-sm',
         {
           'max-w-sm': displayMode === DisplayMode.MOBILE,
         },
@@ -41,7 +41,7 @@ export function Preview({
     >
       <PreviewTopBar url={workspace?.portalUrl} />
 
-      <div className="preview-scrollable min-h-0 flex-1 overflow-auto border-gray-200 border-t">
+      <div className="preview-scrollable min-h-0 flex-1 overflow-auto border-border-gray border-t">
         {!workspace ? (
           <div className="flex min-h-32 items-center justify-center">
             <Loader />

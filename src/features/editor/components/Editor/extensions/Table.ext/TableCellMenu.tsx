@@ -4,6 +4,7 @@ import { Icon } from '@assembly-js/design-system'
 import type { Editor } from '@tiptap/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { cn } from '@/utils/tailwind'
 
 type TableAction = {
   label: string
@@ -161,7 +162,7 @@ export const TableCellMenu = ({ editor }: { editor: Editor }) => {
           left: triggerLeft,
           zIndex: 20,
         }}
-        className="flex h-5 w-5 items-center justify-center rounded border border-gray-200 bg-white shadow-sm hover:bg-gray-100"
+        className="flex h-5 w-5 items-center justify-center rounded border border-border-gray bg-white shadow-sm hover:bg-background-primary"
         aria-label="Table cell options"
       >
         <Icon icon="ChevronDown" width={12} height={12} />
@@ -181,7 +182,7 @@ export const TableCellMenu = ({ editor }: { editor: Editor }) => {
             left: dropdownLeft,
             zIndex: 50,
           }}
-          className="min-w-[180px] rounded-md border border-gray-200 bg-white py-1 shadow-lg"
+          className="min-w-[180px] rounded-md border border-border-gray bg-white py-1 shadow-md"
         >
           {TABLE_ACTIONS.map((action) => (
             <button
@@ -191,9 +192,10 @@ export const TableCellMenu = ({ editor }: { editor: Editor }) => {
                 e.preventDefault()
                 handleAction(action)
               }}
-              className={`flex w-full items-center gap-2 px-3 py-1.5 text-left text-sm transition-colors hover:bg-gray-100 ${
-                action.isDanger ? 'text-red-600 hover:bg-red-50' : 'text-gray-700'
-              }`}
+              className={cn(
+                'flex w-full items-center gap-2 px-3 py-1.5 text-left text-sm transition-colors hover:bg-background-primary',
+                action.isDanger ? 'text-red-600 hover:bg-red-50' : 'text-text-primary',
+              )}
             >
               {action.icon}
               {action.label}
