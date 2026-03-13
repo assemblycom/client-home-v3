@@ -5,6 +5,7 @@ import { Menu } from '@editor/components/Menu'
 import { MenuMode } from '@editor/components/Menu/menuConfig'
 import { ClientSelector } from '@editor/components/TopBar/ClientSelector'
 import { DisplayModeTab } from '@editor/components/TopBar/DisplayModeTab'
+import { SegmentSelector } from '@editor/components/TopBar/SegmentSelector'
 import { TabBtn } from '@editor/components/TopBar/TabBtn'
 import { useSidebarStore } from '@editor/stores/sidebarStore'
 import { useViewStore, ViewMode } from '@editor/stores/viewStore'
@@ -43,6 +44,9 @@ export const TopBar = () => {
               handleClick={() => changeViewModeDebounced(ViewMode.PREVIEW)}
             />
           </div>
+          <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
+            <SegmentSelector />
+          </Activity>
           <Activity mode={getActivityMode(viewMode === ViewMode.PREVIEW)}>
             <div className="h-5 w-px bg-border-gray" />
             <ClientSelector />

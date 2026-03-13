@@ -2,7 +2,7 @@ import type { Segment } from '@segments/lib/segments/segments.entity'
 import { segments } from '@segments/lib/segments/segments.schema'
 import type { SegmentCreatePayload } from '@segments/lib/segments/types'
 import type { SegmentResponseDto } from '@segments/lib/segments.dto'
-import { and, eq, isNull } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import type { BaseRepository } from '@/lib/core/base.repository'
 import BaseDrizzleRepository from '@/lib/core/base-drizzle.repository'
 
@@ -11,7 +11,8 @@ export interface SegmentsRepository extends BaseRepository {
   getOne(segmentId: string): Promise<SegmentResponseDto | undefined>
   getAll(workspaceId: string): Promise<SegmentResponseDto[]>
   updateOne(segmentId: string, payload: { name?: string }): Promise<Segment>
-  softDelete(segmentId: string): Promise<Segment>
+  delete(segmentId: string): Promise<Segment>
+  deleteAllByWorkspaceId(workspaceId: string): Promise<Segment[]>
 }
 
 class SegmentsDrizzleRepository extends BaseDrizzleRepository implements SegmentsRepository {
@@ -25,14 +26,14 @@ class SegmentsDrizzleRepository extends BaseDrizzleRepository implements Segment
 
   async getOne(segmentId: string) {
     return await this.db.query.segments.findFirst({
-      where: and(eq(segments.id, segmentId), isNull(segments.deletedAt)),
+      where: eq(segments.id, segmentId),
       with: { conditions: true },
     })
   }
 
   async getAll(workspaceId: string) {
     return await this.db.query.segments.findMany({
-      where: and(eq(segments.workspaceId, workspaceId), isNull(segments.deletedAt)),
+      where: eq(segments.workspaceId, workspaceId),
       with: { conditions: true },
     })
   }
@@ -42,13 +43,13 @@ class SegmentsDrizzleRepository extends BaseDrizzleRepository implements Segment
     return updated
   }
 
-  async softDelete(segmentId: string) {
-    const [deleted] = await this.db
-      .update(segments)
-      .set({ deletedAt: new Date() })
-      .where(eq(segments.id, segmentId))
-      .returning()
+  async delete(segmentId: string) {
+    const [deleted] = await this.db.delete(segments).where(eq(segments.id, segmentId)).returning()
     return deleted
+  }
+
+  async deleteAllByWorkspaceId(workspaceId: string) {
+    return await this.db.delete(segments).where(eq(segments.workspaceId, workspaceId)).returning()
   }
 }
 

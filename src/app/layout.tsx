@@ -30,12 +30,11 @@ export default async function RootLayout({
   const requestHeaders = await headers()
   const user = authenticateHeaders(requestHeaders)
 
-  // Needed for both IU & client
   const settingsService = SettingsActionsService.new(user)
-  const settings = await settingsService.getForWorkspace()
+  const settings = user.clientId ? await settingsService.getForClient() : await settingsService.getForWorkspace()
 
   const queryClient = getQueryClient()
-  queryClient.setQueryData([SETTINGS_QUERY_KEY], settings)
+  queryClient.setQueryData([SETTINGS_QUERY_KEY, null], settings)
 
   return (
     <html lang="en">

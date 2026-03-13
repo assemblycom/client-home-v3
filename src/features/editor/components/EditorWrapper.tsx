@@ -6,6 +6,7 @@ import { Heading } from '@editor/components/Heading'
 import { Preview } from '@editor/components/Preview'
 import { Subheading } from '@editor/components/Subheading'
 import { useAppControls } from '@editor/hooks/useAppControls'
+import { useSegmentSettings } from '@settings/hooks/useSegmentSettings'
 import { useSettingsMutation } from '@settings/hooks/useSettingsMutation'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import { Activity } from 'react'
@@ -38,16 +39,17 @@ export function EditorWrapper({ className }: EditorWrapperProps) {
 
   const isDark = isDarkColor(backgroundColor)
 
+  useSegmentSettings()
   useAppControls()
 
   return (
     <div
-      className={cn('w-full grow overflow-x-hidden overflow-y-scroll p-4 @md:p-6', isDark && 'dark', className)}
+      className={cn('w-full grow overflow-x-hidden overflow-y-scroll @md:p-6 p-4', isDark && 'dark', className)}
       style={{ '--bg-color': backgroundColor } as React.CSSProperties}
     >
       <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
         <div
-          className="@container flex min-h-full max-w-full flex-col gap-5 rounded-xl border border-border-gray @max-md:rounded-t-none px-6 py-5"
+          className="@container flex min-h-full max-w-full flex-col gap-5 rounded-xl @max-md:rounded-t-none border border-border-gray px-6 py-5"
           style={{ backgroundColor }}
         >
           <div className="flex flex-col gap-1.5">
