@@ -68,17 +68,19 @@ const ConfirmationDialog = ({
         <div className="h-px bg-border-gray" />
 
         <div className="flex flex-col items-start gap-2.5 self-stretch px-5 py-5">
-          <p className="font-normal text-[13px] text-text-primary leading-[21px]">{description}</p>
+          <p className="font-normal text-body-sm text-text-primary">{description}</p>
         </div>
 
         <div className="h-px bg-border-gray" />
 
-        <div className="flex h-[60px] items-center justify-end gap-6 self-stretch px-5 py-4">
+        <div className="flex h-15 items-center justify-end gap-6 self-stretch px-5 py-4">
           <Button label={rejectText} variant="secondary" onClick={handleClose} />
           <Button
             label={resolveText}
             variant="primary"
-            style={isDangerous ? { backgroundColor: '#991A00', borderColor: '#991A00' } : undefined}
+            style={
+              isDangerous ? { backgroundColor: 'var(--color-error)', borderColor: 'var(--color-error)' } : undefined
+            }
             onClick={handleConfirm}
           />
         </div>
