@@ -1,4 +1,4 @@
-import { IconButton, Spinner } from '@assembly-js/design-system'
+import { Icon, IconButton, Spinner } from '@assembly-js/design-system'
 import type { SegmentStatsSettings } from '@segments/lib/segments.dto'
 import { useEffect, useRef, useState } from 'react'
 
@@ -58,23 +58,26 @@ export const SegmentCardItem = ({ data, onEdit, onDelete, isLoading }: Props) =>
             />
           )}
           {menuOpen && !isLoading && (
-            <div className="absolute top-full right-0 z-10 mt-1 w-32 rounded border border-border-gray bg-white shadow-md">
+            <div className="absolute top-full right-0 z-10 mt-1 w-[200px] rounded border border-border-gray bg-white py-0.5 shadow-lg">
               <button
                 type="button"
-                className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50"
+                className="flex w-full items-center gap-3 px-5 py-3 text-left text-sm text-text-primary hover:bg-gray-50"
                 onClick={handleEdit}
               >
-                Edit
+                <Icon icon="Edit" width={16} height={16} />
+                Update segment
               </button>
+
               <button
                 type="button"
-                className="w-full px-3 py-2 text-left text-red-600 text-sm hover:bg-gray-50"
+                className="flex w-full items-center gap-3 px-5 py-3 text-left text-[#991A00] text-sm hover:bg-gray-50"
                 onClick={() => {
                   onDelete?.()
                   setMenuOpen(false)
                 }}
               >
-                Delete
+                <Icon icon="Trash" width={16} height={16} />
+                Delete segment
               </button>
             </div>
           )}
