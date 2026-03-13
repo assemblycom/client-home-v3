@@ -6,7 +6,7 @@ import { useSidebarStore } from '@editor/stores/sidebarStore'
 import { Select } from '@segments/components/Select'
 import { useSegmentMutations } from '@segments/hooks/useSegmentMutations'
 import { useSegmentStats } from '@segments/hooks/useSegments'
-import { useMemo, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useCustomFieldOptions } from '@/features/custom-fields/hooks/useCustomFieldOptions'
 import { useCustomFields } from '@/features/custom-fields/hooks/useCustomFields'
 
@@ -40,16 +40,13 @@ export const SegmentFormPanel = () => {
   )
   const [errors, setErrors] = useState<{ name?: string; conditions?: string }>({})
 
-  const availableOptions = useMemo(() => {
-    const usedByOtherSegments = new Set(
-      segments?.filter((s) => s.id !== currentSegment?.id).flatMap((s) => s.conditions.map((c) => c.compareValue)) ??
-        [],
-    )
-    const usedByCurrentConditions = new Set(conditions.map((c) => c.compareValue))
-    return options
-      .filter((opt) => !usedByOtherSegments.has(opt.key) && !usedByCurrentConditions.has(opt.key))
-      .map((opt) => ({ value: opt.key, label: opt.label }))
-  }, [options, segments, currentSegment?.id, conditions])
+  const usedByOtherSegments = new Set(
+    segments?.filter((s) => s.id !== currentSegment?.id).flatMap((s) => s.conditions.map((c) => c.compareValue)) ?? [],
+  )
+  const usedByCurrentConditions = new Set(conditions.map((c) => c.compareValue))
+  const availableOptions = options
+    .filter((opt) => !usedByOtherSegments.has(opt.key) && !usedByCurrentConditions.has(opt.key))
+    .map((opt) => ({ value: opt.key, label: opt.label }))
 
   const handleBack = () => {
     setExpandSegments(true)
