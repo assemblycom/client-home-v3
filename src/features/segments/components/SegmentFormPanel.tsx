@@ -1,11 +1,11 @@
 'use client'
 
 import { CustomFieldType } from '@assembly/types'
+import { Button, Icon } from '@assembly-js/design-system'
 import { useSidebarStore } from '@editor/stores/sidebarStore'
 import { Select } from '@segments/components/Select'
 import { useSegmentMutations } from '@segments/hooks/useSegmentMutations'
 import { useSegmentStats } from '@segments/hooks/useSegments'
-import { Button, Icon } from 'copilot-design-system'
 import { useRef, useState } from 'react'
 import { useCustomFieldOptions } from '@/features/custom-fields/hooks/useCustomFieldOptions'
 import { useCustomFields } from '@/features/custom-fields/hooks/useCustomFields'

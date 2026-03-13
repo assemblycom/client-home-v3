@@ -1,7 +1,7 @@
+import { Icon } from '@assembly-js/design-system'
 import { Popper } from '@editor/components/Popper'
 import { useViewStore } from '@editor/stores/viewStore'
 import { useSegmentStats } from '@segments/hooks/useSegments'
-import { Icon } from 'copilot-design-system'
 import { useRef, useState } from 'react'
 import { cn } from '@/utils/tailwind'
 

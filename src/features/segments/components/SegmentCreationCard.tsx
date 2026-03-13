@@ -1,5 +1,5 @@
+import { Button, Icon, Tooltip } from '@assembly-js/design-system'
 import { Select } from '@segments/components/Select'
-import { Button, Icon, Tooltip } from 'copilot-design-system'
 import { useState } from 'react'
 import { useCustomFields } from '@/features/custom-fields/hooks/useCustomFields'
 

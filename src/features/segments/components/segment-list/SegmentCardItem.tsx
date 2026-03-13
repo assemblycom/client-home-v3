@@ -1,5 +1,5 @@
+import { IconButton, Spinner } from '@assembly-js/design-system'
 import type { SegmentStatsSettings } from '@segments/lib/segments.dto'
-import { IconButton, Spinner } from 'copilot-design-system'
 import { useEffect, useRef, useState } from 'react'
 
 interface Props {
