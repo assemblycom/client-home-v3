@@ -126,11 +126,11 @@ export default class SegmentsService extends BaseService {
     allSettings: SettingsWithSegment[],
   ): SettingsWithSegment | null {
     const settings =
-      allSettings.find((settings) => {
-        if (!settings.segment) {
+      allSettings.find((setting) => {
+        if (!setting.segment) {
           return false
         }
-        const segment = settings.segment
+        const segment = setting.segment
         const fieldValue = client.customFields?.[segment.customField]
         if (fieldValue == null) return false
 
@@ -230,7 +230,7 @@ export default class SegmentsService extends BaseService {
         color: '#dfe1e4',
         customField: segmentSettings?.at(0)?.segment?.customField,
         conditions: [],
-      } as FormattedSegmentData,
+      },
       ...segmentData,
     ]
   }

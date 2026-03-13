@@ -1,7 +1,6 @@
 import { Popper } from '@editor/components/Popper'
 import { useViewStore } from '@editor/stores/viewStore'
 import { useSegmentStats } from '@segments/hooks/useSegments'
-import type { FormattedSegmentData } from '@segments/lib/segments.dto'
 import { Icon } from 'copilot-design-system'
 import { useRef, useState } from 'react'
 import { cn } from '@/utils/tailwind'
@@ -13,10 +12,9 @@ export const SegmentSelector = () => {
   const [isOpen, setIsOpen] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
 
-  if (!segments || segments?.length < 2) return null
+  if (!segments || segments.length < 2) return null
 
-  const activeSegment =
-    segments.find((segment) => segment?.id === activeSegmentId) || (segments.at(0) as FormattedSegmentData)
+  const activeSegment = segments.find((segment) => segment.id === activeSegmentId) || segments[0]
 
   const handleSelect = (segmentId: string | null) => {
     setActiveSegmentId(segmentId)
@@ -43,11 +41,11 @@ export const SegmentSelector = () => {
           {segments.map((segment) => (
             <button
               type="button"
-              key={segment?.settingId}
-              onClick={() => handleSelect(segment?.id || null)}
+              key={segment.settingId}
+              onClick={() => handleSelect(segment.id ?? null)}
               className={cn(
                 'px-3 py-1.5 text-left text-body-sm hover:bg-background-secondary',
-                activeSegmentId === segment?.id && 'bg-background-secondary',
+                activeSegmentId === segment.id && 'bg-background-secondary',
               )}
             >
               {segment.name}

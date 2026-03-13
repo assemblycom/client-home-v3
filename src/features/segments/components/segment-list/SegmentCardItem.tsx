@@ -1,30 +1,20 @@
-import { useSidebarStore } from '@editor/stores/sidebarStore'
 import type { SegmentStatsSettings } from '@segments/lib/segments.dto'
 import { IconButton, Spinner } from 'copilot-design-system'
 import { useEffect, useRef, useState } from 'react'
 
 interface Props {
   data: SegmentStatsSettings
-  onDelete: (segmentId?: string) => void
+  onEdit: () => void
+  onDelete: () => void
   isLoading?: boolean
 }
 
-export const SegmentCardItem = ({ data, onDelete, isLoading }: Props) => {
+export const SegmentCardItem = ({ data, onEdit, onDelete, isLoading }: Props) => {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
-  const setCurrentSegment = useSidebarStore((s) => s.setCurrentSegment)
 
   const handleEdit = () => {
-    if (!data.id || !data.customField) {
-      return
-    }
-    setCurrentSegment({
-      id: data.id,
-      name: data.name,
-      customField: data.customField,
-      conditions: data.conditions.map((c) => ({ compareValue: c.compareValue })),
-    })
-
+    onEdit()
     setMenuOpen(false)
   }
 
