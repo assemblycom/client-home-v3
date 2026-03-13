@@ -1,11 +1,14 @@
+'use client'
+
 import { Button, Icon, Tooltip } from '@assembly-js/design-system'
 import { Select } from '@segments/components/Select'
-import { useState } from 'react'
+import { useSegmentConfigMutation } from '@segments/hooks/useSegmentConfigMutation'
+import { useEffect, useMemo, useState } from 'react'
 import { useCustomFields } from '@/features/custom-fields/hooks/useCustomFields'
 
 type SegmentCreationCardProps = {
   segmentCount: number
-  lockedCustomFieldKey?: string
+  lockedCustomFieldId?: string
   hasClients: boolean
   onCreateSegment: () => void
 }
@@ -14,27 +17,79 @@ const MAX_SEGMENTS = 6 // including default
 
 export const SegmentCreationCard = ({
   segmentCount,
-  lockedCustomFieldKey,
+  lockedCustomFieldId,
   hasClients,
   onCreateSegment,
 }: SegmentCreationCardProps) => {
-  const { clientCustomFields, isLoading } = useCustomFields()
-  const [selectedKey, setSelectedKey] = useState<string>(lockedCustomFieldKey ?? '')
+  const { clientCustomFields, companyCustomFields, isLoading } = useCustomFields()
+  const [selectedId, setSelectedId] = useState<string>('')
+
+  useEffect(() => {
+    if (lockedCustomFieldId && !selectedId) {
+      setSelectedId(lockedCustomFieldId)
+    }
+  }, [lockedCustomFieldId, selectedId])
   const [error, setError] = useState<string | null>(null)
+  const upsertConfig = useSegmentConfigMutation()
+
+  const allCustomFields = useMemo(
+    () => [...clientCustomFields, ...companyCustomFields],
+    [clientCustomFields, companyCustomFields],
+  )
+
+  const groups = useMemo(
+    () => [
+      {
+        label: 'Client',
+        options: clientCustomFields.map((f) => ({ value: f.id, label: f.name })),
+      },
+      {
+        label: 'Company',
+        options: companyCustomFields.map((f) => ({ value: f.id, label: f.name })),
+        optionClassName: 'font-medium',
+      },
+    ],
+    [clientCustomFields, companyCustomFields],
+  )
 
   if (segmentCount >= MAX_SEGMENTS) return null
 
-  const isLocked = !!lockedCustomFieldKey
-  const hasCustomFields = clientCustomFields.length > 0
+  // Lock the custom field selector when custom segments exist (more than just default)
+  const hasCustomSegments = segmentCount > 1
+  const isLocked = hasCustomSegments && !!lockedCustomFieldId
+  const hasCustomFields = clientCustomFields.length > 0 || companyCustomFields.length > 0
   const isDisabled = !hasClients || !hasCustomFields
 
-  const handleCreate = () => {
-    if (!isLocked && !selectedKey) {
+  const handleCreate = async () => {
+    const fieldId = isLocked ? lockedCustomFieldId : selectedId
+    if (!fieldId) {
       setError('Start by selecting a custom field')
       return
     }
+
+    const field = allCustomFields.find((f) => f.id === fieldId)
+    if (!field) {
+      setError('Selected custom field not found')
+      return
+    }
+
+    const entityType = companyCustomFields.some((f) => f.id === field.id) ? 'company' : 'client'
+
     setError(null)
-    onCreateSegment()
+
+    try {
+      const configUnchanged = lockedCustomFieldId === field.id
+      if (!configUnchanged) {
+        await upsertConfig.mutateAsync({
+          customField: field.key,
+          customFieldId: field.id,
+          entityType: entityType as 'client' | 'company',
+        })
+      }
+      onCreateSegment()
+    } catch {
+      setError('Failed to save custom field configuration')
+    }
   }
 
   return (
@@ -69,12 +124,13 @@ export const SegmentCreationCard = ({
         </div>
       ) : (
         <Select
-          value={selectedKey}
+          value={isLocked ? lockedCustomFieldId : selectedId}
           onChange={(value) => {
-            setSelectedKey(value)
+            setSelectedId(value)
             setError(null)
           }}
-          options={clientCustomFields.map((f) => ({ value: f.key, label: f.name }))}
+          options={[]}
+          groups={groups}
           placeholder="Select custom field"
           disabled={isLocked || isLoading}
           error={!!error}
@@ -89,11 +145,11 @@ export const SegmentCreationCard = ({
       )}
 
       <Button
-        label="Create segment"
+        label={upsertConfig.isPending ? 'Saving...' : 'Create segment'}
         variant="secondary"
         className="w-full"
         onClick={handleCreate}
-        disabled={isDisabled}
+        disabled={isDisabled || upsertConfig.isPending}
       />
     </div>
   )

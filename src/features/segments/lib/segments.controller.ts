@@ -1,5 +1,9 @@
 import { authenticateHeaders } from '@auth/lib/authenticate'
-import { SegmentCreateDtoSchema, SegmentUpdateDtoSchema } from '@segments/lib/segments.dto'
+import {
+  SegmentConfigUpsertDtoSchema,
+  SegmentCreateDtoSchema,
+  SegmentUpdateDtoSchema,
+} from '@segments/lib/segments.dto'
 import SegmentsService from '@segments/lib/segments.service'
 import httpStatus from 'http-status'
 import { type NextRequest, NextResponse } from 'next/server'
@@ -21,6 +25,18 @@ export const getSegments = async (req: NextRequest): Promise<NextResponse<APIRes
   const segments = await segmentsService.getAll()
 
   return NextResponse.json({ data: segments })
+}
+
+export const upsertSegmentConfig = async (req: NextRequest): Promise<NextResponse<APIResponse>> => {
+  const user = authenticateHeaders(req.headers)
+
+  const body = await req.json()
+  const parsedBody = SegmentConfigUpsertDtoSchema.parse(body)
+
+  const segmentsService = SegmentsService.new(user)
+  const config = await segmentsService.upsertSegmentConfig(parsedBody)
+
+  return NextResponse.json({ data: config })
 }
 
 export const createSegment = async (req: NextRequest): Promise<NextResponse<APIResponse>> => {

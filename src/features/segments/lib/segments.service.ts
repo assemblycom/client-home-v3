@@ -5,13 +5,15 @@ import { CustomFieldEntityType } from '@assembly/types'
 import type { User } from '@auth/lib/user.entity'
 import type { ConditionsRepository } from '@segments/lib/conditions/conditions.repository'
 import ConditionsDrizzleRepository from '@segments/lib/conditions/conditions.repository'
-import type { SegmentConfigsRepository } from '@segments/lib/segment-configs/segment-configs.repository'
-import SegmentConfigsDrizzleRepository from '@segments/lib/segment-configs/segment-configs.repository'
+import type { SegmentConfigsRepository } from '@segments/lib/segment-config/segment-config.repository'
+import SegmentConfigsDrizzleRepository from '@segments/lib/segment-config/segment-config.repository'
 import type { SegmentsRepository } from '@segments/lib/segments/segments.repository'
 import SegmentsDrizzleRepository from '@segments/lib/segments/segments.repository'
 import { CATEGORICAL_COLORS } from '@segments/lib/segments.colors'
 import type {
   FormattedSegmentData,
+  SegmentConfigResponse,
+  SegmentConfigUpsertDto,
   SegmentCreateDto,
   SegmentResponseDto,
   SegmentStatsResponseDto,
@@ -64,10 +66,12 @@ export default class SegmentsService extends BaseService {
     )
   }
 
-  private async validateCustomField(customField: string) {
-    // TODO: PR 2 — use entityType from segment config instead of hardcoded CLIENT
+  private async validateCustomField(
+    customField: string,
+    entityType: CustomFieldEntityType = CustomFieldEntityType.CLIENT,
+  ) {
     const { data: customFields } = await this.assembly.listCustomFields({
-      entityType: CustomFieldEntityType.CLIENT,
+      entityType,
     })
     const validKeys = customFields.map((cf) => cf.key)
 
@@ -76,6 +80,38 @@ export default class SegmentsService extends BaseService {
         `Invalid customField "${customField}". Must be one of: ${validKeys.join(', ')}`,
         httpStatus.UNPROCESSABLE_ENTITY,
       )
+    }
+  }
+
+  async upsertSegmentConfig(payload: SegmentConfigUpsertDto): Promise<SegmentConfigResponse> {
+    // Only allow changing config if no custom segments exist
+    const existingSegments = await this.segmentsRepository.getAll(this.user.workspaceId)
+    if (existingSegments.length > 0) {
+      const existingConfig = await this.segmentConfigsRepository.getByWorkspaceId(this.user.workspaceId)
+      if (existingConfig && existingConfig.customField !== payload.customField) {
+        throw new APIError(
+          'Cannot change the custom field while segments exist. Delete all segments first.',
+          httpStatus.UNPROCESSABLE_ENTITY,
+        )
+      }
+    }
+
+    const entityType = payload.entityType === 'company' ? CustomFieldEntityType.COMPANY : CustomFieldEntityType.CLIENT
+    await this.validateCustomField(payload.customField, entityType)
+
+    const config = await this.segmentConfigsRepository.upsert({
+      workspaceId: this.user.workspaceId,
+      customField: payload.customField,
+      customFieldId: payload.customFieldId,
+      entityType: payload.entityType,
+    })
+
+    return {
+      id: config.id,
+      workspaceId: config.workspaceId,
+      customField: config.customField,
+      customFieldId: config.customFieldId,
+      entityType: config.entityType,
     }
   }
 
@@ -272,7 +308,7 @@ export default class SegmentsService extends BaseService {
       throw new APIError('Only internal users can create segments', httpStatus.FORBIDDEN)
     }
 
-    const { conditions: conditionPayloads, ...segmentPayload } = payload
+    const { conditions: conditionPayloads, name } = payload
 
     const existingSegments = await this.segmentsRepository.getAll(this.user.workspaceId)
     if (existingSegments.length >= MAX_SEGMENTS_PER_WORKSPACE) {
@@ -282,8 +318,14 @@ export default class SegmentsService extends BaseService {
       )
     }
 
-    // TODO: PR 2 — validate against segment config's entityType
-    await this.validateCustomField(segmentPayload.customField)
+    // Segment config must exist before creating segments (created via PUT /api/segments/config)
+    const config = await this.segmentConfigsRepository.getByWorkspaceId(this.user.workspaceId)
+    if (!config) {
+      throw new APIError('Segment config must be created before adding segments', httpStatus.UNPROCESSABLE_ENTITY)
+    }
+
+    const entityType = config.entityType === 'company' ? CustomFieldEntityType.COMPANY : CustomFieldEntityType.CLIENT
+    await this.validateCustomField(config.customField, entityType)
     this.validateUniqueCompareValues(
       existingSegments,
       conditionPayloads.map((c) => c.compareValue),
@@ -294,23 +336,9 @@ export default class SegmentsService extends BaseService {
       this.conditionsRepository.setTx(tx)
       this.settingsRepository.setTx(tx)
       this.actionsRepository.setTx(tx)
-      this.segmentConfigsRepository.setTx(tx)
 
       try {
-        // Create or reuse segment config for this workspace
-        const existingConfig = await this.segmentConfigsRepository.getByWorkspaceId(this.user.workspaceId)
-        if (!existingConfig) {
-          await this.segmentConfigsRepository.create({
-            workspaceId: this.user.workspaceId,
-            customField: segmentPayload.customField,
-            customFieldId: segmentPayload.customFieldId ?? '',
-            entityType: segmentPayload.entityType ?? 'client',
-          })
-        }
-
-        const segment = await this.segmentsRepository.createOne(this.user.workspaceId, internalUserId, {
-          name: segmentPayload.name,
-        })
+        const segment = await this.segmentsRepository.createOne(this.user.workspaceId, internalUserId, { name })
 
         const conditions = await this.conditionsRepository.createMany(segment.id, conditionPayloads)
 
@@ -322,7 +350,6 @@ export default class SegmentsService extends BaseService {
         this.conditionsRepository.unsetTx()
         this.settingsRepository.unsetTx()
         this.actionsRepository.unsetTx()
-        this.segmentConfigsRepository.unsetTx()
       }
     })
   }

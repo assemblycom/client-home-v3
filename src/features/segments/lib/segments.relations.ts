@@ -1,5 +1,5 @@
 import { conditions } from '@segments/lib/conditions/conditions.schema'
-import { segmentConfigs } from '@segments/lib/segment-configs/segment-configs.schema'
+import { segmentConfigs } from '@segments/lib/segment-config/segment-config.schema'
 import { segments } from '@segments/lib/segments/segments.schema'
 import { settings } from '@settings/lib/settings/settings.schema'
 import { relations } from 'drizzle-orm'

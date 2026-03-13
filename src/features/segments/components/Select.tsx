@@ -1,5 +1,5 @@
 import { Icon } from '@assembly-js/design-system'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { cn } from '@/utils/tailwind'
 
 export type SelectOption = {
@@ -7,10 +7,17 @@ export type SelectOption = {
   label: string
 }
 
+export type SelectOptionGroup = {
+  label: string
+  options: SelectOption[]
+  optionClassName?: string
+}
+
 type SelectProps = {
   value: string
   onChange: (value: string) => void
   options: SelectOption[]
+  groups?: SelectOptionGroup[]
   placeholder?: string
   disabled?: boolean
   error?: boolean
@@ -21,6 +28,7 @@ export const Select = ({
   value,
   onChange,
   options,
+  groups,
   placeholder = 'Select...',
   disabled = false,
   error = false,
@@ -31,7 +39,14 @@ export const Select = ({
   const containerRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
 
-  const selectedLabel = options.find((o) => o.value === value)?.label
+  const flatOptions = useMemo(() => {
+    if (groups) {
+      return groups.flatMap((g) => g.options)
+    }
+    return options
+  }, [groups, options])
+
+  const selectedLabel = flatOptions.find((o) => o.value === value)?.label
 
   useEffect(() => {
     if (!isOpen) return
@@ -46,10 +61,10 @@ export const Select = ({
 
   useEffect(() => {
     if (isOpen) {
-      const selectedIndex = options.findIndex((o) => o.value === value)
+      const selectedIndex = flatOptions.findIndex((o) => o.value === value)
       setHighlightedIndex(selectedIndex >= 0 ? selectedIndex : 0)
     }
-  }, [isOpen, options, value])
+  }, [isOpen, flatOptions, value])
 
   const selectOption = useCallback(
     (optionValue: string) => {
@@ -69,8 +84,8 @@ export const Select = ({
           e.preventDefault()
           if (!isOpen) {
             setIsOpen(true)
-          } else if (highlightedIndex >= 0 && highlightedIndex < options.length) {
-            selectOption(options[highlightedIndex].value)
+          } else if (highlightedIndex >= 0 && highlightedIndex < flatOptions.length) {
+            selectOption(flatOptions[highlightedIndex].value)
           }
           break
         }
@@ -79,7 +94,7 @@ export const Select = ({
           if (!isOpen) {
             setIsOpen(true)
           } else {
-            setHighlightedIndex((prev) => (prev < options.length - 1 ? prev + 1 : prev))
+            setHighlightedIndex((prev) => (prev < flatOptions.length - 1 ? prev + 1 : prev))
           }
           break
         }
@@ -101,15 +116,73 @@ export const Select = ({
         }
       }
     },
-    [disabled, isOpen, highlightedIndex, options, selectOption],
+    [disabled, isOpen, highlightedIndex, flatOptions, selectOption],
   )
 
   useEffect(() => {
     if (!isOpen || highlightedIndex < 0) return
     const listEl = listRef.current
-    const highlighted = listEl?.children[highlightedIndex] as HTMLElement | undefined
+    if (!listEl) return
+    const items = listEl.querySelectorAll('[role="option"]')
+    const highlighted = items[highlightedIndex] as HTMLElement | undefined
     highlighted?.scrollIntoView({ block: 'nearest' })
   }, [isOpen, highlightedIndex])
+
+  const renderOptions = () => {
+    if (groups) {
+      let flatIndex = 0
+      return groups.map((group) => {
+        if (group.options.length === 0) return null
+        const items = group.options.map((opt) => {
+          const currentIndex = flatIndex++
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              role="option"
+              aria-selected={opt.value === value}
+              onClick={() => selectOption(opt.value)}
+              onMouseEnter={() => setHighlightedIndex(currentIndex)}
+              className={cn(
+                'w-full truncate px-3 py-[5px] text-left text-sm text-text-primary',
+                opt.value === value && 'bg-background-primary',
+                currentIndex === highlightedIndex && 'bg-background-primary',
+                group.optionClassName,
+              )}
+            >
+              {opt.label}
+            </button>
+          )
+        })
+        return (
+          <div key={group.label}>
+            <div className="px-3 pt-2 pb-1 font-medium text-text-secondary text-xs uppercase tracking-wide">
+              {group.label}
+            </div>
+            {items}
+          </div>
+        )
+      })
+    }
+
+    return options.map((opt, index) => (
+      <button
+        key={opt.value}
+        type="button"
+        role="option"
+        aria-selected={opt.value === value}
+        onClick={() => selectOption(opt.value)}
+        onMouseEnter={() => setHighlightedIndex(index)}
+        className={cn(
+          'w-full truncate px-3 py-[5px] text-left text-sm text-text-primary',
+          opt.value === value && 'bg-background-primary',
+          index === highlightedIndex && 'bg-background-primary',
+        )}
+      >
+        {opt.label}
+      </button>
+    ))
+  }
 
   return (
     <div ref={containerRef} className={cn('relative', className)}>
@@ -139,25 +212,9 @@ export const Select = ({
         <div
           ref={listRef}
           role="listbox"
-          className="absolute z-10 mt-1 max-h-32 w-full overflow-y-auto rounded border border-border-popper bg-white pb-1 shadow-[0px_6px_20px_rgba(0,0,0,0.07)]"
+          className="absolute z-10 mt-1 max-h-48 w-full overflow-y-auto rounded border border-border-popper bg-white pb-1 shadow-[0px_6px_20px_rgba(0,0,0,0.07)]"
         >
-          {options.map((opt, index) => (
-            <button
-              key={opt.value}
-              type="button"
-              role="option"
-              aria-selected={opt.value === value}
-              onClick={() => selectOption(opt.value)}
-              onMouseEnter={() => setHighlightedIndex(index)}
-              className={cn(
-                'w-full truncate px-3 py-[5px] text-left text-sm text-text-primary',
-                opt.value === value && 'bg-background-primary',
-                index === highlightedIndex && 'bg-background-primary',
-              )}
-            >
-              {opt.label}
-            </button>
-          ))}
+          {renderOptions()}
         </div>
       )}
     </div>

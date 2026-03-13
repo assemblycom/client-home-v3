@@ -9,7 +9,7 @@ export const Segment = () => {
   const { segments, segmentConfig, totalClients, isLoading, isFetching } = useSegmentStats()
   const setCurrentSegment = useSidebarStore((s) => s.setCurrentSegment)
 
-  const lockedCustomFieldKey = segmentConfig?.customField
+  const lockedCustomFieldId = segmentConfig?.customFieldId
 
   const handleCreateSegment = () => {
     setCurrentSegment({})
@@ -50,7 +50,7 @@ export const Segment = () => {
       )}
       <SegmentCreationCard
         segmentCount={segments?.length || 0}
-        lockedCustomFieldKey={lockedCustomFieldKey}
+        lockedCustomFieldId={lockedCustomFieldId}
         hasClients={!!totalClients}
         onCreateSegment={handleCreateSegment}
       />

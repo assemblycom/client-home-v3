@@ -1,17 +1,20 @@
-import type { SegmentConfig } from '@segments/lib/segment-configs/segment-configs.entity'
-import { segmentConfigs } from '@segments/lib/segment-configs/segment-configs.schema'
+import type { SegmentConfig } from '@segments/lib/segment-config/segment-config.entity'
+import { segmentConfigs } from '@segments/lib/segment-config/segment-config.schema'
 import { eq } from 'drizzle-orm'
 import type { BaseRepository } from '@/lib/core/base.repository'
 import BaseDrizzleRepository from '@/lib/core/base-drizzle.repository'
 
+type SegmentConfigPayload = {
+  workspaceId: string
+  customField: string
+  customFieldId: string
+  entityType: 'client' | 'company'
+}
+
 export interface SegmentConfigsRepository extends BaseRepository {
   getByWorkspaceId(workspaceId: string): Promise<SegmentConfig | undefined>
-  create(payload: {
-    workspaceId: string
-    customField: string
-    customFieldId: string
-    entityType: 'client' | 'company'
-  }): Promise<SegmentConfig>
+  create(payload: SegmentConfigPayload): Promise<SegmentConfig>
+  upsert(payload: SegmentConfigPayload): Promise<SegmentConfig>
   deleteByWorkspaceId(workspaceId: string): Promise<SegmentConfig | undefined>
 }
 
@@ -22,14 +25,25 @@ class SegmentConfigsDrizzleRepository extends BaseDrizzleRepository implements S
     })
   }
 
-  async create(payload: {
-    workspaceId: string
-    customField: string
-    customFieldId: string
-    entityType: 'client' | 'company'
-  }) {
+  async create(payload: SegmentConfigPayload) {
     const [created] = await this.db.insert(segmentConfigs).values(payload).returning()
     return created
+  }
+
+  async upsert(payload: SegmentConfigPayload) {
+    const [upserted] = await this.db
+      .insert(segmentConfigs)
+      .values(payload)
+      .onConflictDoUpdate({
+        target: segmentConfigs.workspaceId,
+        set: {
+          customField: payload.customField,
+          customFieldId: payload.customFieldId,
+          entityType: payload.entityType,
+        },
+      })
+      .returning()
+    return upserted
   }
 
   async deleteByWorkspaceId(workspaceId: string) {

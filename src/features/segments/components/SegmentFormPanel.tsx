@@ -21,10 +21,13 @@ export const SegmentFormPanel = () => {
 
   const { segments, segmentConfig, totalClients } = useSegmentStats()
   const { createSegment, updateSegment } = useSegmentMutations()
-  const { clientCustomFields } = useCustomFields()
+  const { clientCustomFields, companyCustomFields } = useCustomFields()
 
   const customFieldKey = segmentConfig?.customField ?? null
-  const customField = clientCustomFields.find((f) => f.key === customFieldKey)
+  const customField =
+    segmentConfig?.entityType === 'company'
+      ? companyCustomFields.find((f) => f.key === customFieldKey)
+      : clientCustomFields.find((f) => f.key === customFieldKey)
   const isMultiSelect = customField?.type === CustomFieldType.TAGS
   const { options } = useCustomFieldOptions(isMultiSelect ? (customField?.id ?? null) : null)
 
@@ -75,10 +78,7 @@ export const SegmentFormPanel = () => {
     if (isEditing && currentSegment?.id) {
       updateSegment.mutate({ id: currentSegment.id, name, conditions: validConditions }, { onSuccess: handleBack })
     } else {
-      createSegment.mutate(
-        { name, customField: customFieldKey, conditions: validConditions },
-        { onSuccess: handleBack },
-      )
+      createSegment.mutate({ name, conditions: validConditions }, { onSuccess: handleBack })
     }
   }
 
