@@ -182,7 +182,7 @@ export const SegmentFormPanel = () => {
                   <button
                     type="button"
                     onClick={() => removeCondition(index)}
-                    className="shrink-0 rounded p-1 text-text-secondary hover:text-text-primary"
+                    className="shrink-0 cursor-pointer rounded p-1 text-text-secondary hover:bg-background-secondary hover:text-text-primary"
                   >
                     <Icon icon="Trash" width={16} height={16} />
                   </button>
@@ -195,7 +195,7 @@ export const SegmentFormPanel = () => {
           <button
             type="button"
             onClick={addCondition}
-            className="mt-3 flex items-center gap-2 py-0.5 font-medium text-sm text-text-primary"
+            className="mt-3 flex w-fit cursor-pointer items-center gap-2 rounded p-1 font-medium text-sm text-text-primary hover:bg-background-secondary"
           >
             <Icon icon="Plus" width={12} height={12} />
             OR
