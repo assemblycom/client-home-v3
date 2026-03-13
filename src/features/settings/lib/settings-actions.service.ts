@@ -97,7 +97,7 @@ export default class SettingsActionsService extends BaseService {
       this.settingsRepository.getSegments(this.user.workspaceId),
     ])
 
-    const matchedSetting = allSettings.find((setting) => SegmentsService.clientBelongsToSegment(client, setting))
+    const matchedSetting = SegmentsService.resolveSettingForClient(client, allSettings)
 
     return this.getForWorkspace(matchedSetting?.segmentId)
   }

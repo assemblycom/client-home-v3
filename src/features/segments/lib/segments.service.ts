@@ -20,7 +20,7 @@ import type { ActionsRepository } from '@settings/lib/actions/actions.repository
 import ActionsDrizzleRepository from '@settings/lib/actions/actions.repository'
 import type { SettingsRepository } from '@settings/lib/settings/settings.repository'
 import SettingsDrizzleRepository from '@settings/lib/settings/settings.repository'
-import type { SettingsWithSegment } from '@settings/lib/types'
+import type { SegmentWithConditions, SettingsWithSegment } from '@settings/lib/types'
 import httpStatus from 'http-status'
 import db from '@/db'
 import { workspaceId } from '@/db/helpers'
@@ -121,28 +121,36 @@ export default class SegmentsService extends BaseService {
     return await this.segmentsRepository.delete(segmentId)
   }
 
-  static clientBelongsToSegment(client: ClientResponse, settings: SettingsWithSegment): boolean {
-    const segment = settings.segment
-    if (!segment) {
-      return true
-    }
-    const fieldValue = client.customFields?.[segment.customField]
-    if (fieldValue == null) return false
+  static resolveSettingForClient(
+    client: ClientResponse,
+    allSettings: SettingsWithSegment[],
+  ): SettingsWithSegment | null {
+    const settings =
+      allSettings.find((setting) => {
+        if (!setting.segment) {
+          return false
+        }
+        const segment = setting.segment
+        const fieldValue = client.customFields?.[segment.customField]
+        if (fieldValue == null) return false
 
-    const compareValues = segment.conditions.map((c) => c.compareValue)
+        const compareValues = segment.conditions.map((c) => c.compareValue)
 
-    // Array: check if any element matches a compareValue
-    if (Array.isArray(fieldValue)) {
-      return fieldValue.some((v) => compareValues.includes(String(v)))
-    }
+        // Array: check if any element matches a compareValue
+        if (Array.isArray(fieldValue)) {
+          return fieldValue.some((v) => compareValues.includes(String(v)))
+        }
 
-    // Object: check if any value in the object matches a compareValue
-    if (typeof fieldValue === 'object') {
-      return Object.values(fieldValue).some((v) => compareValues.includes(String(v)))
-    }
+        // Object: check if any value in the object matches a compareValue
+        if (typeof fieldValue === 'object') {
+          return Object.values(fieldValue).some((v) => compareValues.includes(String(v)))
+        }
 
-    // String / Number: direct comparison
-    return compareValues.includes(String(fieldValue))
+        // String / Number: direct comparison
+        return compareValues.includes(String(fieldValue))
+      }) || allSettings.at(0)
+
+    return settings ?? null
   }
 
   async getStats(): Promise<SegmentStatsResponseDto> {
@@ -155,9 +163,7 @@ export default class SegmentsService extends BaseService {
 
     const segmentStats = clients.reduce(
       (stats, client) => {
-        const settings = allSettings.find((settings) => {
-          return SegmentsService.clientBelongsToSegment(client, settings)
-        })
+        const settings = SegmentsService.resolveSettingForClient(client, allSettings)
 
         if (!settings) {
           // this should not be happening at all. capture error
@@ -175,7 +181,7 @@ export default class SegmentsService extends BaseService {
 
     return {
       totalClients: clients.length,
-      settings: this.formatSegmentData(allSettings).map<SegmentStatsSettings>((settings) => {
+      segments: this.formatSegmentData(allSettings).map<SegmentStatsSettings>((settings) => {
         return {
           ...settings,
           clientsCount: segmentStats[settings.settingId],
@@ -185,26 +191,48 @@ export default class SegmentsService extends BaseService {
   }
 
   formatSegmentData(allSettings: SettingsWithSegment[]): FormattedSegmentData[] {
-    return allSettings.map((settings, index) => {
+    const defaultSetting = allSettings.find((setting) => !setting.segment)
+    if (!defaultSetting) {
+      console.error('No setting found while formatting segment.')
+      return []
+    }
+    const segmentSettings = allSettings.flatMap((setting) => {
+      if (!setting.segment) {
+        return []
+      }
+
+      return [setting as typeof setting & { segment: SegmentWithConditions }]
+    })
+
+    const segmentData = segmentSettings.map<FormattedSegmentData>((settings, index) => {
       const segment = settings.segment
       return {
+        id: segment?.id,
+        workspaceId: segment.workspaceId,
         settingId: settings.id,
-        segment: !segment
-          ? undefined
-          : {
-              id: segment.id,
-              name: segment.name,
-              color: CATEGORICAL_COLORS[index],
-              customField: segment.customField,
-              conditions: segment.conditions.map((condition) => {
-                return {
-                  id: condition.id,
-                  compareValue: condition.compareValue,
-                }
-              }),
-            },
+        name: segment.name || 'Default',
+        color: CATEGORICAL_COLORS[index] || '#dfe1e4',
+        customField: segment.customField,
+        conditions: segment.conditions.map((condition) => {
+          return {
+            id: condition.id,
+            compareValue: condition.compareValue,
+          }
+        }),
       }
     })
+
+    return [
+      {
+        settingId: defaultSetting.id,
+        workspaceId: defaultSetting.workspaceId,
+        name: 'Default',
+        color: '#dfe1e4',
+        customField: segmentSettings?.at(0)?.segment?.customField,
+        conditions: [],
+      },
+      ...segmentData,
+    ]
   }
 
   async create(payload: SegmentCreateDto) {

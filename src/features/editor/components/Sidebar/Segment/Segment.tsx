@@ -1,44 +1,15 @@
 'use client'
 
-import { useConfirmationDialog } from '@common/hooks/useConfirmationDialog'
 import { useSidebarStore } from '@editor/stores/sidebarStore'
 import { SegmentCreationCard } from '@segments/components/SegmentCreationCard'
-import { SegmentList } from '@segments/components/SegmentList'
-import { useSegmentMutations } from '@segments/hooks/useSegmentMutations'
+import { SegmentList } from '@segments/components/segment-list/SegmentList'
 import { useSegmentStats } from '@segments/hooks/useSegments'
 
 export const Segment = () => {
-  const { stats, isLoading, isFetching } = useSegmentStats()
-  const { deleteSegment } = useSegmentMutations()
+  const { segments, totalClients, isLoading, isFetching } = useSegmentStats()
   const setCurrentSegment = useSidebarStore((s) => s.setCurrentSegment)
-  const { confirm, dialogComponent } = useConfirmationDialog({
-    title: 'Delete Segment',
-    description:
-      'Are you sure you want to delete this segment? All associated settings will be removed. This action cannot be undone.',
-    isDangerous: true,
-    resolveText: 'Delete',
-  })
 
-  const segmentSettings = stats?.settings.filter((s) => !!s.segment) ?? []
-  const lockedCustomFieldKey = segmentSettings.length > 0 ? segmentSettings[0].segment!.customField : null
-
-  const handleEdit = (segmentId: string) => {
-    const setting = segmentSettings.find((s) => s.segment!.id === segmentId)
-    if (!setting?.segment) return
-    setCurrentSegment({
-      id: setting.segment.id,
-      name: setting.segment.name,
-      customField: setting.segment.customField,
-      conditions: setting.segment.conditions.map((c) => ({ compareValue: c.compareValue })),
-    })
-  }
-
-  const handleDelete = async (segmentId: string) => {
-    const confirmed = await confirm()
-    if (confirmed) {
-      deleteSegment.mutate(segmentId)
-    }
-  }
+  const lockedCustomFieldKey = segments?.at(0)?.customField
 
   const handleCreateSegment = (customFieldKey: string) => {
     setCurrentSegment({ customField: customFieldKey })
@@ -72,18 +43,17 @@ export const Segment = () => {
       <p className="text-[13px] text-text-secondary leading-5.25">
         By default, all clients see the same content. Create segments to tailor your homepage for different clients.
       </p>
-      {stats && (
-        <div className={deleteSegment.isPending || isFetching ? 'pointer-events-none animate-pulse opacity-60' : ''}>
-          <SegmentList settings={stats.settings} onEdit={handleEdit} onDelete={handleDelete} />
+      {!!segments?.length && (
+        <div className={isFetching ? 'pointer-events-none animate-pulse opacity-60' : ''}>
+          <SegmentList segments={segments} />
         </div>
       )}
       <SegmentCreationCard
-        segmentCount={segmentSettings.length}
+        segmentCount={segments?.length || 0}
         lockedCustomFieldKey={lockedCustomFieldKey}
-        hasClients={(stats?.totalClients ?? 0) > 0}
+        hasClients={!!totalClients}
         onCreateSegment={handleCreateSegment}
       />
-      {dialogComponent}
     </div>
   )
 }
