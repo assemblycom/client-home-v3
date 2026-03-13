@@ -1,6 +1,6 @@
 'use client'
 
-import { CustomFieldType } from '@assembly/types'
+import { CustomFieldEntityType, CustomFieldType } from '@assembly/types'
 import { Button, Icon } from '@assembly-js/design-system'
 import { useSidebarStore } from '@editor/stores/sidebarStore'
 import { Select } from '@segments/components/Select'
@@ -18,13 +18,16 @@ export const SegmentFormPanel = () => {
   const setExpandSegments = useSidebarStore((s) => s.setExpandSegments)
 
   const isEditing = !!currentSegment?.id
-  const customFieldKey = currentSegment?.customField ?? null
 
-  const { segments, totalClients } = useSegmentStats()
+  const { segments, segmentConfig, totalClients } = useSegmentStats()
   const { createSegment, updateSegment } = useSegmentMutations()
-  const { clientCustomFields } = useCustomFields()
+  const { clientCustomFields, companyCustomFields } = useCustomFields()
 
-  const customField = clientCustomFields.find((f) => f.key === customFieldKey)
+  const customFieldKey = segmentConfig?.customField ?? null
+  const customField =
+    segmentConfig?.entityType === CustomFieldEntityType.COMPANY
+      ? companyCustomFields.find((f) => f.key === customFieldKey)
+      : clientCustomFields.find((f) => f.key === customFieldKey)
   const isMultiSelect = customField?.type === CustomFieldType.TAGS
   const { options } = useCustomFieldOptions(isMultiSelect ? (customField?.id ?? null) : null)
 
@@ -86,10 +89,7 @@ export const SegmentFormPanel = () => {
     if (isEditing && currentSegment?.id) {
       updateSegment.mutate({ id: currentSegment.id, name, conditions: validConditions }, { onSuccess: handleBack })
     } else {
-      createSegment.mutate(
-        { name, customField: customFieldKey, conditions: validConditions },
-        { onSuccess: handleBack },
-      )
+      createSegment.mutate({ name, conditions: validConditions }, { onSuccess: handleBack })
     }
   }
 

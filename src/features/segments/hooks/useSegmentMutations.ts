@@ -45,5 +45,13 @@ export const useSegmentMutations = () => {
     onSuccess: invalidateSegments,
   })
 
-  return { createSegment, updateSegment, deleteSegment }
+  const deleteAllSegments = useMutation({
+    mutationFn: async () => {
+      const res = await api.delete(`/api/segments?token=${token}`)
+      return res.data.data
+    },
+    onSuccess: invalidateSegments,
+  })
+
+  return { createSegment, updateSegment, deleteSegment, deleteAllSegments }
 }

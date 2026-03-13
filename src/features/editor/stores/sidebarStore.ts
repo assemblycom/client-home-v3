@@ -5,7 +5,6 @@ type SidebarView = 'default' | 'change-banner'
 export type CurrentSegment = {
   id?: string
   name?: string
-  customField: string
   conditions?: { compareValue: string }[]
 }
 

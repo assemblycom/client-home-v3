@@ -2,17 +2,26 @@
 
 import { useSidebarStore } from '@editor/stores/sidebarStore'
 import { SegmentCreationCard } from '@segments/components/SegmentCreationCard'
+import { SegmentDeletedFieldCard } from '@segments/components/SegmentDeletedFieldCard'
 import { SegmentList } from '@segments/components/segment-list/SegmentList'
 import { useSegmentStats } from '@segments/hooks/useSegments'
+import { useCustomFields } from '@/features/custom-fields/hooks/useCustomFields'
 
 export const Segment = () => {
-  const { segments, totalClients, isLoading, isFetching } = useSegmentStats()
+  const { segments, segmentConfig, totalClients, isLoading, isFetching } = useSegmentStats()
+  const { clientCustomFields, companyCustomFields, isLoading: customFieldsLoading } = useCustomFields()
   const setCurrentSegment = useSidebarStore((s) => s.setCurrentSegment)
 
-  const lockedCustomFieldKey = segments?.at(0)?.customField
+  const lockedCustomFieldId = segmentConfig?.customFieldId
+  const allCustomFields = [...clientCustomFields, ...companyCustomFields]
+  const hasDeletedCustomField =
+    !customFieldsLoading &&
+    !!segmentConfig?.customFieldId &&
+    allCustomFields.length > 0 &&
+    !allCustomFields.some((f) => f.id === segmentConfig.customFieldId)
 
-  const handleCreateSegment = (customFieldKey: string) => {
-    setCurrentSegment({ customField: customFieldKey })
+  const handleCreateSegment = () => {
+    setCurrentSegment({})
   }
 
   if (isLoading) {
@@ -48,12 +57,16 @@ export const Segment = () => {
           <SegmentList segments={segments} />
         </div>
       )}
-      <SegmentCreationCard
-        segmentCount={segments?.length || 0}
-        lockedCustomFieldKey={lockedCustomFieldKey}
-        hasClients={!!totalClients}
-        onCreateSegment={handleCreateSegment}
-      />
+      {hasDeletedCustomField ? (
+        <SegmentDeletedFieldCard />
+      ) : (
+        <SegmentCreationCard
+          segmentCount={segments?.length || 0}
+          lockedCustomFieldId={lockedCustomFieldId}
+          hasClients={!!totalClients}
+          onCreateSegment={handleCreateSegment}
+        />
+      )}
     </div>
   )
 }

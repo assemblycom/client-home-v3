@@ -17,6 +17,7 @@ export const ROUTES = Object.freeze({
     customFieldOptions: '/api/custom-fields/values/:id',
     segments: '/api/segments',
     segment: '/api/segments/:segmentId',
+    segmentConfig: '/api/segments/config',
     segmentStats: '/api/segments/stats',
   },
 })
@@ -50,6 +51,7 @@ export const authorizedRoutes: Record<string, RouteRule[]> = {
     ROUTES.api.upload,
     ROUTES.api.segments,
     ROUTES.api.segment,
+    ROUTES.api.segmentConfig,
     ROUTES.api.segmentStats,
   ],
   clientUsers: [
