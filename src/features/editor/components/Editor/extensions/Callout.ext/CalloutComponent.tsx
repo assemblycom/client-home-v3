@@ -1,6 +1,6 @@
+import { Icon } from '@assembly-js/design-system'
 import type { CalloutOptions } from '@extensions/Callout.ext'
 import { NodeViewContent, type NodeViewProps, NodeViewWrapper } from '@tiptap/react'
-import { Icon } from 'copilot-design-system'
 import { useCallback } from 'react'
 
 interface CalloutProps extends NodeViewProps {
