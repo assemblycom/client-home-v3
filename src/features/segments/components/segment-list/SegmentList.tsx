@@ -12,9 +12,8 @@ export const SegmentList = ({ segments }: SegmentListProps) => {
   const { deleteSegment } = useSegmentMutations()
   const setCurrentSegment = useSidebarStore((s) => s.setCurrentSegment)
   const { confirm, dialogComponent } = useConfirmationDialog({
-    title: 'Delete Segment',
-    description:
-      'Are you sure you want to delete this segment? All associated settings will be removed. This action cannot be undone.',
+    title: 'Delete segment?',
+    description: 'Clients in this segment will return to the default segment.',
     isDangerous: true,
     resolveText: 'Delete',
   })

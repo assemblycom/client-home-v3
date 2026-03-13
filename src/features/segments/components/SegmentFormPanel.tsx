@@ -6,7 +6,7 @@ import { useSidebarStore } from '@editor/stores/sidebarStore'
 import { Select } from '@segments/components/Select'
 import { useSegmentMutations } from '@segments/hooks/useSegmentMutations'
 import { useSegmentStats } from '@segments/hooks/useSegments'
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useCustomFieldOptions } from '@/features/custom-fields/hooks/useCustomFieldOptions'
 import { useCustomFields } from '@/features/custom-fields/hooks/useCustomFields'
 
@@ -39,6 +39,17 @@ export const SegmentFormPanel = () => {
       : [{ id: 0, compareValue: '' }],
   )
   const [errors, setErrors] = useState<{ name?: string; conditions?: string }>({})
+
+  const availableOptions = useMemo(() => {
+    const usedByOtherSegments = new Set(
+      segments?.filter((s) => s.id !== currentSegment?.id).flatMap((s) => s.conditions.map((c) => c.compareValue)) ??
+        [],
+    )
+    const usedByCurrentConditions = new Set(conditions.map((c) => c.compareValue))
+    return options
+      .filter((opt) => !usedByOtherSegments.has(opt.key) && !usedByCurrentConditions.has(opt.key))
+      .map((opt) => ({ value: opt.key, label: opt.label }))
+  }, [options, segments, currentSegment?.id, conditions])
 
   const handleBack = () => {
     setExpandSegments(true)
@@ -165,9 +176,10 @@ export const SegmentFormPanel = () => {
                   <Select
                     value={condition.compareValue}
                     onChange={(value) => updateCondition(index, value)}
-                    options={options.map((opt) => ({ value: opt.key, label: opt.label }))}
+                    options={availableOptions}
                     placeholder="Select value"
                     className="flex-1"
+                    disabled={availableOptions.length === 0 && !condition.compareValue}
                   />
                 ) : (
                   <input
@@ -182,7 +194,7 @@ export const SegmentFormPanel = () => {
                   <button
                     type="button"
                     onClick={() => removeCondition(index)}
-                    className="shrink-0 rounded p-1 text-text-secondary hover:text-text-primary"
+                    className="shrink-0 cursor-pointer rounded p-1 text-text-secondary hover:bg-background-secondary hover:text-text-primary"
                   >
                     <Icon icon="Trash" width={16} height={16} />
                   </button>
@@ -195,7 +207,7 @@ export const SegmentFormPanel = () => {
           <button
             type="button"
             onClick={addCondition}
-            className="mt-3 flex items-center gap-2 py-0.5 font-medium text-sm text-text-primary"
+            className="mt-3 flex w-fit cursor-pointer items-center gap-2 rounded p-1 font-medium text-sm text-text-primary hover:bg-background-secondary"
           >
             <Icon icon="Plus" width={12} height={12} />
             OR
