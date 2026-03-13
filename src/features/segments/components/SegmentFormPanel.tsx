@@ -1,6 +1,6 @@
 'use client'
 
-import { CustomFieldType } from '@assembly/types'
+import { CustomFieldEntityType, CustomFieldType } from '@assembly/types'
 import { Button, Icon } from '@assembly-js/design-system'
 import { useSidebarStore } from '@editor/stores/sidebarStore'
 import { Select } from '@segments/components/Select'
@@ -25,7 +25,7 @@ export const SegmentFormPanel = () => {
 
   const customFieldKey = segmentConfig?.customField ?? null
   const customField =
-    segmentConfig?.entityType === 'company'
+    segmentConfig?.entityType === CustomFieldEntityType.COMPANY
       ? companyCustomFields.find((f) => f.key === customFieldKey)
       : clientCustomFields.find((f) => f.key === customFieldKey)
   const isMultiSelect = customField?.type === CustomFieldType.TAGS

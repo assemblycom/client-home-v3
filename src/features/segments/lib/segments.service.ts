@@ -113,9 +113,12 @@ export default class SegmentsService extends BaseService {
         const existingSegments = await this.segmentsRepository.getAll(this.user.workspaceId)
         if (existingSegments.length > 0) {
           const existingConfig = await this.segmentConfigsRepository.getByWorkspaceId(this.user.workspaceId)
-          if (existingConfig && existingConfig.customField !== payload.customField) {
+          if (
+            existingConfig &&
+            (existingConfig.customField !== payload.customField || existingConfig.entityType !== payload.entityType)
+          ) {
             throw new APIError(
-              'Cannot change the custom field while segments exist. Delete all segments first.',
+              'Cannot change the segment configuration while segments exist. Delete all segments first.',
               httpStatus.UNPROCESSABLE_ENTITY,
             )
           }

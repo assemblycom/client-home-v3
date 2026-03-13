@@ -8,6 +8,7 @@ import SegmentsService from '@segments/lib/segments.service'
 import httpStatus from 'http-status'
 import { type NextRequest, NextResponse } from 'next/server'
 import type { APIResponse } from '@/app/types'
+import APIError from '@/errors/api.error'
 
 export const getSegmentStats = async (req: NextRequest): Promise<NextResponse<APIResponse>> => {
   const user = authenticateHeaders(req.headers)
@@ -29,6 +30,9 @@ export const getSegments = async (req: NextRequest): Promise<NextResponse<APIRes
 
 export const upsertSegmentConfig = async (req: NextRequest): Promise<NextResponse<APIResponse>> => {
   const user = authenticateHeaders(req.headers)
+  if (!user.internalUserId) {
+    throw new APIError('Only internal users can configure segments', httpStatus.FORBIDDEN)
+  }
 
   const body = await req.json()
   const parsedBody = SegmentConfigUpsertDtoSchema.parse(body)
