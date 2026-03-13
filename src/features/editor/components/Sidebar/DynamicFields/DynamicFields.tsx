@@ -1,10 +1,12 @@
 'use client'
 
+import { useViewStore } from '@editor/stores/viewStore'
 import { DynamicFieldComponent } from '@/features/editor/components/Sidebar/DynamicFields/DynamicFieldComponent'
 import { useDynamicFields } from '@/features/editor/components/Sidebar/DynamicFields/useDynamicFields'
 
 export const DynamicFields = () => {
   const { dynamicFields } = useDynamicFields()
+  const labels = useViewStore((s) => s.workspace?.labels)
 
   return (
     <>
@@ -14,7 +16,12 @@ export const DynamicFields = () => {
       </div>
       <div className="mt-5 flex flex-col space-y-4">
         {(['client', 'company', 'workspace'] as const).map((type) => (
-          <DynamicFieldComponent key={type} type={type} fields={dynamicFields.filter((f) => f.entityType === type)} />
+          <DynamicFieldComponent
+            key={type}
+            type={type}
+            labels={labels}
+            fields={dynamicFields.filter((f) => f.entityType === type)}
+          />
         ))}
       </div>
     </>
