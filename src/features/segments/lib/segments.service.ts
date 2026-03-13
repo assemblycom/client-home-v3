@@ -5,6 +5,8 @@ import { CustomFieldEntityType } from '@assembly/types'
 import type { User } from '@auth/lib/user.entity'
 import type { ConditionsRepository } from '@segments/lib/conditions/conditions.repository'
 import ConditionsDrizzleRepository from '@segments/lib/conditions/conditions.repository'
+import type { SegmentConfigsRepository } from '@segments/lib/segment-configs/segment-configs.repository'
+import SegmentConfigsDrizzleRepository from '@segments/lib/segment-configs/segment-configs.repository'
 import type { SegmentsRepository } from '@segments/lib/segments/segments.repository'
 import SegmentsDrizzleRepository from '@segments/lib/segments/segments.repository'
 import { CATEGORICAL_COLORS } from '@segments/lib/segments.colors'
@@ -38,6 +40,7 @@ export default class SegmentsService extends BaseService {
     private readonly conditionsRepository: ConditionsRepository,
     private readonly settingsRepository: SettingsRepository,
     private readonly actionsRepository: ActionsRepository,
+    private readonly segmentConfigsRepository: SegmentConfigsRepository,
   ) {
     super(user, assembly)
   }
@@ -48,6 +51,7 @@ export default class SegmentsService extends BaseService {
     const conditionsRepository = new ConditionsDrizzleRepository(db)
     const settingsRepository = new SettingsDrizzleRepository(db)
     const actionsRepository = new ActionsDrizzleRepository(db)
+    const segmentConfigsRepository = new SegmentConfigsDrizzleRepository(db)
 
     return new SegmentsService(
       user,
@@ -56,10 +60,12 @@ export default class SegmentsService extends BaseService {
       conditionsRepository,
       settingsRepository,
       actionsRepository,
+      segmentConfigsRepository,
     )
   }
 
   private async validateCustomField(customField: string) {
+    // TODO: PR 2 — use entityType from segment config instead of hardcoded CLIENT
     const { data: customFields } = await this.assembly.listCustomFields({
       entityType: CustomFieldEntityType.CLIENT,
     })
@@ -74,7 +80,8 @@ export default class SegmentsService extends BaseService {
   }
 
   async getAll(): Promise<FormattedSegmentData[]> {
-    return this.formatSegmentData(await this.settingsRepository.getSegments(this.user.workspaceId))
+    const allSettings = await this.settingsRepository.getSegments(this.user.workspaceId)
+    return this.formatSegmentData(allSettings)
   }
 
   async update(segmentId: string, payload: SegmentUpdateDto) {
@@ -118,20 +125,35 @@ export default class SegmentsService extends BaseService {
   }
 
   async delete(segmentId: string) {
-    return await this.segmentsRepository.delete(segmentId)
+    const deleted = await this.segmentsRepository.delete(segmentId)
+
+    // If this was the last segment in the workspace, clean up the config
+    const remainingSegments = await this.segmentsRepository.getAll(this.user.workspaceId)
+    if (remainingSegments.length === 0) {
+      await this.segmentConfigsRepository.deleteByWorkspaceId(this.user.workspaceId)
+    }
+
+    return deleted
   }
 
-  static resolveSettingForClient(
-    client: ClientResponse,
-    allSettings: SettingsWithSegment[],
-  ): SettingsWithSegment | null {
+  static resolveSettingForClient({
+    client,
+    allSettings,
+    customField,
+  }: {
+    client: ClientResponse
+    allSettings: SettingsWithSegment[]
+    customField: string | undefined
+  }): SettingsWithSegment | null {
+    if (!customField) return allSettings.at(0) ?? null
+
     const settings =
       allSettings.find((setting) => {
         if (!setting.segment) {
           return false
         }
         const segment = setting.segment
-        const fieldValue = client.customFields?.[segment.customField]
+        const fieldValue = client.customFields?.[customField]
         if (fieldValue == null) return false
 
         const compareValues = segment.conditions.map((c) => c.compareValue)
@@ -154,16 +176,18 @@ export default class SegmentsService extends BaseService {
   }
 
   async getStats(): Promise<SegmentStatsResponseDto> {
-    const [allSettings, clientsResponse] = await Promise.all([
+    const [allSettings, clientsResponse, segmentConfig] = await Promise.all([
       this.settingsRepository.getSegments(this.user.workspaceId),
       this.assembly.getClients({ limit: MAX_FETCH_ASSEMBLY_RESOURCES }),
+      this.segmentConfigsRepository.getByWorkspaceId(this.user.workspaceId),
     ])
 
     const clients = clientsResponse.data ?? []
+    const customField = segmentConfig?.customField
 
     const segmentStats = clients.reduce(
       (stats, client) => {
-        const settings = SegmentsService.resolveSettingForClient(client, allSettings)
+        const settings = SegmentsService.resolveSettingForClient({ client, allSettings, customField })
 
         if (!settings) {
           // this should not be happening at all. capture error
@@ -181,6 +205,15 @@ export default class SegmentsService extends BaseService {
 
     return {
       totalClients: clients.length,
+      segmentConfig: segmentConfig
+        ? {
+            id: segmentConfig.id,
+            workspaceId: segmentConfig.workspaceId,
+            customField: segmentConfig.customField,
+            customFieldId: segmentConfig.customFieldId,
+            entityType: segmentConfig.entityType,
+          }
+        : null,
       segments: this.formatSegmentData(allSettings).map<SegmentStatsSettings>((settings) => {
         return {
           ...settings,
@@ -212,7 +245,6 @@ export default class SegmentsService extends BaseService {
         settingId: settings.id,
         name: segment.name || 'Default',
         color: CATEGORICAL_COLORS[index] || '#dfe1e4',
-        customField: segment.customField,
         conditions: segment.conditions.map((condition) => {
           return {
             id: condition.id,
@@ -228,7 +260,6 @@ export default class SegmentsService extends BaseService {
         workspaceId: defaultSetting.workspaceId,
         name: 'Default',
         color: '#dfe1e4',
-        customField: segmentSettings?.at(0)?.segment?.customField,
         conditions: [],
       },
       ...segmentData,
@@ -251,6 +282,7 @@ export default class SegmentsService extends BaseService {
       )
     }
 
+    // TODO: PR 2 — validate against segment config's entityType
     await this.validateCustomField(segmentPayload.customField)
     this.validateUniqueCompareValues(
       existingSegments,
@@ -262,9 +294,23 @@ export default class SegmentsService extends BaseService {
       this.conditionsRepository.setTx(tx)
       this.settingsRepository.setTx(tx)
       this.actionsRepository.setTx(tx)
+      this.segmentConfigsRepository.setTx(tx)
 
       try {
-        const segment = await this.segmentsRepository.createOne(this.user.workspaceId, internalUserId, segmentPayload)
+        // Create or reuse segment config for this workspace
+        const existingConfig = await this.segmentConfigsRepository.getByWorkspaceId(this.user.workspaceId)
+        if (!existingConfig) {
+          await this.segmentConfigsRepository.create({
+            workspaceId: this.user.workspaceId,
+            customField: segmentPayload.customField,
+            customFieldId: segmentPayload.customFieldId ?? '',
+            entityType: segmentPayload.entityType ?? 'client',
+          })
+        }
+
+        const segment = await this.segmentsRepository.createOne(this.user.workspaceId, internalUserId, {
+          name: segmentPayload.name,
+        })
 
         const conditions = await this.conditionsRepository.createMany(segment.id, conditionPayloads)
 
@@ -276,6 +322,7 @@ export default class SegmentsService extends BaseService {
         this.conditionsRepository.unsetTx()
         this.settingsRepository.unsetTx()
         this.actionsRepository.unsetTx()
+        this.segmentConfigsRepository.unsetTx()
       }
     })
   }

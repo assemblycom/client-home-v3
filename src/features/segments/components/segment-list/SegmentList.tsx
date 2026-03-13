@@ -20,13 +20,12 @@ export const SegmentList = ({ segments }: SegmentListProps) => {
   })
 
   const handleEdit = (segment: SegmentStatsSettings) => {
-    if (!segment.id || !segment.customField) {
+    if (!segment.id) {
       return
     }
     setCurrentSegment({
       id: segment.id,
       name: segment.name,
-      customField: segment.customField,
       conditions: segment.conditions.map((c) => ({ compareValue: c.compareValue })),
     })
   }

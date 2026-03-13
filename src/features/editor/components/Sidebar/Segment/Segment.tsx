@@ -6,13 +6,13 @@ import { SegmentList } from '@segments/components/segment-list/SegmentList'
 import { useSegmentStats } from '@segments/hooks/useSegments'
 
 export const Segment = () => {
-  const { segments, totalClients, isLoading, isFetching } = useSegmentStats()
+  const { segments, segmentConfig, totalClients, isLoading, isFetching } = useSegmentStats()
   const setCurrentSegment = useSidebarStore((s) => s.setCurrentSegment)
 
-  const lockedCustomFieldKey = segments?.at(0)?.customField
+  const lockedCustomFieldKey = segmentConfig?.customField
 
-  const handleCreateSegment = (customFieldKey: string) => {
-    setCurrentSegment({ customField: customFieldKey })
+  const handleCreateSegment = () => {
+    setCurrentSegment({})
   }
 
   if (isLoading) {

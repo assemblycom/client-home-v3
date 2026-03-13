@@ -18,12 +18,12 @@ export const SegmentFormPanel = () => {
   const setExpandSegments = useSidebarStore((s) => s.setExpandSegments)
 
   const isEditing = !!currentSegment?.id
-  const customFieldKey = currentSegment?.customField ?? null
 
-  const { segments, totalClients } = useSegmentStats()
+  const { segments, segmentConfig, totalClients } = useSegmentStats()
   const { createSegment, updateSegment } = useSegmentMutations()
   const { clientCustomFields } = useCustomFields()
 
+  const customFieldKey = segmentConfig?.customField ?? null
   const customField = clientCustomFields.find((f) => f.key === customFieldKey)
   const isMultiSelect = customField?.type === CustomFieldType.TAGS
   const { options } = useCustomFieldOptions(isMultiSelect ? (customField?.id ?? null) : null)

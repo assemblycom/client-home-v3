@@ -5,6 +5,10 @@ import z from 'zod'
 
 export const SegmentCreateDtoSchema = SegmentCreateSchema.extend({
   conditions: z.array(ConditionCreateSchema).min(1, 'At least one condition is required'),
+  // Custom field info — used to create/validate the workspace's segment config
+  customField: z.string(),
+  customFieldId: z.string().optional(),
+  entityType: z.enum(['client', 'company']).optional(),
 })
 export type SegmentCreateDto = z.infer<typeof SegmentCreateDtoSchema>
 
@@ -30,7 +34,6 @@ export const FormattedSegmentDataSchema = SegmentSchema.pick({
 }).extend({
   id: z.uuid().optional(),
   settingId: SettingsSchema.shape.id,
-  customField: SegmentSchema.shape.customField.optional(),
   color: z.string(),
   conditions: z.array(ConditionSummarySchema),
 })
@@ -41,8 +44,18 @@ export const SegmentStatsSettingsSchema = FormattedSegmentDataSchema.extend({
 })
 export type SegmentStatsSettings = z.infer<typeof SegmentStatsSettingsSchema>
 
+export const SegmentConfigResponseSchema = z.object({
+  id: z.string(),
+  workspaceId: z.string(),
+  customField: z.string(),
+  customFieldId: z.string(),
+  entityType: z.enum(['client', 'company']),
+})
+export type SegmentConfigResponse = z.infer<typeof SegmentConfigResponseSchema>
+
 export const SegmentStatsResponseDtoSchema = z.object({
   totalClients: z.number(),
+  segmentConfig: SegmentConfigResponseSchema.nullable(),
   segments: z.array(SegmentStatsSettingsSchema),
 })
 export type SegmentStatsResponseDto = z.infer<typeof SegmentStatsResponseDtoSchema>

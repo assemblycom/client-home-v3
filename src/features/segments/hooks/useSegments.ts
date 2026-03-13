@@ -21,6 +21,7 @@ export const useSegmentStats = () => {
 
   return {
     totalClients: data?.totalClients || 0,
+    segmentConfig: data?.segmentConfig ?? null,
     segments: data?.segments,
     isLoading,
     isFetching,

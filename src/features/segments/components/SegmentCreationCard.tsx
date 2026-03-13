@@ -7,7 +7,7 @@ type SegmentCreationCardProps = {
   segmentCount: number
   lockedCustomFieldKey?: string
   hasClients: boolean
-  onCreateSegment: (customFieldKey: string) => void
+  onCreateSegment: () => void
 }
 
 const MAX_SEGMENTS = 6 // including default
@@ -29,12 +29,12 @@ export const SegmentCreationCard = ({
   const isDisabled = !hasClients || !hasCustomFields
 
   const handleCreate = () => {
-    if (!selectedKey) {
+    if (!isLocked && !selectedKey) {
       setError('Start by selecting a custom field')
       return
     }
     setError(null)
-    onCreateSegment(selectedKey)
+    onCreateSegment()
   }
 
   return (

@@ -2,6 +2,8 @@ import AssemblyClient from '@assembly/assembly-client'
 import type { User } from '@auth/lib/user.entity'
 import { DEFAULT_BANNER_IMAGE_PATH } from '@media/constants'
 import MediaDrizzleRepository, { type MediaRepository } from '@media/lib/media.repository'
+import type { SegmentConfigsRepository } from '@segments/lib/segment-configs/segment-configs.repository'
+import SegmentConfigsDrizzleRepository from '@segments/lib/segment-configs/segment-configs.repository'
 import SegmentsService from '@segments/lib/segments.service'
 import { defaultContent } from '@settings/constants'
 import type { ActionsRepository } from '@settings/lib/actions/actions.repository'
@@ -27,6 +29,7 @@ export default class SettingsActionsService extends BaseService {
     private readonly settingsRepository: SettingsRepository,
     private readonly actionsRepository: ActionsRepository,
     private readonly mediaRepository: MediaRepository,
+    private readonly segmentConfigsRepository: SegmentConfigsRepository,
   ) {
     super(user, assembly)
   }
@@ -37,6 +40,7 @@ export default class SettingsActionsService extends BaseService {
     const actionsRepository = new ActionsDrizzleRepository(db)
     const settingsActionsQueryRepository = new SettingsActionsDrizzleQueryRepository(db)
     const mediaRepository = new MediaDrizzleRepository(db)
+    const segmentConfigsRepository = new SegmentConfigsDrizzleRepository(db)
 
     return new SettingsActionsService(
       user,
@@ -45,6 +49,7 @@ export default class SettingsActionsService extends BaseService {
       settingsRepository,
       actionsRepository,
       mediaRepository,
+      segmentConfigsRepository,
     )
   }
 
@@ -92,12 +97,17 @@ export default class SettingsActionsService extends BaseService {
       return this.getForWorkspace()
     }
 
-    const [client, allSettings] = await Promise.all([
+    const [client, allSettings, segmentConfig] = await Promise.all([
       this.assembly.getClient(clientId),
       this.settingsRepository.getSegments(this.user.workspaceId),
+      this.segmentConfigsRepository.getByWorkspaceId(this.user.workspaceId),
     ])
 
-    const matchedSetting = SegmentsService.resolveSettingForClient(client, allSettings)
+    const matchedSetting = SegmentsService.resolveSettingForClient({
+      client,
+      allSettings,
+      customField: segmentConfig?.customField,
+    })
 
     return this.getForWorkspace(matchedSetting?.segmentId)
   }
