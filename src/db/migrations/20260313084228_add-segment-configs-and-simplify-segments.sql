@@ -11,16 +11,8 @@ CREATE TABLE "segment_configs" (
 
 CREATE UNIQUE INDEX "uq_segment_configs__workspace_id" ON "segment_configs" USING btree ("workspace_id");
 
--- Backfill: migrate existing segment custom fields into segment_configs (one per workspace)
-INSERT INTO "segment_configs" ("workspace_id", "custom_field", "custom_field_id", "entity_type")
-SELECT DISTINCT ON (s.workspace_id)
-  s.workspace_id,
-  s.custom_field,
-  '',
-  'client'
-FROM "segments" s
-WHERE s.deleted_at IS NULL
-ORDER BY s.workspace_id, s.created_at ASC;
+-- Delete existing segments (conditions and settings with segment_id cascade automatically)
+DELETE FROM "segments";
 
 -- Drop the trigger and function (no longer needed — custom field is centralized in segment_configs)
 DROP TRIGGER IF EXISTS trg_segments_enforce_custom_field ON segments;
