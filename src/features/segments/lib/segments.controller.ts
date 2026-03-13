@@ -71,6 +71,18 @@ export const updateSegment = async (
   return NextResponse.json({ data: segment })
 }
 
+export const deleteAllSegments = async (req: NextRequest): Promise<NextResponse<APIResponse>> => {
+  const user = authenticateHeaders(req.headers)
+  if (!user.internalUserId) {
+    throw new APIError('Only internal users can delete segments', httpStatus.FORBIDDEN)
+  }
+
+  const segmentsService = SegmentsService.new(user)
+  const deleted = await segmentsService.deleteAll()
+
+  return NextResponse.json({ data: deleted })
+}
+
 export const deleteSegment = async (
   req: NextRequest,
   { params }: { params: Promise<{ segmentId: string }> },

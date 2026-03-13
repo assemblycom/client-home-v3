@@ -196,6 +196,17 @@ export default class SegmentsService extends BaseService {
     return deleted
   }
 
+  async deleteAll() {
+    if (!this.user.internalUserId) {
+      throw new APIError('Only internal users can delete segments', httpStatus.FORBIDDEN)
+    }
+
+    const deleted = await this.segmentsRepository.deleteAllByWorkspaceId(this.user.workspaceId)
+    await this.segmentConfigsRepository.deleteByWorkspaceId(this.user.workspaceId)
+
+    return deleted
+  }
+
   static resolveSetting({
     entity,
     allSettings,

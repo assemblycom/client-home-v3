@@ -12,6 +12,7 @@ export interface SegmentsRepository extends BaseRepository {
   getAll(workspaceId: string): Promise<SegmentResponseDto[]>
   updateOne(segmentId: string, payload: { name?: string }): Promise<Segment>
   delete(segmentId: string): Promise<Segment>
+  deleteAllByWorkspaceId(workspaceId: string): Promise<Segment[]>
 }
 
 class SegmentsDrizzleRepository extends BaseDrizzleRepository implements SegmentsRepository {
@@ -45,6 +46,10 @@ class SegmentsDrizzleRepository extends BaseDrizzleRepository implements Segment
   async delete(segmentId: string) {
     const [deleted] = await this.db.delete(segments).where(eq(segments.id, segmentId)).returning()
     return deleted
+  }
+
+  async deleteAllByWorkspaceId(workspaceId: string) {
+    return await this.db.delete(segments).where(eq(segments.workspaceId, workspaceId)).returning()
   }
 }
 
