@@ -1,6 +1,7 @@
 'use client'
 
-import { type ReactNode, useCallback, useImperativeHandle, useRef, useState } from 'react'
+import { Button } from '@assembly-js/design-system'
+import { useCallback, useImperativeHandle, useRef, useState } from 'react'
 
 type ConfirmationDialogRef = { confirm: () => Promise<boolean> }
 
@@ -8,8 +9,8 @@ type ConfirmationDialogProps = {
   title: string
   description: string
   isDangerous?: boolean
-  rejectText?: ReactNode
-  resolveText?: ReactNode
+  rejectText?: string
+  resolveText?: string
   ref: React.Ref<ConfirmationDialogRef>
 }
 
@@ -56,26 +57,32 @@ const ConfirmationDialog = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={handleClose}>
       {/** biome-ignore lint/a11y/useKeyWithClickEvents: <allow> */}
       {/** biome-ignore lint/a11y/noStaticElementInteractions: <allow> */}
-      <div className="w-full max-w-xs rounded-lg bg-white p-5 shadow-xl" onClick={(e) => e.stopPropagation()}>
-        <h2 className="mb-3 font-semibold text-gray-900 text-lg">{title}</h2>
-        <p className="mb-6 text-gray-600 text-sm leading-5">{description}</p>
-        <div className="flex gap-3">
-          <button
-            type="button"
-            onClick={handleClose}
-            className="flex-1 cursor-pointer rounded-md bg-gray-100 px-4 py-2 font-medium text-gray-700 text-sm hover:bg-gray-200"
-          >
-            {rejectText}
-          </button>
-          <button
-            type="button"
+      <div
+        className="flex w-[480px] flex-col overflow-hidden rounded-lg bg-white shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center self-stretch px-5 py-3">
+          <h2 className="font-medium text-base text-text-primary leading-6">{title}</h2>
+        </div>
+
+        <div className="h-px bg-border-gray" />
+
+        <div className="flex flex-col items-start gap-2.5 self-stretch px-5 py-5">
+          <p className="font-normal text-body-sm text-text-primary">{description}</p>
+        </div>
+
+        <div className="h-px bg-border-gray" />
+
+        <div className="flex h-15 items-center justify-end gap-6 self-stretch px-5 py-4">
+          <Button label={rejectText} variant="secondary" onClick={handleClose} />
+          <Button
+            label={resolveText}
+            variant="primary"
+            style={
+              isDangerous ? { backgroundColor: 'var(--color-error)', borderColor: 'var(--color-error)' } : undefined
+            }
             onClick={handleConfirm}
-            className={`flex-1 cursor-pointer rounded-md px-4 py-2 font-medium text-sm text-white ${
-              isDangerous ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'
-            }`}
-          >
-            {resolveText}
-          </button>
+          />
         </div>
       </div>
     </div>
