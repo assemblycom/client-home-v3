@@ -1,5 +1,3 @@
-'use client'
-
 import { Select } from '@segments/components/Select'
 import { Button, Icon, Tooltip } from 'copilot-design-system'
 import { useState } from 'react'
@@ -7,12 +5,12 @@ import { useCustomFields } from '@/features/custom-fields/hooks/useCustomFields'
 
 type SegmentCreationCardProps = {
   segmentCount: number
-  lockedCustomFieldKey: string | null
+  lockedCustomFieldKey?: string
   hasClients: boolean
   onCreateSegment: (customFieldKey: string) => void
 }
 
-const MAX_SEGMENTS = 5
+const MAX_SEGMENTS = 6 // including default
 
 export const SegmentCreationCard = ({
   segmentCount,
@@ -26,7 +24,7 @@ export const SegmentCreationCard = ({
 
   if (segmentCount >= MAX_SEGMENTS) return null
 
-  const isLocked = lockedCustomFieldKey !== null
+  const isLocked = !!lockedCustomFieldKey
   const hasCustomFields = clientCustomFields.length > 0
   const isDisabled = !hasClients || !hasCustomFields
 

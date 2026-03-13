@@ -20,7 +20,7 @@ import type { ActionsRepository } from '@settings/lib/actions/actions.repository
 import ActionsDrizzleRepository from '@settings/lib/actions/actions.repository'
 import type { SettingsRepository } from '@settings/lib/settings/settings.repository'
 import SettingsDrizzleRepository from '@settings/lib/settings/settings.repository'
-import type { SettingsWithSegment } from '@settings/lib/types'
+import type { SegmentWithConditions, SettingsWithSegment } from '@settings/lib/types'
 import httpStatus from 'http-status'
 import db from '@/db'
 import { workspaceId } from '@/db/helpers'
@@ -181,7 +181,7 @@ export default class SegmentsService extends BaseService {
 
     return {
       totalClients: clients.length,
-      settings: this.formatSegmentData(allSettings).map<SegmentStatsSettings>((settings) => {
+      segments: this.formatSegmentData(allSettings).map<SegmentStatsSettings>((settings) => {
         return {
           ...settings,
           clientsCount: segmentStats[settings.settingId],
@@ -191,26 +191,48 @@ export default class SegmentsService extends BaseService {
   }
 
   formatSegmentData(allSettings: SettingsWithSegment[]): FormattedSegmentData[] {
-    return allSettings.map((settings, index) => {
+    const defaultSetting = allSettings.find((setting) => !setting.segment)
+    if (!defaultSetting) {
+      console.error('No setting found while formatting segment.')
+      return []
+    }
+    const segmentSettings = allSettings.flatMap((setting) => {
+      if (!setting.segment) {
+        return []
+      }
+
+      return [setting as typeof setting & { segment: SegmentWithConditions }]
+    })
+
+    const segmentData = segmentSettings.map<FormattedSegmentData>((settings, index) => {
       const segment = settings.segment
       return {
+        id: segment?.id,
+        workspaceId: segment.workspaceId,
         settingId: settings.id,
-        segment: !segment
-          ? undefined
-          : {
-              id: segment.id,
-              name: segment.name,
-              color: CATEGORICAL_COLORS[index],
-              customField: segment.customField,
-              conditions: segment.conditions.map((condition) => {
-                return {
-                  id: condition.id,
-                  compareValue: condition.compareValue,
-                }
-              }),
-            },
+        name: segment.name || 'Default',
+        color: CATEGORICAL_COLORS[index] || '#dfe1e4',
+        customField: segment.customField,
+        conditions: segment.conditions.map((condition) => {
+          return {
+            id: condition.id,
+            compareValue: condition.compareValue,
+          }
+        }),
       }
     })
+
+    return [
+      {
+        settingId: defaultSetting.id,
+        workspaceId: defaultSetting.workspaceId,
+        name: 'Default',
+        color: '#dfe1e4',
+        customField: segmentSettings?.at(0)?.segment?.customField,
+        conditions: [],
+      } as FormattedSegmentData,
+      ...segmentData,
+    ]
   }
 
   async create(payload: SegmentCreateDto) {

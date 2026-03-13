@@ -24,18 +24,15 @@ const ConditionSummarySchema = ConditionSchema.pick({
   compareValue: true,
 })
 
-const ActiveSegmentDataSchema = SegmentSchema.pick({
-  id: true,
+export const FormattedSegmentDataSchema = SegmentSchema.pick({
   name: true,
-  customField: true,
+  workspaceId: true,
 }).extend({
+  id: z.uuid().optional(),
+  settingId: SettingsSchema.shape.id,
+  customField: SegmentSchema.shape.customField.optional(),
   color: z.string(),
   conditions: z.array(ConditionSummarySchema),
-})
-
-export const FormattedSegmentDataSchema = z.object({
-  settingId: SettingsSchema.shape.id,
-  segment: ActiveSegmentDataSchema.optional(),
 })
 export type FormattedSegmentData = z.infer<typeof FormattedSegmentDataSchema>
 
@@ -46,6 +43,6 @@ export type SegmentStatsSettings = z.infer<typeof SegmentStatsSettingsSchema>
 
 export const SegmentStatsResponseDtoSchema = z.object({
   totalClients: z.number(),
-  settings: z.array(SegmentStatsSettingsSchema),
+  segments: z.array(SegmentStatsSettingsSchema),
 })
 export type SegmentStatsResponseDto = z.infer<typeof SegmentStatsResponseDtoSchema>

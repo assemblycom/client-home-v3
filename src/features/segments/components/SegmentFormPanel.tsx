@@ -20,7 +20,7 @@ export const SegmentFormPanel = () => {
   const isEditing = !!currentSegment?.id
   const customFieldKey = currentSegment?.customField ?? null
 
-  const { stats } = useSegmentStats()
+  const { segments, totalClients } = useSegmentStats()
   const { createSegment, updateSegment } = useSegmentMutations()
   const { clientCustomFields } = useCustomFields()
 
@@ -88,48 +88,44 @@ export const SegmentFormPanel = () => {
     <div className="flex h-full flex-col">
       {/* Header */}
       <div className="shrink-0 border-border-gray border-b px-6 pt-2 pb-6">
-        <button type="button" onClick={handleBack} className="flex cursor-pointer items-center gap-1.5 py-[3px]">
+        <button type="button" onClick={handleBack} className="flex cursor-pointer items-center gap-1.5 py-0.75">
           <Icon icon="ArrowLeft" className="size-2.5" />
-          <span className="text-[11px] text-text-primary leading-[18px]">Back</span>
+          <span className="text-body-xs text-text-primary">Back</span>
         </button>
         <div className="mt-2 flex flex-col gap-1">
           <h2 className="text-[20px] text-text-primary leading-6">{isEditing ? 'Edit segment' : 'Create segment'}</h2>
-          <p className="text-[13px] text-text-secondary leading-[21px]">
-            Create a homepage variant for a specific client group.
-          </p>
+          <p className="text-body-sm text-text-secondary">Create a homepage variant for a specific client group.</p>
         </div>
       </div>
 
       {/* Stats bar */}
-      {stats && (
+      {!!segments?.length && (
         <div className="shrink-0 border-border-gray border-b px-5 py-6">
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between text-sm">
               <span className="text-text-primary">Total</span>
-              <span className="text-text-secondary">{stats.totalClients} clients</span>
+              {/*TODO:- Use workspace override for clients*/}
+              <span className="text-text-secondary">{totalClients} clients</span>
             </div>
             <div className="flex h-4 overflow-hidden rounded-sm bg-gray-200">
-              {stats.settings.map((setting) => (
+              {segments.map((segment) => (
                 <div
-                  key={setting.settingId}
+                  key={segment.settingId}
                   className="h-full"
                   style={{
-                    backgroundColor: setting.segment?.color ?? '#DFE1E4',
-                    width: stats.totalClients > 0 ? `${(setting.clientsCount / stats.totalClients) * 100}%` : '0%',
+                    backgroundColor: segment.color,
+                    width: totalClients > 0 ? `${(segment.clientsCount / totalClients) * 100}%` : '0%',
                   }}
                 />
               ))}
             </div>
-            {stats.settings.map((setting) => (
-              <div key={setting.settingId} className="flex items-center justify-between">
+            {segments.map((segment) => (
+              <div key={segment.settingId} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span
-                    className="size-2 shrink-0 rounded-full"
-                    style={{ backgroundColor: setting.segment?.color ?? '#DFE1E4' }}
-                  />
-                  <span className="text-sm text-text-primary">{setting.segment?.name ?? 'Default'}</span>
+                  <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: segment.color }} />
+                  <span className="text-sm text-text-primary">{segment.name}</span>
                 </div>
-                <span className="text-sm text-text-secondary">{setting.clientsCount}</span>
+                <span className="text-sm text-text-secondary">{segment.clientsCount}</span>
               </div>
             ))}
           </div>

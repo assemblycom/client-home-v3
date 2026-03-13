@@ -106,6 +106,8 @@ Custom error classes in `src/errors/`: APIError, NotFoundError, UnauthorizedErro
 - Use modern JS / TS syntax for everything
 - Use async/await instead of .then() and .catch()
 - No semicolons
+- **After making code changes**, always run `pnpm typecheck` and `pnpm lint` to verify there are no type errors or linting violations before considering the task complete
+- When writing code, adhere to TypeScript strict mode rules and Biome linting rules — do not suppress or ignore errors without explicit user approval
 
 ## PR Requirements
 
