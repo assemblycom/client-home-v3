@@ -28,7 +28,8 @@ export const SegmentCardItem = ({ data, onEdit, onDelete, isLoading }: Props) =>
   }, [menuOpen])
 
   // TODO:- use workspace override here..
-  const countLabel = `${data.clientsCount} ${data.clientsCount === 1 ? 'client' : 'clients'}`
+  const count = data.clientsCount ?? 0
+  const countLabel = `${count} ${count === 1 ? 'client' : 'clients'}`
 
   return (
     <div
