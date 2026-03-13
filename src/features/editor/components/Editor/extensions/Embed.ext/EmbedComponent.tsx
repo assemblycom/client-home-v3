@@ -1,7 +1,7 @@
 import type { EmbedOptions } from '@extensions/Embed.ext'
 import { ResizeBar } from '@extensions/Embed.ext/ResizeBar'
 import { type NodeViewProps, NodeViewWrapper } from '@tiptap/react'
-import { useCallback, useRef } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 import { cn } from '@/utils/tailwind'
 
 interface EmbedProps extends NodeViewProps {
@@ -82,11 +82,17 @@ export const Embed = (props: EmbedProps) => {
     [props],
   )
 
-  function extractIframeSrc(inputString: string) {
+  const iframeSrc = useMemo(() => {
+    const raw = props.node.attrs.src as string
     const iframeSrcRegex = /<iframe.*?src=["']([^"']+)["'][^>]*><\/iframe>/
-    const match = inputString.match(iframeSrcRegex)
-    return match ? match[1] : inputString
-  }
+    const match = raw.match(iframeSrcRegex)
+    return match ? match[1] : raw
+  }, [props.node.attrs.src])
+
+  const iframeElement = useMemo(
+    () => <iframe title="Client Home embed" src={iframeSrc} width="100%" height="100%" />,
+    [iframeSrc],
+  )
 
   return (
     <NodeViewWrapper ref={parentRef}>
@@ -99,16 +105,7 @@ export const Embed = (props: EmbedProps) => {
             width: props.node.attrs.width,
           }}
         >
-          <iframe
-            title="Client Home embed"
-            src={extractIframeSrc(props.node.attrs.src)}
-            width="100%"
-            height="100%"
-            onError={(e) => {
-              e.stopPropagation()
-              console.info('[iframe error]:', e)
-            }}
-          />
+          {iframeElement}
         </div>
 
         {props.editor.isEditable && (
