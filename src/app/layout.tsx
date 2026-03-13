@@ -1,4 +1,4 @@
-import 'copilot-design-system/dist/styles/main.css'
+import '@assembly-js/design-system/dist/styles/main.css'
 import { authenticateHeaders } from '@auth/lib/authenticate'
 import { AuthProvider } from '@auth/providers/auth.provider'
 import { AppProvider } from '@common/providers/app.provider'

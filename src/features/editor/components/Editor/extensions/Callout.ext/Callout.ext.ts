@@ -38,4 +38,40 @@ export const CalloutExt = Node.create<CalloutOptions>({
       ({ chain }) =>
         chain().setNode('callout').run(),
   }),
+
+  addKeyboardShortcuts() {
+    return {
+      Backspace: () => {
+        const { state } = this.editor
+        const { selection } = state
+        const { $from, empty } = selection
+
+        if (!empty) return false
+
+        let calloutDepth: number | null = null
+        for (let d = $from.depth; d >= 0; d--) {
+          if ($from.node(d).type.name === 'callout') {
+            calloutDepth = d
+            break
+          }
+        }
+
+        if (calloutDepth === null) return false
+
+        const calloutNode = $from.node(calloutDepth)
+
+        if (calloutNode.textContent.length === 0) {
+          const pos = $from.before(calloutDepth)
+          const tr = state.tr.delete(pos, pos + calloutNode.nodeSize)
+          this.editor.view.dispatch(tr)
+          return true
+        }
+
+        const isAtStart = $from.pos === $from.start(calloutDepth)
+        if (!isAtStart) return false
+
+        return this.editor.chain().focus().setNode('paragraph').run()
+      },
+    }
+  },
 })

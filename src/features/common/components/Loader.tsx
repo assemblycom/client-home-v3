@@ -1,6 +1,6 @@
 'use client'
 
-import { Spinner } from 'copilot-design-system'
+import { Spinner } from '@assembly-js/design-system'
 
 export const Loader = () => {
   return (

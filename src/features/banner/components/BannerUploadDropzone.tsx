@@ -1,4 +1,4 @@
-import { Icon } from 'copilot-design-system'
+import { Icon } from '@assembly-js/design-system'
 import { useCallback, useState } from 'react'
 
 interface BannerUploadDropzoneProps {

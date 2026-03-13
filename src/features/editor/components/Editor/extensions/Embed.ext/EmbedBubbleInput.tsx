@@ -1,6 +1,6 @@
+import { Icon } from '@assembly-js/design-system'
 import { EMBED_PLACEHOLDER } from '@editor/constants'
 import type { Editor } from '@tiptap/core'
-import { Icon } from 'copilot-design-system'
 import { type KeyboardEvent, useEffect, useRef, useState } from 'react'
 import { fixEmbedUrl } from '@/utils/urls'
 

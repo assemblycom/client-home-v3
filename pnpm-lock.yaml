@@ -11,6 +11,9 @@ importers:
       '@assembly-js/app-bridge':
         specifier: ^1.1.0
         version: 1.1.0
+      '@assembly-js/design-system':
+        specifier: ^3.1.1
+        version: 3.1.1(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
       '@assembly-js/node-sdk':
         specifier: ^3.19.1
         version: 3.19.1(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -80,9 +83,6 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
-      copilot-design-system:
-        specifier: ^3.0.0
-        version: 3.0.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -207,6 +207,12 @@ packages:
 
   '@assembly-js/app-bridge@1.1.0':
     resolution: {integrity: sha512-brMSQxpldcwdqCpIxcVUKj6eX3uP18BKH4NhWpgGVaLo/aDVD/G4j/AI98UYeLeLK0unkjKuo4NLQZRNmE9Lag==}
+
+  '@assembly-js/design-system@3.1.1':
+    resolution: {integrity: sha512-b3ntA2IMdVjXD4vA1oRq9PPKJRZ1fxlANkMtyui78+26WSHg/ASX1MCagBXDn/AWOYz8yynr/tsLHo8fsn3aUA==}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
 
   '@assembly-js/node-sdk@3.19.1':
     resolution: {integrity: sha512-8td1ks3Oj3aPmFGUXdoTC28fEH3t5keyDt4vTewfOBSZW3sW0Rxw7LP9oP4clw29KIeLQtM5BTpsP3I5VM0edw==}
@@ -3257,13 +3263,6 @@ packages:
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
 
-  copilot-design-system@3.0.0:
-    resolution: {integrity: sha512-qnWlZ7UV1CyrmHrkM8PuYNG3p6yna+0divB2HdBzQ0+jxcOlvKAgx7c4bqNyzAPekvNJqajtIgHsjOrKEHjciQ==}
-    deprecated: This package has been renamed to @assembly-js/design-system
-    peerDependencies:
-      react: ^17.0.0 || ^18.0.0
-      react-dom: ^17.0.0 || ^18.0.0
-
   core-js-compat@3.48.0:
     resolution: {integrity: sha512-OM4cAF3D6VtH/WkLtWvyNC56EZVXsZdU3iqaMG2B4WvYrlqU831pc4UtG5yp0sE9z8Y02wVN7PjW5Zf9Gt0f1Q==}
 
@@ -4780,6 +4779,24 @@ snapshots:
   '@alloc/quick-lru@5.2.0': {}
 
   '@assembly-js/app-bridge@1.1.0': {}
+
+  
+  '@assembly-js/design-system@3.1.1(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)':
+    dependencies:
+      '@radix-ui/react-avatar': 1.1.11(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@radix-ui/react-toast': 1.2.15(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      clsx: 2.1.1
+      cva: 1.0.0-beta.4(typescript@5.9.3)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+      react-select: 5.10.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      tailwind-merge: 2.6.1
+      uuid: 9.0.1
+    transitivePeerDependencies:
+      - '@types/react'
+      - '@types/react-dom'
+      - supports-color
+      - typescript
 
   '@assembly-js/node-sdk@3.19.1(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
@@ -7799,23 +7816,6 @@ snapshots:
   convert-source-map@1.9.0: {}
 
   convert-source-map@2.0.0: {}
-
-  copilot-design-system@3.0.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3):
-    dependencies:
-      '@radix-ui/react-avatar': 1.1.11(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@radix-ui/react-toast': 1.2.15(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      clsx: 2.1.1
-      cva: 1.0.0-beta.4(typescript@5.9.3)
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
-      react-select: 5.10.2(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      tailwind-merge: 2.6.1
-      uuid: 9.0.1
-    transitivePeerDependencies:
-      - '@types/react'
-      - '@types/react-dom'
-      - supports-color
-      - typescript
 
   core-js-compat@3.48.0:
     dependencies:

@@ -1,7 +1,7 @@
 'use client'
 
+import { Icon } from '@assembly-js/design-system'
 import type { Editor } from '@tiptap/react'
-import { Icon } from 'copilot-design-system'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 

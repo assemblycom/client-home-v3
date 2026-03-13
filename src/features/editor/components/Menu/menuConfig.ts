@@ -1,7 +1,7 @@
+import type { ActionConfig, ActionData } from '@assembly-js/design-system'
 import { triggerImageUpload } from '@editor/client.utils'
 import { useEditorStore } from '@editor/stores/editorStore'
 import type { Editor } from '@tiptap/core'
-import type { ActionConfig, ActionData } from 'copilot-design-system'
 
 export type { ActionConfig, ActionData }
 
@@ -10,6 +10,7 @@ export enum EditorActions {
   HEADING2 = 'heading2',
   HEADING3 = 'heading3',
   TEXT = 'text',
+  TEXT_STYLE_DROPDOWN = 'textStyleDropdown',
   BOLD = 'bold',
   ITALIC = 'italic',
   UNDERLINE = 'underline',
@@ -29,34 +30,53 @@ export enum MenuMode {
 }
 
 export const editorActionConfig = (mode: MenuMode): ActionConfig[] => {
+  const textStyleActions: ActionConfig[] =
+    mode === MenuMode.TOOLBAR
+      ? [
+          {
+            id: EditorActions.TEXT_STYLE_DROPDOWN,
+            type: 'dropdown', // value 'dropdown' to use dropdown in toolbar component
+            label: 'Text',
+            icon: 'Text',
+            action: EditorActions.TEXT_STYLE_DROPDOWN,
+            options: [
+              { value: EditorActions.TEXT, label: 'Text', icon: 'Text' },
+              { value: EditorActions.HEADING1, label: 'Heading 1', icon: 'H1' },
+              { value: EditorActions.HEADING2, label: 'Heading 2', icon: 'H2' },
+              { value: EditorActions.HEADING3, label: 'Heading 3', icon: 'H3' },
+            ],
+          },
+        ]
+      : [
+          {
+            type: 'action',
+            id: EditorActions.HEADING1,
+            action: EditorActions.HEADING1,
+            icon: 'H1',
+            label: 'Heading 1',
+          },
+          {
+            type: 'action',
+            id: EditorActions.HEADING2,
+            action: EditorActions.HEADING2,
+            icon: 'H2',
+            label: 'Heading 2',
+          },
+          {
+            type: 'action',
+            id: EditorActions.HEADING3,
+            action: EditorActions.HEADING3,
+            icon: 'H3',
+            label: 'Heading 3',
+          },
+        ]
+
   const allGroups: ActionConfig[] = [
     {
       id: 'text-styles',
       type: 'group',
       label: 'Text styles',
-      actions: [
-        {
-          type: 'action',
-          id: EditorActions.HEADING1,
-          action: EditorActions.HEADING1,
-          icon: 'H1',
-          label: 'Heading 1',
-        },
-        {
-          type: 'action',
-          id: EditorActions.HEADING2,
-          action: EditorActions.HEADING2,
-          icon: 'H2',
-          label: 'Heading 2',
-        },
-        {
-          type: 'action',
-          id: EditorActions.HEADING3,
-          action: EditorActions.HEADING3,
-          icon: 'H3',
-          label: 'Heading 3',
-        },
-      ],
+      actions: textStyleActions,
     },
     {
       id: 'text-controls',
@@ -173,7 +193,7 @@ export const editorActionConfig = (mode: MenuMode): ActionConfig[] => {
 }
 
 export const handleToolbarAction = (
-  { action }: ActionData,
+  actionData: ActionData,
   editorInstance?: Editor,
   range?: { from: number; to: number },
 ) => {
@@ -182,6 +202,13 @@ export const handleToolbarAction = (
     console.warn('Editor not available')
     return
   }
+
+  // For dropdown actions, use the selected option value as the action
+  const action =
+    actionData.action === EditorActions.TEXT_STYLE_DROPDOWN && actionData.metadata?.value
+      ? String(actionData.metadata.value) // toolbar component returns option value for dropdown actions in metadata.value
+      : actionData.action
+
   executeSlashCommand(action, editor, range)
 }
 

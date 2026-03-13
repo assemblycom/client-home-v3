@@ -1,9 +1,9 @@
 'use client'
 
 import { CustomFieldEntityType, CustomFieldType, ListCustomFieldResponseSchema } from '@assembly/types'
+import type { IconType } from '@assembly-js/design-system'
 import { useAuthStore } from '@auth/providers/auth.provider'
 import { useQuery } from '@tanstack/react-query'
-import type { IconType } from 'copilot-design-system'
 import { api } from '@/lib/core/axios.instance'
 
 const CUSTOM_FIELDS_QUERY_KEY = 'custom-fields'

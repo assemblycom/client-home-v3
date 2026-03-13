@@ -1,7 +1,7 @@
+import { Button, Icon } from '@assembly-js/design-system'
 import { useAuthStore } from '@auth/providers/auth.provider'
 import { useSettingsMutation } from '@settings/hooks/useSettingsMutation'
 import { useSettingsStore } from '@settings/providers/settings.provider'
-import { Button, Icon } from 'copilot-design-system'
 import { useCallback, useRef, useState } from 'react'
 import { Banner } from '@/features/banner'
 import { BannerUploadDropzone } from '@/features/banner/components/BannerUploadDropzone'
