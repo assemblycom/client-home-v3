@@ -65,6 +65,22 @@ export default class SegmentsService extends BaseService {
     )
   }
 
+  private toConfigResponse(config: {
+    id: string
+    workspaceId: string
+    customField: string
+    customFieldId: string
+    entityType: CustomFieldEntityType
+  }): SegmentConfigResponse {
+    return {
+      id: config.id,
+      workspaceId: config.workspaceId,
+      customField: config.customField,
+      customFieldId: config.customFieldId,
+      entityType: config.entityType,
+    }
+  }
+
   private async validateCustomField(
     customField: string,
     entityType: CustomFieldEntityType = CustomFieldEntityType.CLIENT,
@@ -83,35 +99,41 @@ export default class SegmentsService extends BaseService {
   }
 
   async upsertSegmentConfig(payload: SegmentConfigUpsertDto): Promise<SegmentConfigResponse> {
-    // Only allow changing config if no custom segments exist
-    const existingSegments = await this.segmentsRepository.getAll(this.user.workspaceId)
-    if (existingSegments.length > 0) {
-      const existingConfig = await this.segmentConfigsRepository.getByWorkspaceId(this.user.workspaceId)
-      if (existingConfig && existingConfig.customField !== payload.customField) {
-        throw new APIError(
-          'Cannot change the custom field while segments exist. Delete all segments first.',
-          httpStatus.UNPROCESSABLE_ENTITY,
-        )
+    if (!this.user.internalUserId) {
+      throw new APIError('Only internal users can configure segments', httpStatus.FORBIDDEN)
+    }
+
+    await this.validateCustomField(payload.customField, payload.entityType)
+
+    return await DBService.transaction(async (tx) => {
+      this.segmentsRepository.setTx(tx)
+      this.segmentConfigsRepository.setTx(tx)
+
+      try {
+        const existingSegments = await this.segmentsRepository.getAll(this.user.workspaceId)
+        if (existingSegments.length > 0) {
+          const existingConfig = await this.segmentConfigsRepository.getByWorkspaceId(this.user.workspaceId)
+          if (existingConfig && existingConfig.customField !== payload.customField) {
+            throw new APIError(
+              'Cannot change the custom field while segments exist. Delete all segments first.',
+              httpStatus.UNPROCESSABLE_ENTITY,
+            )
+          }
+        }
+
+        const config = await this.segmentConfigsRepository.upsert({
+          workspaceId: this.user.workspaceId,
+          customField: payload.customField,
+          customFieldId: payload.customFieldId,
+          entityType: payload.entityType,
+        })
+
+        return this.toConfigResponse(config)
+      } finally {
+        this.segmentsRepository.unsetTx()
+        this.segmentConfigsRepository.unsetTx()
       }
-    }
-
-    const entityType = payload.entityType === 'company' ? CustomFieldEntityType.COMPANY : CustomFieldEntityType.CLIENT
-    await this.validateCustomField(payload.customField, entityType)
-
-    const config = await this.segmentConfigsRepository.upsert({
-      workspaceId: this.user.workspaceId,
-      customField: payload.customField,
-      customFieldId: payload.customFieldId,
-      entityType: payload.entityType,
     })
-
-    return {
-      id: config.id,
-      workspaceId: config.workspaceId,
-      customField: config.customField,
-      customFieldId: config.customFieldId,
-      entityType: config.entityType,
-    }
   }
 
   async getAll(): Promise<FormattedSegmentData[]> {
@@ -216,7 +238,7 @@ export default class SegmentsService extends BaseService {
       this.segmentConfigsRepository.getByWorkspaceId(this.user.workspaceId),
     ])
 
-    const isCompanySegment = segmentConfig?.entityType === 'company'
+    const isCompanySegment = segmentConfig?.entityType === CustomFieldEntityType.COMPANY
     const customField = segmentConfig?.customField
 
     const [clientsResponse, companiesResponse] = await Promise.all([
@@ -271,15 +293,7 @@ export default class SegmentsService extends BaseService {
 
     return {
       totalClients: clients.length,
-      segmentConfig: segmentConfig
-        ? {
-            id: segmentConfig.id,
-            workspaceId: segmentConfig.workspaceId,
-            customField: segmentConfig.customField,
-            customFieldId: segmentConfig.customFieldId,
-            entityType: segmentConfig.entityType,
-          }
-        : null,
+      segmentConfig: segmentConfig ? this.toConfigResponse(segmentConfig) : null,
       segments: this.formatSegmentData(allSettings).map<SegmentStatsSettings>((settings) => {
         return {
           ...settings,
@@ -354,8 +368,7 @@ export default class SegmentsService extends BaseService {
       throw new APIError('Segment config must be created before adding segments', httpStatus.UNPROCESSABLE_ENTITY)
     }
 
-    const entityType = config.entityType === 'company' ? CustomFieldEntityType.COMPANY : CustomFieldEntityType.CLIENT
-    await this.validateCustomField(config.customField, entityType)
+    await this.validateCustomField(config.customField, config.entityType)
     this.validateUniqueCompareValues(
       existingSegments,
       conditionPayloads.map((c) => c.compareValue),

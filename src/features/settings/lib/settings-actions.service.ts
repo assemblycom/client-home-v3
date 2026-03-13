@@ -1,4 +1,5 @@
 import AssemblyClient from '@assembly/assembly-client'
+import { CustomFieldEntityType } from '@assembly/types'
 import type { User } from '@auth/lib/user.entity'
 import { DEFAULT_BANNER_IMAGE_PATH } from '@media/constants'
 import MediaDrizzleRepository, { type MediaRepository } from '@media/lib/media.repository'
@@ -103,17 +104,21 @@ export default class SettingsActionsService extends BaseService {
       this.segmentConfigsRepository.getByWorkspaceId(this.user.workspaceId),
     ])
 
-    const isCompanySegment = segmentConfig?.entityType === 'company'
+    const isCompanySegment = segmentConfig?.entityType === CustomFieldEntityType.COMPANY
 
-    // For company segments, resolve using the client's company
-    if (isCompanySegment && companyId) {
-      const company = await this.assembly.getCompany(companyId)
-      const matchedSetting = SegmentsService.resolveSetting({
-        entity: company,
-        allSettings,
-        customField: segmentConfig?.customField,
-      })
-      return this.getForWorkspace(matchedSetting?.segmentId)
+    if (isCompanySegment) {
+      // For company segments, resolve using the client's company
+      if (companyId) {
+        const company = await this.assembly.getCompany(companyId)
+        const matchedSetting = SegmentsService.resolveSetting({
+          entity: company,
+          allSettings,
+          customField: segmentConfig?.customField,
+        })
+        return this.getForWorkspace(matchedSetting?.segmentId)
+      }
+      // Client has no company — fall back to default
+      return this.getForWorkspace()
     }
 
     const matchedSetting = SegmentsService.resolveSetting({

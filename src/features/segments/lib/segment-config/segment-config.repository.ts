@@ -1,3 +1,4 @@
+import type { CustomFieldEntityType } from '@assembly/types'
 import type { SegmentConfig } from '@segments/lib/segment-config/segment-config.entity'
 import { segmentConfigs } from '@segments/lib/segment-config/segment-config.schema'
 import { eq } from 'drizzle-orm'
@@ -8,7 +9,7 @@ type SegmentConfigPayload = {
   workspaceId: string
   customField: string
   customFieldId: string
-  entityType: 'client' | 'company'
+  entityType: CustomFieldEntityType
 }
 
 export interface SegmentConfigsRepository extends BaseRepository {

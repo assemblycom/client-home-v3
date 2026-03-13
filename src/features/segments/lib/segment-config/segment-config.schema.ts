@@ -1,7 +1,8 @@
+import { CustomFieldEntityType } from '@assembly/types'
 import { pgEnum, pgTable, text, uniqueIndex } from 'drizzle-orm/pg-core'
 import { id, timestamps, workspaceId } from '@/db/helpers'
 
-export const customFieldEntityTypeEnum = pgEnum('custom_field_entity_type', ['client', 'company'])
+export const customFieldEntityTypeEnum = pgEnum('custom_field_entity_type', CustomFieldEntityType)
 
 export const segmentConfigs = pgTable(
   'segment_configs',
@@ -16,7 +17,7 @@ export const segmentConfigs = pgTable(
     customFieldId: text().notNull(),
 
     // Whether the custom field belongs to a client or company entity
-    entityType: customFieldEntityTypeEnum().notNull().default('client'),
+    entityType: customFieldEntityTypeEnum().notNull().default(CustomFieldEntityType.CLIENT),
 
     ...timestamps,
   },

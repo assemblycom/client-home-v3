@@ -1,5 +1,6 @@
 'use client'
 
+import { CustomFieldEntityType } from '@assembly/types'
 import { Button, Icon, Tooltip } from '@assembly-js/design-system'
 import { Select } from '@segments/components/Select'
 import { useSegmentConfigMutation } from '@segments/hooks/useSegmentConfigMutation'
@@ -73,7 +74,9 @@ export const SegmentCreationCard = ({
       return
     }
 
-    const entityType = companyCustomFields.some((f) => f.id === field.id) ? 'company' : 'client'
+    const entityType = companyCustomFields.some((f) => f.id === field.id)
+      ? CustomFieldEntityType.COMPANY
+      : CustomFieldEntityType.CLIENT
 
     setError(null)
 
@@ -83,7 +86,7 @@ export const SegmentCreationCard = ({
         await upsertConfig.mutateAsync({
           customField: field.key,
           customFieldId: field.id,
-          entityType: entityType as 'client' | 'company',
+          entityType,
         })
       }
       onCreateSegment()

@@ -1,3 +1,4 @@
+import { CustomFieldEntityType } from '@assembly/types'
 import { ConditionCreateSchema, ConditionSchema } from '@segments/lib/conditions/types'
 import { SegmentCreateSchema, SegmentSchema } from '@segments/lib/segments/types'
 import { SettingsSchema } from '@settings/lib/types'
@@ -43,7 +44,7 @@ export type SegmentStatsSettings = z.infer<typeof SegmentStatsSettingsSchema>
 export const SegmentConfigUpsertDtoSchema = z.object({
   customField: z.string(),
   customFieldId: z.string(),
-  entityType: z.enum(['client', 'company']),
+  entityType: z.nativeEnum(CustomFieldEntityType),
 })
 export type SegmentConfigUpsertDto = z.infer<typeof SegmentConfigUpsertDtoSchema>
 
@@ -52,7 +53,7 @@ export const SegmentConfigResponseSchema = z.object({
   workspaceId: z.string(),
   customField: z.string(),
   customFieldId: z.string(),
-  entityType: z.enum(['client', 'company']),
+  entityType: z.nativeEnum(CustomFieldEntityType),
 })
 export type SegmentConfigResponse = z.infer<typeof SegmentConfigResponseSchema>
 
