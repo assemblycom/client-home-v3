@@ -1,2 +1,10 @@
 [tools]
-node = "22"
+node = "24"
+
+[tasks."migration:gen"]
+description = "Generate a new Drizzle migration (requires a name argument)"
+run = "pnpm migration:gen {{arg(name=\"migration_name\")}}"
+
+[tasks."migration:run"]
+description = "Run pending Drizzle migrations"
+run = "pnpm migration:run"

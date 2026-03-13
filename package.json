@@ -11,6 +11,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "biome check",
     "format": "biome check --write",
+    "migration:gen": "drizzle-kit generate --name",
+    "migration:run": "drizzle-kit migrate",
     "lint-staged": "lint-staged",
     "prepare": "husky",
     "tsc": "NODE_ENV=production tsc --noemit --skipLibCheck",
