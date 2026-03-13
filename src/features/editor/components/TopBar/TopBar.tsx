@@ -29,7 +29,7 @@ export const TopBar = () => {
   }, [changeViewModeDebounced])
 
   return (
-    <nav className="flex w-full shrink-0 cursor-default flex-col border-border-gray border-b">
+    <nav className="@container flex w-full shrink-0 cursor-default flex-col border-border-gray border-b">
       <div className="flex h-14 items-center justify-between px-5 py-3">
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-2 rounded-sm p-1 outline outline-border-gray">
@@ -54,12 +54,12 @@ export const TopBar = () => {
         </div>
         <div className="flex items-center gap-2">
           <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
-            <div className="hidden min-[860px]:block">
+            <div className="@min-[860px]:block hidden">
               <Menu mode={MenuMode.TOOLBAR} />
             </div>
           </Activity>
           <Activity mode={getActivityMode(viewMode === ViewMode.PREVIEW)}>
-            <div className="hidden min-[860px]:block">
+            <div className="@min-[860px]:block hidden">
               <DisplayModeTab />
             </div>
           </Activity>
@@ -75,11 +75,11 @@ export const TopBar = () => {
       <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
         <div
           className={cn(
-            'block border-border-gray border-t px-5 py-2 min-[860px]:hidden',
+            'block @min-[860px]:hidden border-border-gray border-t px-5 py-2',
             mobileSidebarOpen && 'hidden',
           )}
         >
-          <Menu mode={MenuMode.TOOLBAR} />
+          <Menu mode={MenuMode.MOBILE_TOOLBAR} />
         </div>
       </Activity>
     </nav>
