@@ -1,6 +1,6 @@
 import AssemblyClient from '@assembly/assembly-client'
 import { MAX_FETCH_ASSEMBLY_RESOURCES } from '@assembly/constants'
-import type { ClientResponse } from '@assembly/types'
+import type { ClientResponse, CompanyResponse } from '@assembly/types'
 import { CustomFieldEntityType } from '@assembly/types'
 import type { User } from '@auth/lib/user.entity'
 import type { ConditionsRepository } from '@segments/lib/conditions/conditions.repository'
@@ -27,7 +27,6 @@ import SettingsDrizzleRepository from '@settings/lib/settings/settings.repositor
 import type { SegmentWithConditions, SettingsWithSegment } from '@settings/lib/types'
 import httpStatus from 'http-status'
 import db from '@/db'
-import { workspaceId } from '@/db/helpers'
 import APIError from '@/errors/api.error'
 import BaseService from '@/lib/core/base.service'
 import DBService from '@/lib/core/db.service'
@@ -172,12 +171,12 @@ export default class SegmentsService extends BaseService {
     return deleted
   }
 
-  static resolveSettingForClient({
-    client,
+  static resolveSetting({
+    entity,
     allSettings,
     customField,
   }: {
-    client: ClientResponse
+    entity: ClientResponse | CompanyResponse
     allSettings: SettingsWithSegment[]
     customField: string | undefined
   }): SettingsWithSegment | null {
@@ -189,7 +188,7 @@ export default class SegmentsService extends BaseService {
           return false
         }
         const segment = setting.segment
-        const fieldValue = client.customFields?.[customField]
+        const fieldValue = entity.customFields?.[customField]
         if (fieldValue == null) return false
 
         const compareValues = segment.conditions.map((c) => c.compareValue)
@@ -212,23 +211,54 @@ export default class SegmentsService extends BaseService {
   }
 
   async getStats(): Promise<SegmentStatsResponseDto> {
-    const [allSettings, clientsResponse, segmentConfig] = await Promise.all([
+    const [allSettings, segmentConfig] = await Promise.all([
       this.settingsRepository.getSegments(this.user.workspaceId),
-      this.assembly.getClients({ limit: MAX_FETCH_ASSEMBLY_RESOURCES }),
       this.segmentConfigsRepository.getByWorkspaceId(this.user.workspaceId),
     ])
 
-    const clients = clientsResponse.data ?? []
+    const isCompanySegment = segmentConfig?.entityType === 'company'
     const customField = segmentConfig?.customField
+
+    const [clientsResponse, companiesResponse] = await Promise.all([
+      this.assembly.getClients({ limit: MAX_FETCH_ASSEMBLY_RESOURCES }),
+      isCompanySegment ? this.assembly.getCompanies({ limit: MAX_FETCH_ASSEMBLY_RESOURCES }) : null,
+    ])
+
+    const clients = clientsResponse.data ?? []
+    const companies = companiesResponse?.data ?? []
+
+    // Build a map from companyId → matched settingId for company segments
+    const companySettingMap = new Map<string, string>()
+    if (isCompanySegment) {
+      for (const company of companies) {
+        const settings = SegmentsService.resolveSetting({ entity: company, allSettings, customField })
+        if (settings) {
+          companySettingMap.set(company.id, settings.id)
+        }
+      }
+    }
 
     const segmentStats = clients.reduce(
       (stats, client) => {
-        const settings = SegmentsService.resolveSettingForClient({ client, allSettings, customField })
+        let settings: SettingsWithSegment | null = null
+
+        if (isCompanySegment) {
+          // For company segments, resolve via the client's associated company
+          const companyId = client.companyIds?.at(0)
+          const settingId = companyId ? companySettingMap.get(companyId) : undefined
+          if (settingId) {
+            stats[settingId] = (stats[settingId] ?? 0) + 1
+            return stats
+          }
+          // No matching company — fall back to default
+          settings = allSettings.at(0) ?? null
+        } else {
+          settings = SegmentsService.resolveSetting({ entity: client, allSettings, customField })
+        }
 
         if (!settings) {
-          // this should not be happening at all. capture error
           console.error(
-            `Some of the clients did match even the default segment for some reason: workspace id "{${workspaceId}, clientId "${client.id}"`,
+            `Client did not match even the default segment: workspace id "${this.user.workspaceId}", clientId "${client.id}"`,
           )
           return stats
         }

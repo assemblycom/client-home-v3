@@ -92,7 +92,7 @@ export default class SettingsActionsService extends BaseService {
   }
 
   async getForClient(): Promise<SettingsWithActions> {
-    const { clientId } = this.user
+    const { clientId, companyId } = this.user
     if (!clientId) {
       return this.getForWorkspace()
     }
@@ -103,8 +103,21 @@ export default class SettingsActionsService extends BaseService {
       this.segmentConfigsRepository.getByWorkspaceId(this.user.workspaceId),
     ])
 
-    const matchedSetting = SegmentsService.resolveSettingForClient({
-      client,
+    const isCompanySegment = segmentConfig?.entityType === 'company'
+
+    // For company segments, resolve using the client's company
+    if (isCompanySegment && companyId) {
+      const company = await this.assembly.getCompany(companyId)
+      const matchedSetting = SegmentsService.resolveSetting({
+        entity: company,
+        allSettings,
+        customField: segmentConfig?.customField,
+      })
+      return this.getForWorkspace(matchedSetting?.segmentId)
+    }
+
+    const matchedSetting = SegmentsService.resolveSetting({
+      entity: client,
       allSettings,
       customField: segmentConfig?.customField,
     })
