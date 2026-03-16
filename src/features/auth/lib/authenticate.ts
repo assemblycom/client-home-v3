@@ -10,7 +10,6 @@ import env from '@/config/env'
 import { NotFoundError } from '@/errors/not-found.error'
 import { UnauthorizedError } from '@/errors/unauthorized.error'
 import type { Token } from '@/lib/assembly/types'
-import { createCustomToken } from '@/utils/token-generator'
 
 /**
  * Authenticates a Assembly user by token
@@ -62,19 +61,12 @@ export const authenticateProxy = async (req: NextRequest): Promise<NextResponse>
     throw new UnauthorizedError()
   }
 
-  const customToken = createCustomToken(env.ASSEMBLY_API_KEY, {
-    clientId: tokenPayload.clientId,
-    internalUserId: tokenPayload.internalUserId,
-    workspaceId: tokenPayload.workspaceId,
-    companyId: tokenPayload.companyId,
-  })
-
   return NextResponse.next({
     headers: {
       ...headers,
       ...Object.fromEntries(
         Object.entries({
-          [AuthenticatedAPIHeaders.CUSTOM_APP_TOKEN]: customToken,
+          [AuthenticatedAPIHeaders.CUSTOM_APP_TOKEN]: token,
           [AuthenticatedAPIHeaders.INTERNAL_USER_ID]: tokenPayload.internalUserId,
           [AuthenticatedAPIHeaders.CLIENT_ID]: tokenPayload.clientId,
           [AuthenticatedAPIHeaders.COMPANY_ID]: tokenPayload.companyId,
