@@ -1,6 +1,6 @@
 import { Button, Icon } from '@assembly-js/design-system'
 import { useAuthStore } from '@auth/providers/auth.provider'
-import { useSettingsMutation } from '@settings/hooks/useSettingsMutation'
+import { useBannerSettingsMutation } from '@settings/hooks/useBannerSettingsMutation'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import { useCallback, useRef, useState } from 'react'
 import { Banner } from '@/features/banner'
@@ -17,7 +17,7 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
   const bannerId = useSettingsStore((store) => store?.bannerImageId)
   const token = useAuthStore((store) => store.token)
   const setBannerImage = useSettingsStore((s) => s.setBannerImageId)
-  const updateSettingsMutation = useSettingsMutation()
+  const updateBannerMutation = useBannerSettingsMutation()
   const createBannerMutation = useBannerMutation()
 
   const [selectedImage, setSelectedImage] = useState(bannerImages?.find((item) => item.id === bannerId))
@@ -25,12 +25,12 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
 
   const handleRemoveBanner = () => {
     setSelectedImage(undefined)
-    updateSettingsMutation.mutate({ bannerImageId: null, bannerPositionX: 50, bannerPositionY: 50 })
+    updateBannerMutation.mutate({ bannerImageId: null, bannerPositionX: 50, bannerPositionY: 50 })
   }
 
   const handleSaveChanges = () => {
     if (selectedImage?.id) {
-      updateSettingsMutation.mutate({ bannerImageId: selectedImage.id, bannerPositionX: 50, bannerPositionY: 50 })
+      updateBannerMutation.mutate({ bannerImageId: selectedImage.id, bannerPositionX: 50, bannerPositionY: 50 })
     }
   }
 
@@ -49,7 +49,7 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
                 const uploaded = data.data
                 setBannerImage(uploaded.id)
                 setSelectedImage({ id: uploaded.id, path: uploaded.path })
-                updateSettingsMutation.mutate({ bannerImageId: uploaded.id, bannerPositionX: 50, bannerPositionY: 50 })
+                updateBannerMutation.mutate({ bannerImageId: uploaded.id, bannerPositionX: 50, bannerPositionY: 50 })
               },
             },
           )
@@ -61,7 +61,7 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
           setIsUploading(false)
         })
     },
-    [token, createBannerMutation, setBannerImage, updateSettingsMutation],
+    [token, createBannerMutation, setBannerImage, updateBannerMutation],
   )
 
   const onBannerUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
