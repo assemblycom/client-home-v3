@@ -174,7 +174,7 @@ export default class AssemblyClient {
     try {
       const tasksToken = encodePayload(env.TASKS_ASSEMBLY_API_KEY, { clientId, companyId, workspaceId })
       const tasksResponse = await fetch(
-        `https://tasks.assembly.com/api/tasks/public?token=${tasksToken}&limit=${MAX_FETCH_ASSEMBLY_RESOURCES}`,
+        `https://tasks.assembly.com/api/tasks/public?token=${tasksToken}&limit=${MAX_FETCH_ASSEMBLY_RESOURCES}&parentTaskId=null`, //NOT SHOWING SUBTASKS COUNT.
       )
       const tasksParsed = TasksResponseSchema.safeParse(await tasksResponse.json())
       if (!tasksParsed.success) {

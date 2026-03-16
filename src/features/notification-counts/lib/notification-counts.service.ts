@@ -45,7 +45,14 @@ export default class NotificationsCountService extends BaseService {
       forms: 0,
       invoices: 0,
       contracts: 0,
-      tasks: tasks.filter((t) => t.status === TaskStatus.TODO || t.status === TaskStatus.IN_PROGRESS).length,
+      tasks: tasks.filter(
+        (t) =>
+          (t.status === TaskStatus.TODO || t.status === TaskStatus.IN_PROGRESS) &&
+          t.companyId !== null &&
+          t.isArchived === false,
+      ).length,
+      //ALSO FILTERED FOR TASKS WHERE parentTaskId is null and companyId is null because tasks public api for client also returns tasks that are associated to this companyId.
+      //ONCE we apply the changes required for clients in tasks public api, we need to remove this.
     }
 
     notifications.data.forEach(({ event, recipientCompanyId: notificationRecipientCompanyId }) => {

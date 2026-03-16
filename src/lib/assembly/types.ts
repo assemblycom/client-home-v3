@@ -152,6 +152,8 @@ export const TasksResponseSchema = z.object({
   data: z
     .object({
       status: z.enum(TaskStatus),
+      companyId: z.string().nullish(),
+      isArchived: z.boolean(),
     })
     .array(),
 })
