@@ -6,8 +6,8 @@ import { Heading } from '@editor/components/Heading'
 import { Preview } from '@editor/components/Preview'
 import { Subheading } from '@editor/components/Subheading'
 import { useAppControls } from '@editor/hooks/useAppControls'
+import { useBannerSettingsMutation } from '@settings/hooks/useBannerSettingsMutation'
 import { useSegmentSettings } from '@settings/hooks/useSegmentSettings'
-import { useSettingsMutation } from '@settings/hooks/useSettingsMutation'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import { Activity } from 'react'
 import { ActionsCard } from '@/features/action-items/components/actions-card'
@@ -35,7 +35,7 @@ export function EditorWrapper({ className }: EditorWrapperProps) {
   const bannerPositionY = useSettingsStore((store) => store.bannerPositionY) ?? 50
   const setSidebarView = useSidebarStore((store) => store.setSidebarView)
 
-  const { mutate: updateSettings } = useSettingsMutation()
+  const { mutate: updateBannerSettings } = useBannerSettingsMutation()
 
   const isDark = isDarkColor(backgroundColor)
 
@@ -65,7 +65,7 @@ export function EditorWrapper({ className }: EditorWrapperProps) {
               positionY={bannerPositionY}
               onChangeBanner={() => setSidebarView('change-banner')}
               onSavePosition={(positionX, positionY) =>
-                updateSettings({ bannerPositionX: positionX, bannerPositionY: positionY })
+                updateBannerSettings({ bannerPositionX: positionX, bannerPositionY: positionY })
               }
             />
           ) : null}
