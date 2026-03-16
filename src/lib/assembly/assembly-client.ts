@@ -17,6 +17,7 @@ import {
   InternalUserResponseSchema,
   type InternalUsersResponse,
   InternalUsersResponseSchema,
+  ListCustomFieldOptionsResponseSchema,
   ListCustomFieldResponseSchema,
   type NotificationsResponse,
   NotificationsResponseSchema,
@@ -93,7 +94,9 @@ export default class AssemblyClient {
     return ClientResponseSchema.parse(await assembly.retrieveClient({ id }))
   }
 
-  async _getClients(args: AssemblyListArgs & { companyId?: string } = {}) {
+  async _getClients(
+    args: AssemblyListArgs & { companyId?: string } = {},
+  ): Promise<z.infer<typeof ClientsResponseSchema>> {
     logger.info('AssemblyClient#_getClients', args)
     const assembly = await this.assemblyPromise
     return ClientsResponseSchema.parse(
@@ -171,7 +174,7 @@ export default class AssemblyClient {
     try {
       const tasksToken = encodePayload(env.TASKS_ASSEMBLY_API_KEY, { clientId, companyId, workspaceId })
       const tasksResponse = await fetch(
-        `https://tasks.assembly.com/api/tasks/public?token=${tasksToken}&limit=${MAX_FETCH_ASSEMBLY_RESOURCES}`,
+        `https://tasks.assembly.com/api/tasks/public?token=${tasksToken}&limit=${MAX_FETCH_ASSEMBLY_RESOURCES}&parentTaskId=null`, //NOT SHOWING SUBTASKS COUNT.
       )
       const tasksParsed = TasksResponseSchema.safeParse(await tasksResponse.json())
       if (!tasksParsed.success) {
@@ -201,6 +204,19 @@ export default class AssemblyClient {
     )
   }
 
+  private async _listCustomFieldOptions({ id }: { id: string }) {
+    logger.info('AssemblyClient#_listCustomFieldOptions', { id })
+    const assembly = await this.assemblyPromise
+    return ListCustomFieldOptionsResponseSchema.parse(
+      await assembly.listCustomFieldOptions({ id }).then((res) => {
+        if (!res.data) {
+          return { data: [] } as z.infer<typeof ListCustomFieldOptionsResponseSchema>
+        }
+        return res
+      }),
+    )
+  }
+
   private wrapWithRetry<Args extends unknown[], R>(fn: (...args: Args) => Promise<R>): (...args: Args) => Promise<R> {
     return (...args: Args): Promise<R> => withRetry(fn.bind(this), args)
   }
@@ -222,5 +238,6 @@ export default class AssemblyClient {
   getNotifications = this.wrapWithRetry(this._getNotifications)
   getTasks = this.wrapWithRetry(this._getTasks)
   listCustomFields = this.wrapWithRetry(this._listCustomFields)
+  listCustomFieldOptions = this.wrapWithRetry(this._listCustomFieldOptions)
   getAppId = this.wrapWithRetry(this._getAppId)
 }

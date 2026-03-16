@@ -14,13 +14,13 @@ export default async function Home() {
 
   return (
     <>
-      <Suspense>
+      <Suspense fallback={null}>
         <UsersFetcher token={token} />
       </Suspense>
-      <Suspense>
+      <Suspense fallback={null}>
         <WorkspaceFetcher token={token} />
       </Suspense>
-      <Suspense>
+      <Suspense fallback={null}>
         <BannerImagesFetcher token={token} />
       </Suspense>
 

@@ -9,10 +9,11 @@ import { cn } from '@/utils/tailwind'
 export type AccordionProps = PropsWithClassname & {
   title: string
   content: ReactNode
+  defaultOpen?: boolean
 }
 
-export const Accordion = ({ title, content, className }: AccordionProps) => {
-  const { isOpen, setIsOpen } = useAccordion()
+export const Accordion = ({ title, content, className, defaultOpen = false }: AccordionProps) => {
+  const { isOpen, setIsOpen } = useAccordion(defaultOpen)
   return (
     <div className={cn('w-full', className)}>
       <button

@@ -33,7 +33,7 @@ export const useAppControls = () => {
   const initialSettings = useSettingsStore((s) => s.initialSettings)
   const orderChanged = JSON.stringify(actions.order) !== JSON.stringify(initialSettings.actions?.order)
   const show =
-    !areObjKeysEqual(settings, initialSettings, ['content', 'subheading', 'bannerImageId', 'backgroundColor']) ||
+    !areObjKeysEqual(settings, initialSettings, ['content', 'subheading', 'backgroundColor']) ||
     !areObjKeysEqual(actions, initialSettings.actions, ['tasks', 'invoices', 'contracts', 'forms']) ||
     orderChanged
 

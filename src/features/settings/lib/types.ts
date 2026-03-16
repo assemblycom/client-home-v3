@@ -1,3 +1,5 @@
+import type { Condition } from '@segments/lib/conditions/conditions.entity'
+import type { Segment } from '@segments/lib/segments/segments.entity'
 import { settings } from '@settings/lib/settings/settings.schema'
 import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'drizzle-zod'
 import type z from 'zod'
@@ -19,3 +21,11 @@ export const SettingsUpdateSchema = createUpdateSchema(settings).omit({
   updatedAt: true,
 })
 export type SettingsUpdatePayload = z.infer<typeof SettingsUpdateSchema>
+
+export type SegmentWithConditions = Segment & {
+  conditions: Condition[]
+}
+
+export type SettingsWithSegment = Pick<z.infer<typeof SettingsSchema>, 'id' | 'workspaceId' | 'segmentId'> & {
+  segment: SegmentWithConditions | null
+}
