@@ -3,8 +3,6 @@ import { TaskStatus } from '@assembly/types'
 import type { User } from '@auth/lib/user.entity'
 import type { NotificationCountsDto } from '@notification-counts/notification-counts.dto'
 import { NotificationEvent } from '@notification-counts/types'
-import { HttpStatusCode } from 'axios'
-import APIError from '@/errors/api.error'
 import BaseService from '@/lib/core/base.service'
 
 export default class NotificationsCountService extends BaseService {
@@ -31,15 +29,16 @@ export default class NotificationsCountService extends BaseService {
     recipientCompanyId: string | null,
   ): Promise<NotificationCountsDto> {
     const [notifications, tasks] = await Promise.all([
-      this.assembly.getNotifications({ recipientClientId }),
+      this.assembly.getNotifications({ recipientClientId }).catch((err) => {
+        console.error('Could not fetch notifications list from assembly', err)
+        return null
+      }),
       this.assembly.getTasks({
         workspaceId: this.user.workspaceId,
         clientId: recipientClientId,
         companyId: recipientCompanyId || undefined,
       }),
     ])
-    if (!notifications || !notifications.data)
-      throw new APIError('Could not fetch notifications list from assembly', HttpStatusCode.InternalServerError)
 
     const notificationCounts: NotificationCountsDto = {
       forms: 0,
@@ -48,7 +47,7 @@ export default class NotificationsCountService extends BaseService {
       tasks: tasks.filter((t) => t.status === TaskStatus.TODO || t.status === TaskStatus.IN_PROGRESS).length,
     }
 
-    notifications.data.forEach(({ event, recipientCompanyId: notificationRecipientCompanyId }) => {
+    notifications?.data?.forEach(({ event, recipientCompanyId: notificationRecipientCompanyId }) => {
       if (recipientCompanyId && notificationRecipientCompanyId !== recipientCompanyId) return
 
       const key = this.eventMap[event as NotificationEvent]
