@@ -54,7 +54,7 @@ export const SegmentCardItem = ({ data, onEdit, onDelete, isLoading }: Props) =>
               icon="Ellipsis"
               variant="minimal"
               size="sm"
-              className="opacity-0 transition-opacity group-hover:opacity-100"
+              className=""
               onClick={() => setMenuOpen(!menuOpen)}
             />
           )}
