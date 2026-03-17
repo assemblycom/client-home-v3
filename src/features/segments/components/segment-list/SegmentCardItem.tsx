@@ -53,24 +53,27 @@ export const SegmentCardItem = ({ data, onEdit, onDelete, isLoading }: Props) =>
             <IconButton
               icon="Ellipsis"
               variant="minimal"
+              size="sm"
               className="opacity-0 transition-opacity group-hover:opacity-100"
               onClick={() => setMenuOpen(!menuOpen)}
             />
           )}
           {menuOpen && !isLoading && (
-            <div className="absolute top-full right-0 z-10 mt-1 w-[200px] rounded border border-border-gray bg-white py-0.5 shadow-lg">
+            <div className="absolute top-full right-0 z-10 w-[200px] rounded border border-border-gray bg-white py-1 shadow-lg">
               <button
                 type="button"
-                className="flex w-full items-center gap-3 px-5 py-3 text-left text-sm text-text-primary hover:bg-gray-50"
+                className="flex w-full items-center gap-3 px-4 py-1.5 text-left text-sm text-text-primary hover:bg-gray-50"
                 onClick={handleEdit}
               >
                 <Icon icon="Edit" width={16} height={16} />
                 Update segment
               </button>
 
+              <div className="my-0.5 border-gray-100 border-t" />
+
               <button
                 type="button"
-                className="flex w-full items-center gap-3 px-5 py-3 text-left text-[#991A00] text-sm hover:bg-gray-50"
+                className="flex w-full items-center gap-3 px-4 py-1.5 text-left text-[var(--color-error)] text-sm hover:bg-gray-50"
                 onClick={() => {
                   onDelete?.()
                   setMenuOpen(false)
