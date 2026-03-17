@@ -141,7 +141,7 @@ body {
     @apply text-sm leading-5.5 font-normal mb-2;
   }
 
-  p:last-child {
+  p:last-of-type {
     @apply mb-0;
   }
 
@@ -232,6 +232,11 @@ body {
   [data-resize-handle="bottom-right"] {
     @apply resize-bar opacity-0;
   }
+}
+
+.ProseMirror .column-resize-handle {
+  position: absolute;
+  pointer-events: none;
 }
 
 .ProseMirror-focused {
