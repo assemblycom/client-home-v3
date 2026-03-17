@@ -31,6 +31,7 @@ import type { AssemblyAPI as SDK } from '@assembly-js/node-sdk'
 import { assemblyApi } from '@assembly-js/node-sdk'
 import type { z } from 'zod'
 import env from '@/config/env'
+import { refreshSessionToken } from '@/lib/assembly/refresh-token'
 import logger from '@/lib/logger'
 import { withRetry } from '@/lib/with-retry'
 import { encodePayload } from '@/utils/crypto'
@@ -38,18 +39,31 @@ import { MAX_FETCH_ASSEMBLY_RESOURCES } from './constants'
 import { AssemblyInvalidTokenError } from './errors'
 
 export default class AssemblyClient {
-  readonly assemblyPromise: Promise<SDK>
+  private assemblyPromise: Promise<SDK>
+  private token: string
 
   constructor(
-    private readonly token: string,
+    token: string,
     readonly customApiKey?: string,
   ) {
+    this.token = token
     this.assemblyPromise = Promise.resolve(
       assemblyApi({
         apiKey: customApiKey ?? env.ASSEMBLY_API_KEY,
         token,
       }),
     ).catch(() => {
+      throw new AssemblyInvalidTokenError()
+    })
+  }
+
+  private async refreshAndRebuildClient(): Promise<void> {
+    logger.info('AssemblyClient#refreshAndRebuildClient | Refreshing session token due to 403')
+    const apiKey = this.customApiKey ?? env.ASSEMBLY_API_KEY
+    const { token: newToken } = await refreshSessionToken(this.token)
+    logger.info('AssemblyClient#refreshAndRebuildClient | Token refreshed successfully, rebuilding SDK client')
+    this.token = newToken
+    this.assemblyPromise = Promise.resolve(assemblyApi({ apiKey, token: newToken })).catch(() => {
       throw new AssemblyInvalidTokenError()
     })
   }
@@ -218,7 +232,10 @@ export default class AssemblyClient {
   }
 
   private wrapWithRetry<Args extends unknown[], R>(fn: (...args: Args) => Promise<R>): (...args: Args) => Promise<R> {
-    return (...args: Args): Promise<R> => withRetry(fn.bind(this), args)
+    return (...args: Args): Promise<R> =>
+      withRetry(fn.bind(this), args, {
+        onForbidden: () => this.refreshAndRebuildClient(),
+      })
   }
 
   // Methods wrapped with retry

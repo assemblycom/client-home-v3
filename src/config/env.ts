@@ -16,6 +16,7 @@ const EnvSchema = z.object({
   SUPABASE_SECRET_KEY: z.string().min(1),
   SUPABASE_BUCKET_NAME: z.string().min(1),
   SUPABASE_SIGNED_URL_EXPIRY: z.number().optional().default(300),
+  ASSEMBLY_APP_ID: z.uuid(),
 })
 
 const currentEnv = process.env.VERCEL_ENV
