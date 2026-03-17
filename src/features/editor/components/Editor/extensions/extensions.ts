@@ -18,7 +18,7 @@ const extensions: Array<Extension | Node> = [
   StarterKitExt,
   Headings,
   CalloutExt,
-  TableExt,
+  ...TableExt,
   PlaceholderExt,
   EmbedExt,
   FileHandlerExt,
