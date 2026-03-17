@@ -21,7 +21,8 @@ export const useBannerMutation = () => {
     onSuccess: (data) => {
       const queryClient = getQueryClient()
       queryClient.setQueryData([MEDIA_QUERY_KEY], data.data)
-      setBannerImages([...bannerImages, data.data])
+      const { id, path, workspaceId } = data.data
+      setBannerImages([...bannerImages, { id, path, workspaceId }])
     },
   })
 

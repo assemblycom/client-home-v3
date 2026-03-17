@@ -31,6 +31,11 @@ export default class SupabaseServerClient {
     return data
   }
 
+  async deleteFile(path: string) {
+    const { error } = await this.client.storage.from(env.SUPABASE_BUCKET_NAME).remove([path])
+    if (error) throw error
+  }
+
   // async uploadToSignedUrl(path: string, token: string, file: File, fileOptions: any) {
   //   const { data, error } = await this.client.storage
   //     .from(env.SUPABASE_BUCKET_NAME)
