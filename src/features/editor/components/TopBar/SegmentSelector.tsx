@@ -31,7 +31,7 @@ export const SegmentSelector = () => {
         className="box-content flex min-h-7 max-w-48 items-center gap-2.5 whitespace-nowrap rounded-sm border border-border-gray px-2 py-0.5 text-body-sm"
       >
         <div className="truncate">
-          <span className="text-text-secondary">Editing: </span>
+          <span className="text-text-secondary">Segment: </span>
           <span>{activeSegment.name}</span>
         </div>
         <Icon icon="ChevronDown" name="arrow-down" height={10} width={10} className="text-text-primary" />
@@ -44,10 +44,11 @@ export const SegmentSelector = () => {
               key={segment.settingId}
               onClick={() => handleSelect(segment.id ?? null)}
               className={cn(
-                'px-3 py-1.5 text-left text-body-sm hover:bg-background-secondary',
+                'flex items-center gap-2 px-3 py-1.5 text-left text-body-sm hover:bg-background-secondary',
                 activeSegmentId === segment.id && 'bg-background-secondary',
               )}
             >
+              <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: segment.color }} />
               {segment.name}
             </button>
           ))}
