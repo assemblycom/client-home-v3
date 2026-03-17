@@ -7,7 +7,7 @@ import { SETTINGS_QUERY_KEY } from '@settings/constants'
 import type { SettingsResponseDto } from '@settings/lib/settings-actions.dto'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import { useQuery } from '@tanstack/react-query'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { ROUTES } from '@/app/routes'
 import { api } from '@/lib/core/axios.instance'
 
@@ -17,6 +17,8 @@ export const useSegmentSettings = () => {
   const setSettings = useSettingsStore((s) => s.setSettings)
   const setInitialSettings = useSettingsStore((s) => s.setInitialSettings)
   const editor = useEditorStore((s) => s.editor)
+  const editorRef = useRef(editor)
+  editorRef.current = editor
 
   const { data } = useQuery({
     queryKey: [SETTINGS_QUERY_KEY, activeSegmentId ?? null],
@@ -38,6 +40,6 @@ export const useSegmentSettings = () => {
 
     setSettings({ ...data })
     setInitialSettings({ ...data })
-    editor?.commands.setContent(data.content)
-  }, [activeSegmentId, data, setSettings, setInitialSettings, editor])
+    editorRef.current?.commands.setContent(data.content)
+  }, [activeSegmentId, data, setSettings, setInitialSettings])
 }
