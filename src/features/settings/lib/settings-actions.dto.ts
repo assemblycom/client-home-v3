@@ -9,6 +9,7 @@ export const SettingsResponseDtoSchema = SettingsSchema.extend({
       z.object({
         id: z.string(),
         path: z.string(),
+        workspaceId: z.string(),
       }),
     )
     .optional(),

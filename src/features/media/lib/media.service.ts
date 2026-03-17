@@ -61,6 +61,21 @@ export default class MediaService extends BaseService {
     return bannerImages
   }
 
+  async deleteBannerImage(mediaId: string) {
+    const mediaRecord = await this.repository.getById(mediaId)
+    if (!mediaRecord) {
+      throw new APIError('Media not found', httpStatus.NOT_FOUND)
+    }
+    if (mediaRecord.workspaceId === '*') {
+      throw new APIError('Cannot delete default banner images', httpStatus.FORBIDDEN)
+    }
+    if (mediaRecord.workspaceId !== this.user.workspaceId) {
+      throw new APIError('Unauthorized', httpStatus.FORBIDDEN)
+    }
+    await this.supabase.deleteFile(mediaRecord.path)
+    await this.repository.deleteMedia(mediaId)
+  }
+
   async createMediaEntry(payload: CreateMediaRequestDto) {
     const media = await this.repository.createMedia(payload, this.user.workspaceId, this.user.internalUserId ?? '')
     return media

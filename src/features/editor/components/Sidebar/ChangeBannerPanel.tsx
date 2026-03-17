@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Banner } from '@/features/banner'
 import { BannerUploadDropzone } from '@/features/banner/components/BannerUploadDropzone'
 import { useBannerMutation } from '@/features/banner/hooks/useBannerMutation'
+import { useDeleteBannerMutation } from '@/features/banner/hooks/useDeleteBannerMutation'
 import { getImageUrl, handleBannerFileUpload } from '@/features/banner/lib/utils'
 
 interface ChangeBannerPanelProps {
@@ -19,6 +20,7 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
   const setBannerImage = useSettingsStore((s) => s.setBannerImageId)
   const updateBannerMutation = useBannerSettingsMutation()
   const createBannerMutation = useBannerMutation()
+  const deleteBannerMutation = useDeleteBannerMutation()
 
   const [selectedImage, setSelectedImage] = useState(bannerImages?.find((item) => item.id === bannerId))
   const [isUploading, setIsUploading] = useState(false)
@@ -52,7 +54,7 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
               onSuccess: (data) => {
                 const uploaded = data.data
                 setBannerImage(uploaded.id)
-                setSelectedImage({ id: uploaded.id, path: uploaded.path })
+                setSelectedImage({ id: uploaded.id, path: uploaded.path, workspaceId: uploaded.workspaceId })
                 updateBannerMutation.mutate({ bannerImageId: uploaded.id, bannerPositionX: 50, bannerPositionY: 50 })
               },
             },
@@ -144,14 +146,24 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
         <div className="flex flex-col items-start gap-y-[12px] self-stretch">
           <span className="text-[12px] text-text-secondary leading-[20px]">Image library</span>
           {bannerImages?.map((banner) => (
-            <button
-              key={banner.id}
-              onClick={() => setSelectedImage(banner)}
-              className="block w-full cursor-pointer border-none bg-transparent p-0"
-              type="button"
-            >
-              <Banner src={getImageUrl(banner.path, token)} isSelected={selectedImage?.id === banner?.id} />
-            </button>
+            <div key={banner.id} className="group/library relative w-full">
+              <button
+                onClick={() => setSelectedImage(banner)}
+                className="block w-full cursor-pointer border-none bg-transparent p-0"
+                type="button"
+              >
+                <Banner src={getImageUrl(banner.path, token)} isSelected={selectedImage?.id === banner?.id} />
+              </button>
+              {banner.workspaceId !== '*' && selectedImage?.id !== banner.id && (
+                <button
+                  type="button"
+                  onClick={() => deleteBannerMutation.mutate(banner.id)}
+                  className="absolute top-2 right-2 z-10 cursor-pointer rounded-[4px] bg-white p-[5px] opacity-0 shadow-sm transition-opacity group-hover/library:opacity-100"
+                >
+                  <Icon icon="Trash" width={16} height={16} />
+                </button>
+              )}
+            </div>
           ))}
         </div>
       </div>

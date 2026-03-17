@@ -4,6 +4,7 @@ export const BannerImagesResponseSchema = z
   .object({
     id: z.string(),
     path: z.string(),
+    workspaceId: z.string(),
   })
   .array()
 
