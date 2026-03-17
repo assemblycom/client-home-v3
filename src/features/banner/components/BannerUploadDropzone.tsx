@@ -42,7 +42,7 @@ export const BannerUploadDropzone = ({ isUploading, onFileSelect, onClickUpload 
     >
       <Icon icon="Upload" width={24} height={24} className="text-gray-300" />
       <span className="font-normal text-sm text-text-primary"> Click to upload or drag and drop </span>
-      <span className="text-text-secondary text-xs">1500 x 1600 recommended size</span>
+      <span className="text-text-secondary text-xs">1200 x 250 recommended size</span>
     </button>
   )
 }

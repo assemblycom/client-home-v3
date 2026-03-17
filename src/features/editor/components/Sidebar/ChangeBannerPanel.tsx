@@ -99,7 +99,7 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
       <div className="flex flex-col gap-y-[4px] border-border-gray border-b px-6 pt-4 pb-6">
         <span className="font-normal text-[20px] text-text-primary leading-6">Change banner</span>
         <span className="text-[13px] text-text-primary leading-[21px]">
-          Recommended image size is 1139 x 231 pixels. Text in images may appear cut off at smallest screen sizes.
+          Recommended image size is 1200 x 250 pixels. Text in images may appear cut off at smallest screen sizes.
         </span>
       </div>
       <div className="flex flex-col items-start gap-y-[32px] overflow-y-auto px-[27px] py-[21px]">
