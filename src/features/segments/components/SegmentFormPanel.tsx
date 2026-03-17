@@ -3,6 +3,7 @@
 import { CustomFieldEntityType, CustomFieldType } from '@assembly/types'
 import { Button, Icon } from '@assembly-js/design-system'
 import { useSidebarStore } from '@editor/stores/sidebarStore'
+import { useViewStore } from '@editor/stores/viewStore'
 import { Select } from '@segments/components/Select'
 import { useSegmentMutations } from '@segments/hooks/useSegmentMutations'
 import { useSegmentStats } from '@segments/hooks/useSegments'
@@ -16,6 +17,7 @@ export const SegmentFormPanel = () => {
   const currentSegment = useSidebarStore((s) => s.currentSegment)
   const setCurrentSegment = useSidebarStore((s) => s.setCurrentSegment)
   const setExpandSegments = useSidebarStore((s) => s.setExpandSegments)
+  const setActiveSegmentId = useViewStore((s) => s.setActiveSegmentId)
 
   const isEditing = !!currentSegment?.id
 
@@ -94,7 +96,15 @@ export const SegmentFormPanel = () => {
     if (isEditing && currentSegment?.id) {
       updateSegment.mutate({ id: currentSegment.id, name, conditions: validConditions }, { onSuccess: handleBack })
     } else {
-      createSegment.mutate({ name, conditions: validConditions }, { onSuccess: handleBack })
+      createSegment.mutate(
+        { name, conditions: validConditions },
+        {
+          onSuccess: (data) => {
+            setActiveSegmentId(data.id)
+            handleBack()
+          },
+        },
+      )
     }
   }
 
