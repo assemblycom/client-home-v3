@@ -343,9 +343,55 @@ export const executeSlashCommand = (action: string, editor: Editor, range?: { fr
       // Insert '{{' to trigger the autofill field suggestion
       editor.chain().focus().insertContent('{{').run()
       break
-    case EditorActions.TABLE:
-      editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
+    case EditorActions.TABLE: {
+      // If cursor is inside a table, insert the new table above the current one
+      const { $from } = editor.state.selection
+      let tablePos: number | null = null
+      for (let depth = $from.depth; depth >= 0; depth--) {
+        if ($from.node(depth).type.name === 'table') {
+          tablePos = $from.before(depth)
+          break
+        }
+      }
+      if (tablePos !== null) {
+        editor
+          .chain()
+          .focus()
+          .insertContentAt(tablePos, {
+            type: 'table',
+            content: [
+              {
+                type: 'tableRow',
+                content: [
+                  { type: 'tableHeader', content: [{ type: 'paragraph' }] },
+                  { type: 'tableHeader', content: [{ type: 'paragraph' }] },
+                  { type: 'tableHeader', content: [{ type: 'paragraph' }] },
+                ],
+              },
+              {
+                type: 'tableRow',
+                content: [
+                  { type: 'tableCell', content: [{ type: 'paragraph' }] },
+                  { type: 'tableCell', content: [{ type: 'paragraph' }] },
+                  { type: 'tableCell', content: [{ type: 'paragraph' }] },
+                ],
+              },
+              {
+                type: 'tableRow',
+                content: [
+                  { type: 'tableCell', content: [{ type: 'paragraph' }] },
+                  { type: 'tableCell', content: [{ type: 'paragraph' }] },
+                  { type: 'tableCell', content: [{ type: 'paragraph' }] },
+                ],
+              },
+            ],
+          })
+          .run()
+      } else {
+        editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
+      }
       break
+    }
     case EditorActions.CALLOUT:
       editor.chain().focus().setCallout().run()
       break
