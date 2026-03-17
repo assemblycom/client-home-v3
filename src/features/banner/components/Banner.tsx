@@ -12,6 +12,8 @@ interface BannerProps {
   editable?: boolean
   positionX?: number
   positionY?: number
+  isRepositioning?: boolean
+  onRepositioningChange?: (repositioning: boolean) => void
   onChangeBanner?: () => void
   onSavePosition?: (positionX: number, positionY: number) => void
 }
@@ -24,12 +26,23 @@ export const Banner = ({
   editable,
   positionX = 50,
   positionY = 50,
+  isRepositioning: externalRepositioning,
+  onRepositioningChange,
   onChangeBanner,
   onSavePosition,
 }: BannerProps) => {
   const [isLoaded, setIsLoaded] = useState(false)
   const [hasError, setHasError] = useState(false)
-  const [isRepositioning, setIsRepositioning] = useState(false)
+  const [internalRepositioning, setInternalRepositioning] = useState(false)
+
+  const isRepositioning = externalRepositioning ?? internalRepositioning
+  const setIsRepositioning = useCallback(
+    (value: boolean) => {
+      onRepositioningChange?.(value)
+      setInternalRepositioning(value)
+    },
+    [onRepositioningChange],
+  )
   const [currentX, setCurrentX] = useState(positionX)
   const [currentY, setCurrentY] = useState(positionY)
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null)

@@ -17,6 +17,8 @@ interface SidebarStore {
   setExpandSegments: (expand: boolean) => void
   mobileSidebarOpen: boolean
   toggleMobileSidebar: () => void
+  bannerRepositioning: boolean
+  setBannerRepositioning: (repositioning: boolean) => void
 }
 
 export const useSidebarStore = create<SidebarStore>()((set) => ({
@@ -28,4 +30,6 @@ export const useSidebarStore = create<SidebarStore>()((set) => ({
   setExpandSegments: (expandSegments: boolean) => set({ expandSegments }),
   mobileSidebarOpen: false,
   toggleMobileSidebar: () => set((state) => ({ mobileSidebarOpen: !state.mobileSidebarOpen })),
+  bannerRepositioning: false,
+  setBannerRepositioning: (bannerRepositioning: boolean) => set({ bannerRepositioning }),
 }))

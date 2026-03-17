@@ -34,6 +34,8 @@ export function EditorWrapper({ className }: EditorWrapperProps) {
   const bannerPositionX = useSettingsStore((store) => store.bannerPositionX) ?? 50
   const bannerPositionY = useSettingsStore((store) => store.bannerPositionY) ?? 50
   const setSidebarView = useSidebarStore((store) => store.setSidebarView)
+  const bannerRepositioning = useSidebarStore((store) => store.bannerRepositioning)
+  const setBannerRepositioning = useSidebarStore((store) => store.setBannerRepositioning)
 
   const { mutate: updateBannerSettings } = useBannerSettingsMutation()
 
@@ -63,6 +65,8 @@ export function EditorWrapper({ className }: EditorWrapperProps) {
               editable
               positionX={bannerPositionX}
               positionY={bannerPositionY}
+              isRepositioning={bannerRepositioning}
+              onRepositioningChange={setBannerRepositioning}
               onChangeBanner={() => setSidebarView('change-banner')}
               onSavePosition={(positionX, positionY) =>
                 updateBannerSettings({ bannerPositionX: positionX, bannerPositionY: positionY })
