@@ -4,17 +4,11 @@ import pRetry from 'p-retry'
 import type { StatusableError } from '@/errors/base-server.error'
 import logger from '@/lib/logger'
 
-interface WithRetryOptions {
-  onForbidden?: () => Promise<void>
-}
-
 export const withRetry = async <Args extends unknown[], R>(
   fn: (...args: Args) => Promise<R>,
   args: Args,
-  options?: WithRetryOptions,
 ): Promise<R> => {
   let isEventProcessorRegistered = false
-  let hasRefreshedToken = false
 
   return await pRetry(
     async () => {
@@ -42,19 +36,8 @@ export const withRetry = async <Args extends unknown[], R>(
       maxTimeout: 5000,
       factor: 2, // Exponential factor for timeout delay. Tweak this if issues still persist
 
-      onFailedAttempt: async (error: { error: unknown; attemptNumber: number; retriesLeft: number }) => {
-        const status = (error.error as StatusableError).status
-
-        if (status === 403 && !hasRefreshedToken && options?.onForbidden) {
-          logger.warn(
-            `withRetry | Attempt ${error.attemptNumber} failed with 403. Refreshing token before retry. ${error.retriesLeft} retries left.`,
-          )
-          await options.onForbidden()
-          hasRefreshedToken = true
-          return
-        }
-
-        if (status !== 429 && status !== 500) {
+      onFailedAttempt: (error: { error: unknown; attemptNumber: number; retriesLeft: number }) => {
+        if ((error.error as StatusableError).status !== 429 && (error.error as StatusableError).status !== 500) {
           return
         }
         logger.warn(
@@ -64,7 +47,8 @@ export const withRetry = async <Args extends unknown[], R>(
       },
       shouldRetry: (error: unknown) => {
         const err = error as StatusableError
-        return err.status === 429 || err.status === 500 || (err.status === 403 && !hasRefreshedToken)
+        // Retry only if statusCode indicates a ratelimit or Internal Server Error
+        return err.status === 429 || err.status === 500
       },
     },
   )
