@@ -65,7 +65,7 @@ export const SegmentCardItem = ({ data, onEdit, onDelete, isLoading }: Props) =>
                 className="flex w-full items-center gap-3 px-4 py-1.5 text-left text-sm text-text-primary hover:bg-gray-50"
                 onClick={handleEdit}
               >
-                <Icon icon="Edit" width={16} height={16} />
+                <Icon icon="Edit" width={13} height={13} />
                 Update segment
               </button>
 
@@ -79,7 +79,7 @@ export const SegmentCardItem = ({ data, onEdit, onDelete, isLoading }: Props) =>
                   setMenuOpen(false)
                 }}
               >
-                <Icon icon="Trash" width={16} height={16} />
+                <Icon icon="Trash" width={13} height={13} />
                 Delete segment
               </button>
             </div>
