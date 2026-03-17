@@ -66,7 +66,7 @@ export const SegmentCardItem = ({ data, onEdit, onDelete, isLoading }: Props) =>
                 onClick={handleEdit}
               >
                 <Icon icon="Edit" width={13} height={13} />
-                Update segment
+                Edit segment
               </button>
 
               <div className="my-0.5 border-gray-100 border-t" />
