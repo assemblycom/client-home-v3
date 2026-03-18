@@ -39,13 +39,13 @@ export const EmbedBubbleInput = ({ editor, showEmbedInput, setShowEmbedInput }: 
   useEffect(() => {
     if (!showEmbedInput) return
 
-    // Wait until tippy has actually mounted/moved the node into the popper
-    const raf = requestAnimationFrame(() => {
+    // Wait until tippy has actually mounted/moved the node into the popper.
+    // A short timeout is more reliable than rAF for Tippy popups.
+    const timer = setTimeout(() => {
       urlInputRef.current?.focus()
-      urlInputRef.current?.select()
-    })
+    }, 50)
 
-    return () => cancelAnimationFrame(raf)
+    return () => clearTimeout(timer)
   }, [showEmbedInput])
 
   return (

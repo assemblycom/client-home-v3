@@ -48,5 +48,16 @@ export const fixEmbedUrl = (url: string) => {
       src: z.url(),
     })
     .safeParse(linkToIframe(url, { returnObject: true }))
-  return urlResultObject.success ? urlResultObject.data.src : url
+
+  if (!urlResultObject.success) return url
+
+  // Only use the linkToIframe src when it actually differs in a meaningful way
+  // (e.g. YouTube watch → embed). For unrecognized services, linkToIframe may
+  // mangle the URL (e.g. cal.com → app.cal.com/embed/…), so fall back to the
+  // original URL when the transformed host doesn't match the original.
+  const originalHost = new URL(url).host
+  const transformedHost = new URL(urlResultObject.data.src).host
+  if (originalHost !== transformedHost) return url
+
+  return urlResultObject.data.src
 }
