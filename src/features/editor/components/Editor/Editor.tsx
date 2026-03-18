@@ -14,11 +14,10 @@ import { useContext, useEffect } from 'react'
 import { useShallow } from 'zustand/shallow'
 
 interface EditorProps {
-  token: string
   content: string
 }
 
-export const Editor = ({ token, content }: EditorProps) => {
+export const Editor = ({ content }: EditorProps) => {
   const settingsStoreApi = useContext(SettingsContext)
   const { setEditor, destroyEditor, showEmbedInput, setShowEmbedInput } = useEditorStore(
     useShallow((s) => ({
@@ -35,9 +34,6 @@ export const Editor = ({ token, content }: EditorProps) => {
     content,
     immediatelyRender: false, // Avoid SSR & hydration issues
     editorProps: { attributes: { class: 'text-custom-xs' } },
-    onCreate({ editor }) {
-      editor.storage.token.token = token
-    },
     onUpdate: ({ editor }) => {
       settingsStoreApi?.getState().setSettings({
         content: editor.getHTML(),

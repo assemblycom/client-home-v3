@@ -1,6 +1,5 @@
 'use client'
 
-import { useAuthStore } from '@auth/providers/auth.provider'
 import { Editor } from '@editor/components/Editor'
 import { Heading } from '@editor/components/Heading'
 import { Preview } from '@editor/components/Preview'
@@ -25,7 +24,6 @@ interface EditorWrapperProps {
 
 export function EditorWrapper({ className }: EditorWrapperProps) {
   const viewMode = useViewStore((store) => store.viewMode)
-  const token = useAuthStore((store) => store.token)
   const content = useSettingsStore((store) => store.content)
   const backgroundColor = useSettingsStore((store) => store.backgroundColor)
   const bannerImages = useSettingsStore((store) => store.bannerImages)
@@ -62,7 +60,7 @@ export function EditorWrapper({ className }: EditorWrapperProps) {
           </div>
           {bannerUrl ? (
             <Banner
-              src={getImageUrl(bannerUrl.path, token)}
+              src={getImageUrl(bannerUrl.path)}
               alt="Workspace Banner"
               editable
               positionX={bannerPositionX}
@@ -79,7 +77,7 @@ export function EditorWrapper({ className }: EditorWrapperProps) {
             />
           ) : null}
           <ActionsCard />
-          <Editor token={token} content={content} />
+          <Editor content={content} />
         </div>
       </Activity>
 
@@ -87,9 +85,8 @@ export function EditorWrapper({ className }: EditorWrapperProps) {
         <div className="h-full min-[860px]:px-6 min-[860px]:pt-6.5 min-[860px]:pb-6.5">
           <Preview
             content={content}
-            token={token}
             backgroundColor={backgroundColor}
-            bannerUrl={getImageUrl(bannerUrl?.path, token)}
+            bannerUrl={getImageUrl(bannerUrl?.path)}
             bannerPositionX={bannerPositionX}
             bannerPositionY={bannerPositionY}
           />

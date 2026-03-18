@@ -1,4 +1,3 @@
-import { useAuthStore } from '@auth/providers/auth.provider'
 import { useEditorStore } from '@editor/stores/editorStore'
 import { useViewStore } from '@editor/stores/viewStore'
 import { SETTINGS_QUERY_KEY } from '@settings/constants'
@@ -11,7 +10,6 @@ import { api } from '@/lib/core/axios.instance'
 import { getQueryClient } from '@/lib/core/query.utils'
 
 export const useSettingsMutation = () => {
-  const token = useAuthStore((s) => s.token)
   const activeSegmentId = useViewStore((s) => s.activeSegmentId)
 
   const editor = useEditorStore((s) => s.editor)
@@ -22,7 +20,7 @@ export const useSettingsMutation = () => {
 
   const updateSettingsMutation = useMutation({
     mutationFn: (settings: SettingsUpdateDto) => {
-      const params = new URLSearchParams({ token: token ?? '' })
+      const params = new URLSearchParams()
       if (activeSegmentId) params.set('segmentId', activeSegmentId)
 
       return api

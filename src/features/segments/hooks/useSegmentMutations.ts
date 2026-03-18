@@ -1,13 +1,11 @@
 'use client'
 
-import { useAuthStore } from '@auth/providers/auth.provider'
 import { SEGMENT_STATS_QUERY_KEY } from '@segments/hooks/useSegments'
 import type { SegmentCreateDto } from '@segments/lib/segments.dto'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/core/axios.instance'
 
 export const useSegmentMutations = () => {
-  const token = useAuthStore((s) => s.token)
   const queryClient = useQueryClient()
 
   const invalidateSegments = async () => {
@@ -16,7 +14,7 @@ export const useSegmentMutations = () => {
 
   const createSegment = useMutation({
     mutationFn: async (payload: SegmentCreateDto) => {
-      const res = await api.post(`/api/segments?token=${token}`, payload)
+      const res = await api.post('/api/segments', payload)
       return res.data.data
     },
     onSuccess: invalidateSegments,
@@ -31,7 +29,7 @@ export const useSegmentMutations = () => {
       name?: string
       conditions?: SegmentCreateDto['conditions']
     }) => {
-      const res = await api.patch(`/api/segments/${id}?token=${token}`, payload)
+      const res = await api.patch(`/api/segments/${id}`, payload)
       return res.data.data
     },
     onSuccess: invalidateSegments,
@@ -39,7 +37,7 @@ export const useSegmentMutations = () => {
 
   const deleteSegment = useMutation({
     mutationFn: async (id: string) => {
-      const res = await api.delete(`/api/segments/${id}?token=${token}`)
+      const res = await api.delete(`/api/segments/${id}`)
       return res.data.data
     },
     onSuccess: invalidateSegments,
@@ -47,7 +45,7 @@ export const useSegmentMutations = () => {
 
   const deleteAllSegments = useMutation({
     mutationFn: async () => {
-      const res = await api.delete(`/api/segments?token=${token}`)
+      const res = await api.delete('/api/segments')
       return res.data.data
     },
     onSuccess: invalidateSegments,

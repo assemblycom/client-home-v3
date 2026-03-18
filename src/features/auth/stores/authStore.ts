@@ -1,20 +1,18 @@
-import type { User } from '@auth/lib/user.entity'
+import type { ClientUser } from '@auth/lib/user.entity'
 import { createStore, type StoreApi } from 'zustand'
 
-interface AuthState extends User {}
+interface AuthState extends ClientUser {}
 
 interface AuthAction {
-  setUser: (user: User) => void
-  setToken: (token: string) => void
+  setUser: (user: ClientUser) => void
 }
 
 export type AuthStore = AuthState & AuthAction
 
-export const createAuthStore = (user: User) =>
+export const createAuthStore = (user: ClientUser) =>
   createStore<AuthStore>()((set) => ({
     ...user,
-    setUser: (user: User) => set(() => user),
-    setToken: (token: string) => set({ token }),
+    setUser: (user: ClientUser) => set(() => user),
   }))
 
 export type AuthStoreApi = StoreApi<AuthStore>

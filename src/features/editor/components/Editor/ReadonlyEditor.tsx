@@ -9,12 +9,10 @@ import { useEffect } from 'react'
 import { useShallow } from 'zustand/shallow'
 
 interface ReadonlyEditorProps {
-  token: string
   content: string
-  customFields?: Record<string, string> // Not needed right now
 }
 
-export const ReadonlyEditor = ({ token, content }: ReadonlyEditorProps) => {
+export const ReadonlyEditor = ({ content }: ReadonlyEditorProps) => {
   const { setEditor, destroyEditor } = useEditorStore(
     useShallow((s) => ({
       setEditor: s.setEditor,
@@ -27,9 +25,6 @@ export const ReadonlyEditor = ({ token, content }: ReadonlyEditorProps) => {
     content,
     editable: false,
     immediatelyRender: false, // Avoid SSR & hydration issues
-    onCreate({ editor }) {
-      editor.storage.token.token = token
-    },
   })
 
   useEffect(() => {

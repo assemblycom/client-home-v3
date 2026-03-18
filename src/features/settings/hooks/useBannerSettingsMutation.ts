@@ -1,4 +1,3 @@
-import { useAuthStore } from '@auth/providers/auth.provider'
 import { useViewStore } from '@editor/stores/viewStore'
 import type { SettingsResponseDto } from '@settings/lib/settings-actions.dto'
 import { useSettingsStore } from '@settings/providers/settings.provider'
@@ -9,14 +8,13 @@ import { api } from '@/lib/core/axios.instance'
 type BannerSettingsPayload = Partial<Pick<SettingsResponseDto, 'bannerImageId' | 'bannerPositionX' | 'bannerPositionY'>>
 
 export const useBannerSettingsMutation = () => {
-  const token = useAuthStore((s) => s.token)
   const activeSegmentId = useViewStore((s) => s.activeSegmentId)
   const setSettings = useSettingsStore((s) => s.setSettings)
   const setInitialSettings = useSettingsStore((s) => s.setInitialSettings)
 
   return useMutation({
     mutationFn: (payload: BannerSettingsPayload) => {
-      const params = new URLSearchParams({ token: token ?? '' })
+      const params = new URLSearchParams()
       if (activeSegmentId) params.set('segmentId', activeSegmentId)
 
       return api

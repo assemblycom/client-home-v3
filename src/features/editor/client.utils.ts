@@ -1,5 +1,6 @@
 import 'client-only'
 
+import { AssemblyBridge } from '@assembly-js/app-bridge'
 import { MediaFolders } from '@media/constants'
 import type { MediaSignedUrlResponseDto } from '@media/media.dto'
 import type { Editor } from '@tiptap/core'
@@ -7,11 +8,10 @@ import { api } from '@/lib/core/axios.instance'
 
 export const uploadFileToSupabase = async (
   file: File,
-  token: string,
   mediaFolder: MediaFolders = MediaFolders.EDITOR,
 ): Promise<{ path: string }> => {
   const signedUrlResponse = await api.post<{ data: MediaSignedUrlResponseDto }>(
-    `/api/media?token=${token}&mediafolder=${mediaFolder}`,
+    `/api/media?mediafolder=${mediaFolder}`,
     {
       fileName: file.name,
     },
@@ -63,19 +63,19 @@ export const triggerImageUpload = (editor: Editor) => {
         .focus()
         .run()
 
-      const token = editor.storage.token.token
+      const token = AssemblyBridge.sessionToken.getCurrent()?.token
       if (!token) {
         console.error('Could not upload to supabase due to missing token')
         return
       }
 
-      const { path: rawPath } = await uploadFileToSupabase(file, token)
+      const { path: rawPath } = await uploadFileToSupabase(file)
       const path = rawPath.startsWith('media/') ? rawPath.substring(6) : rawPath
       const proxyUrl = `/api/media/image?token=${token}&filePath=${path}`
 
       replaceEditorImageSrcByUploadId(editor, randId, proxyUrl)
 
-      api.post(`/api/media/upload?token=${token}`, {
+      api.post('/api/media/upload', {
         path,
         name: file.name,
         type: file.type,

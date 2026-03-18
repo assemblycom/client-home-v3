@@ -1,12 +1,14 @@
+import { AssemblyBridge } from '@assembly-js/app-bridge'
 import { uploadFileToSupabase } from '@editor/client.utils'
 import { MediaFolders } from '@media/constants'
 
-export const getImageUrl = (path: string | undefined, token: string) => {
+export const getImageUrl = (path: string | undefined) => {
+  const token = AssemblyBridge.sessionToken.getCurrent()?.token ?? ''
   return `/api/media/image?token=${token}&filePath=${path}`
 }
 
-export const handleBannerFileUpload = async (file: File, token: string) => {
-  const { path } = await uploadFileToSupabase(file, token, MediaFolders.BANNER)
+export const handleBannerFileUpload = async (file: File) => {
+  const { path } = await uploadFileToSupabase(file, MediaFolders.BANNER)
 
   return {
     path,
@@ -16,9 +18,9 @@ export const handleBannerFileUpload = async (file: File, token: string) => {
   }
 }
 
-export const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>, token: string) => {
+export const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
   const file = e.target.files?.[0]
   if (!file) return
 
-  return await handleBannerFileUpload(file, token)
+  return await handleBannerFileUpload(file)
 }
