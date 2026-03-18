@@ -35,7 +35,7 @@ export const Banner = ({
   const [hasError, setHasError] = useState(false)
   const [internalRepositioning, setInternalRepositioning] = useState(false)
 
-  const isRepositioning = externalRepositioning ?? internalRepositioning
+  const isRepositioning = externalRepositioning !== undefined ? externalRepositioning : internalRepositioning
   const setIsRepositioning = useCallback(
     (value: boolean) => {
       onRepositioningChange?.(value)
