@@ -19,7 +19,7 @@ export const AutofillFieldNodeView = ({ node, editor }: NodeViewProps) => {
   const displayContent = getFieldDisplayContent(value, workspace?.labels)
 
   return (
-    <NodeViewWrapper as="span" className="inline-flex align-baseline">
+    <NodeViewWrapper as="span" className="mx-0.5 inline-flex align-baseline">
       <HandleBarTemplate
         template={value as TemplateString}
         displayContent={displayContent}
