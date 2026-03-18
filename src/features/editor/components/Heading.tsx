@@ -2,7 +2,7 @@
 
 import { getFieldDisplayContent } from '@editor/components/Editor/extensions/AutofillField.ext/autofill-fields.config'
 import { useViewStore, ViewMode } from '@editor/stores/viewStore'
-import { useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import type { PropsWithClassname } from '@/app/types'
 import { HandleBarTemplate } from '@/features/handlebar-template/components/handle-bar-template'
 import { getTimeOfDay } from '@/utils/date'
@@ -15,7 +15,11 @@ interface HeadingProps extends PropsWithClassname {
 }
 
 export const Heading = ({ readonly, className }: HeadingProps) => {
-  const greeting = useMemo(() => getTimeOfDay(), [])
+  const [greeting, setGreeting] = useState(() => getTimeOfDay())
+
+  useEffect(() => {
+    setGreeting(getTimeOfDay())
+  }, [])
 
   const viewMode = useViewStore((s) => s.viewMode)
   const workspace = useViewStore((s) => s.workspace)
