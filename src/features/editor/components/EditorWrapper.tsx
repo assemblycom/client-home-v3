@@ -36,6 +36,8 @@ export function EditorWrapper({ className }: EditorWrapperProps) {
   const setSidebarView = useSidebarStore((store) => store.setSidebarView)
   const bannerRepositioning = useSidebarStore((store) => store.bannerRepositioning)
   const setBannerRepositioning = useSidebarStore((store) => store.setBannerRepositioning)
+  const mobileSidebarOpen = useSidebarStore((store) => store.mobileSidebarOpen)
+  const toggleMobileSidebar = useSidebarStore((store) => store.toggleMobileSidebar)
 
   const { mutate: updateBannerSettings } = useBannerSettingsMutation()
 
@@ -67,7 +69,10 @@ export function EditorWrapper({ className }: EditorWrapperProps) {
               positionY={bannerPositionY}
               isRepositioning={bannerRepositioning}
               onRepositioningChange={setBannerRepositioning}
-              onChangeBanner={() => setSidebarView('change-banner')}
+              onChangeBanner={() => {
+                setSidebarView('change-banner')
+                if (!mobileSidebarOpen && window.innerWidth < 860) toggleMobileSidebar()
+              }}
               onSavePosition={(positionX, positionY) =>
                 updateBannerSettings({ bannerPositionX: positionX, bannerPositionY: positionY })
               }
