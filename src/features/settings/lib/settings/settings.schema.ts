@@ -1,5 +1,6 @@
 import { media } from '@media/lib/media.schema'
-import { index, integer, pgTable, text, uuid, varchar } from 'drizzle-orm/pg-core'
+import { segments } from '@segments/lib/segments/segments.schema'
+import { index, integer, pgTable, text, unique, uuid, varchar } from 'drizzle-orm/pg-core'
 import { createInsertSchema } from 'drizzle-zod'
 import type z from 'zod'
 import { id, timestamps, workspaceId } from '@/db/helpers'
@@ -9,6 +10,9 @@ export const settings = pgTable(
   {
     id,
     workspaceId,
+
+    // Optional segment association. Null means default (non-segmented) settings.
+    segmentId: uuid().references(() => segments.id, { onDelete: 'cascade' }),
 
     // Subheading text section
     subheading: text().notNull().default("Here's what needs your attention today"),
@@ -31,7 +35,10 @@ export const settings = pgTable(
 
     ...timestamps,
   },
-  (t) => [index('idx_settings__workspace_id').on(t.workspaceId)],
+  (t) => [
+    index('idx_settings__workspace_id').on(t.workspaceId),
+    unique('uq_settings__workspace_id_segment_id').on(t.workspaceId, t.segmentId),
+  ],
 )
 
 export const SettingsInsertPayloadSchema = createInsertSchema(settings)

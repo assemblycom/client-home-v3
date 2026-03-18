@@ -1,5 +1,5 @@
+import type { UserCompanySelectorProps } from '@assembly-js/design-system'
 import { useUsersStore } from '@users/stores/usersStore'
-import type { UserCompanySelectorProps } from 'copilot-design-system'
 import { useMemo } from 'react'
 
 export const useSelector = () => {

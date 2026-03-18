@@ -6,6 +6,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import z from 'zod'
 import { authorizedRoutes } from '@/app/routes'
 import { AuthenticatedAPIHeaders } from '@/app/types'
+import env from '@/config/env'
 import { NotFoundError } from '@/errors/not-found.error'
 import { UnauthorizedError } from '@/errors/unauthorized.error'
 import type { Token } from '@/lib/assembly/types'
@@ -19,6 +20,7 @@ import type { Token } from '@/lib/assembly/types'
  * @throws AssemblyConnectionError when unable to connect to Assembly API
  */
 const authenticateToken = async (token?: unknown): Promise<Token> => {
+  console.info('Authorizing', token, 'with API key', env.ASSEMBLY_API_KEY)
   const tokenParsed = z.string().min(1).safeParse(token)
   if (!tokenParsed.success) {
     throw new AssemblyNoTokenError()

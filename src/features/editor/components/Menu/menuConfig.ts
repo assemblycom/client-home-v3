@@ -1,7 +1,7 @@
+import type { ActionConfig, ActionData } from '@assembly-js/design-system'
 import { triggerImageUpload } from '@editor/client.utils'
 import { useEditorStore } from '@editor/stores/editorStore'
 import type { Editor } from '@tiptap/core'
-import type { ActionConfig, ActionData } from 'copilot-design-system'
 
 export type { ActionConfig, ActionData }
 
@@ -10,6 +10,10 @@ export enum EditorActions {
   HEADING2 = 'heading2',
   HEADING3 = 'heading3',
   TEXT = 'text',
+  TEXT_STYLE_DROPDOWN = 'textStyleDropdown',
+  LIST_FORMATTING_DROPDOWN = 'listFormattingDropdown',
+  CONTENT_BLOCKS_DROPDOWN = 'contentBlocksDropdown',
+  INSERT_ELEMENTS_DROPDOWN = 'insertElementsDropdown',
   BOLD = 'bold',
   ITALIC = 'italic',
   UNDERLINE = 'underline',
@@ -25,16 +29,31 @@ export enum EditorActions {
 
 export enum MenuMode {
   TOOLBAR = 'toolbar',
+  MOBILE_TOOLBAR = 'mobile-toolbar',
   SLASH_MENU = 'slash-menu',
 }
 
 export const editorActionConfig = (mode: MenuMode): ActionConfig[] => {
-  const allGroups: ActionConfig[] = [
-    {
-      id: 'text-styles',
-      type: 'group',
-      label: 'Text styles',
-      actions: [
+  const isToolbar = mode === MenuMode.TOOLBAR || mode === MenuMode.MOBILE_TOOLBAR
+  const isMobileToolbar = mode === MenuMode.MOBILE_TOOLBAR
+
+  const textStyleActions: ActionConfig[] = isToolbar
+    ? [
+        {
+          id: EditorActions.TEXT_STYLE_DROPDOWN,
+          type: 'dropdown', // value 'dropdown' to use dropdown in toolbar component
+          label: 'Text',
+          icon: 'Text',
+          action: EditorActions.TEXT_STYLE_DROPDOWN,
+          options: [
+            { value: EditorActions.TEXT, label: 'Text', icon: 'Text' },
+            { value: EditorActions.HEADING1, label: 'Heading 1', icon: 'H1' },
+            { value: EditorActions.HEADING2, label: 'Heading 2', icon: 'H2' },
+            { value: EditorActions.HEADING3, label: 'Heading 3', icon: 'H3' },
+          ],
+        },
+      ]
+    : [
         {
           type: 'action',
           id: EditorActions.HEADING1,
@@ -56,7 +75,14 @@ export const editorActionConfig = (mode: MenuMode): ActionConfig[] => {
           icon: 'H3',
           label: 'Heading 3',
         },
-      ],
+      ]
+
+  const allGroups: ActionConfig[] = [
+    {
+      id: 'text-styles',
+      type: 'group',
+      label: 'Text styles',
+      actions: textStyleActions,
     },
     {
       id: 'text-controls',
@@ -90,78 +116,122 @@ export const editorActionConfig = (mode: MenuMode): ActionConfig[] => {
       id: 'list-formatting',
       type: 'group',
       label: 'List formatting',
-      actions: [
-        {
-          type: 'action',
-          id: EditorActions.UNORDERED_LIST,
-          action: EditorActions.UNORDERED_LIST,
-          icon: 'UnorderedList',
-          label: 'Bullet List',
-        },
-        {
-          type: 'action',
-          id: EditorActions.ORDERED_LIST,
-          action: EditorActions.ORDERED_LIST,
-          icon: 'NumberedList',
-          label: 'Numbered List',
-        },
-      ],
+      actions: isMobileToolbar
+        ? [
+            {
+              id: EditorActions.LIST_FORMATTING_DROPDOWN,
+              type: 'dropdown',
+              label: 'Lists',
+              icon: 'UnorderedList',
+              action: EditorActions.LIST_FORMATTING_DROPDOWN,
+              options: [
+                { value: EditorActions.UNORDERED_LIST, label: 'Bullet List', icon: 'UnorderedList' },
+                { value: EditorActions.ORDERED_LIST, label: 'Numbered List', icon: 'NumberedList' },
+              ],
+            },
+          ]
+        : [
+            {
+              type: 'action',
+              id: EditorActions.UNORDERED_LIST,
+              action: EditorActions.UNORDERED_LIST,
+              icon: 'UnorderedList',
+              label: 'Bullet List',
+            },
+            {
+              type: 'action',
+              id: EditorActions.ORDERED_LIST,
+              action: EditorActions.ORDERED_LIST,
+              icon: 'NumberedList',
+              label: 'Numbered List',
+            },
+          ],
     },
     {
       id: 'content-blocks',
       type: 'group',
       label: 'Content blocks',
-      actions: [
-        {
-          type: 'action',
-          id: EditorActions.AUTOFILL,
-          action: EditorActions.AUTOFILL,
-          icon: 'BracketsCurly',
-          label: 'Autofill fields',
-        },
-        {
-          type: 'action',
-          id: EditorActions.TABLE,
-          action: EditorActions.TABLE,
-          icon: 'Table',
-          label: 'Table',
-        },
-        {
-          type: 'action',
-          id: EditorActions.CALLOUT,
-          action: EditorActions.CALLOUT,
-          icon: 'Callout',
-          label: 'Callout',
-        },
-        {
-          type: 'action',
-          id: EditorActions.DIVIDER,
-          action: EditorActions.DIVIDER,
-          icon: 'Dash',
-          label: 'Divider',
-        },
-      ],
+      actions: isMobileToolbar
+        ? [
+            {
+              id: EditorActions.CONTENT_BLOCKS_DROPDOWN,
+              type: 'dropdown',
+              label: 'Blocks',
+              icon: 'Table',
+              action: EditorActions.CONTENT_BLOCKS_DROPDOWN,
+              options: [
+                { value: EditorActions.TABLE, label: 'Table', icon: 'Table' },
+                { value: EditorActions.AUTOFILL, label: 'Autofill fields', icon: 'BracketsCurly' },
+                { value: EditorActions.CALLOUT, label: 'Callout', icon: 'Callout' },
+                { value: EditorActions.DIVIDER, label: 'Divider', icon: 'Dash' },
+              ],
+            },
+          ]
+        : [
+            {
+              type: 'action',
+              id: EditorActions.AUTOFILL,
+              action: EditorActions.AUTOFILL,
+              icon: 'BracketsCurly',
+              label: 'Autofill fields',
+            },
+            {
+              type: 'action',
+              id: EditorActions.TABLE,
+              action: EditorActions.TABLE,
+              icon: 'Table',
+              label: 'Table',
+            },
+            {
+              type: 'action',
+              id: EditorActions.CALLOUT,
+              action: EditorActions.CALLOUT,
+              icon: 'Callout',
+              label: 'Callout',
+            },
+            {
+              type: 'action',
+              id: EditorActions.DIVIDER,
+              action: EditorActions.DIVIDER,
+              icon: 'Dash',
+              label: 'Divider',
+            },
+          ],
     },
     {
       id: 'insert-elements',
       type: 'group',
       label: 'Insert Elements',
-      actions: [
-        {
-          type: 'action',
-          id: EditorActions.EMBED,
-          action: EditorActions.EMBED,
-          icon: 'Code',
-          label: 'Embed',
-        },
-        {
-          type: 'action',
-          id: EditorActions.ATTACHMENT,
-          action: EditorActions.ATTACHMENT,
-          icon: 'Attachment',
-          label: 'Upload',
-        },
-      ],
+      actions: isMobileToolbar
+        ? [
+            {
+              id: EditorActions.INSERT_ELEMENTS_DROPDOWN,
+              type: 'dropdown',
+              label: 'Insert',
+              icon: 'Attachment',
+              action: EditorActions.INSERT_ELEMENTS_DROPDOWN,
+              options: [
+                { value: EditorActions.ATTACHMENT, label: 'Upload', icon: 'Attachment' },
+                { value: EditorActions.EMBED, label: 'Embed', icon: 'Code' },
+              ],
+            },
+          ]
+        : [
+            {
+              type: 'action',
+              id: EditorActions.EMBED,
+              action: EditorActions.EMBED,
+              icon: 'Code',
+              label: 'Embed',
+            },
+            {
+              type: 'action',
+              id: EditorActions.ATTACHMENT,
+              action: EditorActions.ATTACHMENT,
+              icon: 'Attachment',
+              label: 'Upload',
+            },
+          ],
     },
   ]
 
@@ -173,7 +243,7 @@ export const editorActionConfig = (mode: MenuMode): ActionConfig[] => {
 }
 
 export const handleToolbarAction = (
-  { action }: ActionData,
+  actionData: ActionData,
   editorInstance?: Editor,
   range?: { from: number; to: number },
 ) => {
@@ -182,6 +252,19 @@ export const handleToolbarAction = (
     console.warn('Editor not available')
     return
   }
+
+  // For dropdown actions, use the selected option value as the action
+  const dropdownActions: string[] = [
+    EditorActions.TEXT_STYLE_DROPDOWN,
+    EditorActions.LIST_FORMATTING_DROPDOWN,
+    EditorActions.CONTENT_BLOCKS_DROPDOWN,
+    EditorActions.INSERT_ELEMENTS_DROPDOWN,
+  ]
+  const action =
+    dropdownActions.includes(actionData.action) && actionData.metadata?.value
+      ? String(actionData.metadata.value)
+      : actionData.action
+
   executeSlashCommand(action, editor, range)
 }
 

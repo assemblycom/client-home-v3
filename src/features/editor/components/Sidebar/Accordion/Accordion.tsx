@@ -1,6 +1,6 @@
 'use client'
 
-import { Icon } from 'copilot-design-system'
+import { Icon } from '@assembly-js/design-system'
 import type { ReactNode } from 'react'
 import type { PropsWithClassname } from '@/app/types'
 import { useAccordion } from '@/features/editor/components/Sidebar/Accordion/useAccordion'
@@ -9,10 +9,11 @@ import { cn } from '@/utils/tailwind'
 export type AccordionProps = PropsWithClassname & {
   title: string
   content: ReactNode
+  defaultOpen?: boolean
 }
 
-export const Accordion = ({ title, content, className }: AccordionProps) => {
-  const { isOpen, setIsOpen } = useAccordion()
+export const Accordion = ({ title, content, className, defaultOpen = false }: AccordionProps) => {
+  const { isOpen, setIsOpen } = useAccordion(defaultOpen)
   return (
     <div className={cn('w-full', className)}>
       <button
@@ -21,12 +22,7 @@ export const Accordion = ({ title, content, className }: AccordionProps) => {
         className="flex w-full items-center justify-between py-3.5 text-left focus:outline-none"
       >
         <span className="font-medium text-gray-900 leading-6">{title}</span>
-        <Icon
-          icon="ChevronRight"
-          width={16}
-          height={16}
-          className={cn('m-1.5 text-text-primary transition-all duration-100 ease-in-out', isOpen ? 'rotate-90' : '')}
-        />
+        <Icon icon="ChevronRight" width={16} height={16} className="m-1.5 text-text-primary" />
       </button>
       <div
         className={cn(

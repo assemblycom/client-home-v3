@@ -49,3 +49,6 @@ ngrok.yml
 
 /.vscode/
 
+# Migration playwright tests report
+migration_report*
+validation-script-*

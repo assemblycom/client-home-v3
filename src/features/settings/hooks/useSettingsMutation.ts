@@ -1,5 +1,6 @@
 import { useAuthStore } from '@auth/providers/auth.provider'
 import { useEditorStore } from '@editor/stores/editorStore'
+import { useViewStore } from '@editor/stores/viewStore'
 import { SETTINGS_QUERY_KEY } from '@settings/constants'
 import type { SettingsResponseDto, SettingsUpdateDto } from '@settings/lib/settings-actions.dto'
 import { useSettingsStore } from '@settings/providers/settings.provider'
@@ -11,6 +12,7 @@ import { getQueryClient } from '@/lib/core/query.utils'
 
 export const useSettingsMutation = () => {
   const token = useAuthStore((s) => s.token)
+  const activeSegmentId = useViewStore((s) => s.activeSegmentId)
 
   const editor = useEditorStore((s) => s.editor)
   const setSettings = useSettingsStore((s) => s.setSettings)
@@ -20,8 +22,11 @@ export const useSettingsMutation = () => {
 
   const updateSettingsMutation = useMutation({
     mutationFn: (settings: SettingsUpdateDto) => {
+      const params = new URLSearchParams({ token: token ?? '' })
+      if (activeSegmentId) params.set('segmentId', activeSegmentId)
+
       return api
-        .patch<{ data: SettingsResponseDto }>(`${ROUTES.api.settings}/?token=${token}`, settings)
+        .patch<{ data: SettingsResponseDto }>(`${ROUTES.api.settings}/?${params}`, settings)
         .then((res) => res.data)
     },
     onMutate: (variables) => {
@@ -33,7 +38,7 @@ export const useSettingsMutation = () => {
       if (context?.id !== mutationCounter.current) return
 
       const queryClient = getQueryClient()
-      queryClient.setQueryData([SETTINGS_QUERY_KEY], data.data)
+      queryClient.setQueryData([SETTINGS_QUERY_KEY, activeSegmentId ?? null], data.data)
 
       editor?.commands.setContent(data.data.content)
       setSettings({ ...data.data })

@@ -1,8 +1,8 @@
 'use client'
 
+import { Callout, Icon } from '@assembly-js/design-system'
 import { useViewStore } from '@editor/stores/viewStore'
 import { useUsersStore } from '@users/stores/usersStore'
-import { Callout, Icon } from 'copilot-design-system'
 import { PreviewProperty } from './PreviewProperty'
 
 export const PreviewSidebar = () => {

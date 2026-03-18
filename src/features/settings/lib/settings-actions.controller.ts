@@ -1,23 +1,17 @@
-import AssemblyClient from '@assembly/assembly-client'
 import { authenticateHeaders } from '@auth/lib/authenticate'
-import MediaDrizzleRepository from '@media/lib/media.repository'
-import ActionsDrizzleRepository from '@settings/lib/actions/actions.repository'
-import SettingsDrizzleRepository from '@settings/lib/settings/settings.repository'
 import { SettingsUpdateDtoSchema } from '@settings/lib/settings-actions.dto'
-import { SettingsActionsDrizzleQueryRepository } from '@settings/lib/settings-actions.query.repository'
 import SettingsActionsService from '@settings/lib/settings-actions.service'
 import { type NextRequest, NextResponse } from 'next/server'
 import type { APIResponse } from '@/app/types'
-import db from '@/db'
 
-/**
- * Retrieves settings for the current workspace
- */
 export const getSettingsWithActions = async (req: NextRequest): Promise<NextResponse<APIResponse>> => {
   const user = authenticateHeaders(req.headers)
+  const segmentId = req.nextUrl.searchParams.get('segmentId') || undefined
 
   const settingsService = SettingsActionsService.new(user)
-  const settings = await settingsService.getForWorkspace()
+  const settings = user.clientId
+    ? await settingsService.getForClient()
+    : await settingsService.getForWorkspace(segmentId)
 
   return NextResponse.json({
     data: settings,
@@ -26,27 +20,13 @@ export const getSettingsWithActions = async (req: NextRequest): Promise<NextResp
 
 export const updateSettingsWithActions = async (req: NextRequest): Promise<NextResponse<APIResponse>> => {
   const user = authenticateHeaders(req.headers)
+  const segmentId = req.nextUrl.searchParams.get('segmentId') || undefined
 
   const body = await req.json()
   const parsedBody = SettingsUpdateDtoSchema.parse(body)
 
-  // Wire dependencies for settings service
-  const assembly = new AssemblyClient(user.token)
-  const settingsRepository = new SettingsDrizzleRepository(db)
-  const actionsRepository = new ActionsDrizzleRepository(db)
-  const settingsActionsQueryRepository = new SettingsActionsDrizzleQueryRepository(db)
-  const mediaRepository = new MediaDrizzleRepository(db)
-
-  const settingsService = new SettingsActionsService(
-    user,
-    assembly,
-    settingsActionsQueryRepository,
-    settingsRepository,
-    actionsRepository,
-    mediaRepository,
-  )
-
-  const settings = await settingsService.updateForWorkspace(parsedBody)
+  const settingsService = SettingsActionsService.new(user)
+  const settings = await settingsService.updateForWorkspace(parsedBody, segmentId)
 
   return NextResponse.json({
     data: settings,
