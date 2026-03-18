@@ -70,7 +70,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
     if (expandSegments) setExpandSegments(false)
   }, [expandSegments, setExpandSegments])
   return (
-    <aside className={cn('flex h-screen flex-col border-border-gray border-l', className)}>
+    <aside className={cn('flex h-screen flex-col border-border-gray min-[860px]:border-l', className)}>
       <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
         {sidebarView === 'change-banner' ? (
           <ChangeBannerPanel onBack={() => setSidebarView('default')} />
