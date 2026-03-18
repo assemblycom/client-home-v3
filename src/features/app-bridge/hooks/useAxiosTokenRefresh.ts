@@ -3,10 +3,15 @@ import { useAuthStore } from '@auth/providers/auth.provider'
 import { useEffect } from 'react'
 import { api } from '@/lib/core/axios.instance'
 
+let refreshPromise: Promise<string> | null = null
+
 /**
  * Axios response interceptor that transparently handles 403 (expired token) errors.
  * On 403: refreshes the token via AssemblyBridge, updates the auth store,
  * and retries the original request with the new token. No re-renders or reloads.
+ *
+ * Uses a shared promise to prevent race conditions when multiple requests
+ * receive 403 simultaneously — only the first triggers a refresh.
  */
 export const useAxiosTokenRefresh = () => {
   const setToken = useAuthStore((s) => s.setToken)
@@ -23,11 +28,23 @@ export const useAxiosTokenRefresh = () => {
       console.info('useAxiosTokenRefresh | Received 403, refreshing token via app-bridge')
 
       try {
-        const data = await AssemblyBridge.sessionToken.refresh()
-        console.info('useAxiosTokenRefresh | Token refreshed, retrying request')
-        setToken(data.token)
+        if (!refreshPromise) {
+          refreshPromise = AssemblyBridge.sessionToken
+            .refresh()
+            .then((d) => d.token)
+            .finally(() => {
+              refreshPromise = null
+            })
+        }
 
-        originalRequest.url = originalRequest.url.replace(/token=[^&]+/, `token=${data.token}`)
+        const token = await refreshPromise
+        console.info('useAxiosTokenRefresh | Token refreshed, retrying request')
+        setToken(token)
+
+        const url = new URL(originalRequest.url, window.location.origin)
+        url.searchParams.set('token', token)
+        originalRequest.url = url.toString()
+
         return api(originalRequest)
       } catch (refreshError) {
         console.error('useAxiosTokenRefresh | Token refresh failed', refreshError)

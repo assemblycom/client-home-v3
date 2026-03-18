@@ -1,6 +1,6 @@
 'use client'
 
-import { useAxiosTokenRefresh, useTokenRefresh } from '@app-bridge/hooks'
+import { useTokenRefresh } from '@app-bridge/hooks'
 import { useViewStore } from '@editor/stores/viewStore'
 import { useEffect } from 'react'
 import type { WorkspaceResponse } from '@/lib/assembly/types'
@@ -17,7 +17,6 @@ export const WorkspaceSetter = ({ workspace }: WorkspaceSetterProps) => {
   }, [workspace, setWorkspace])
 
   useTokenRefresh(workspace.portalUrl)
-  useAxiosTokenRefresh()
 
   return null
 }

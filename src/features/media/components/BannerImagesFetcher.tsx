@@ -1,6 +1,5 @@
-import { isAxiosError } from 'axios'
 import env from '@/config/env'
-import { TokenRefreshRedirect } from '@/features/app-bridge/components/TokenRefreshRedirect'
+import { handleFetcherError } from '@/features/app-bridge/lib/handle-fetcher-error'
 import type { BannerImagesResponse } from '@/features/banner/types'
 import { api } from '@/lib/core/axios.instance'
 import { BannerImagesSetter } from './BannerImagesSetter'
@@ -16,9 +15,6 @@ export const BannerImagesFetcher = async ({ token }: BannerImagesFetcherProps) =
     )
     return <BannerImagesSetter bannerImages={data.data} />
   } catch (error) {
-    if (isAxiosError(error) && error.response?.status === 403) {
-      return <TokenRefreshRedirect />
-    }
-    throw error
+    return handleFetcherError(error)
   }
 }

@@ -1,7 +1,6 @@
 import type { UsersDto } from '@users/users.dto'
-import { isAxiosError } from 'axios'
 import env from '@/config/env'
-import { TokenRefreshRedirect } from '@/features/app-bridge/components/TokenRefreshRedirect'
+import { handleFetcherError } from '@/features/app-bridge/lib/handle-fetcher-error'
 import { api } from '@/lib/core/axios.instance'
 import { UsersSetter } from './UsersSetter'
 
@@ -14,9 +13,6 @@ export const UsersFetcher = async ({ token }: UsersFetcherProps) => {
     const users = await api.get<{ data: UsersDto }>(`${env.VERCEL_URL}/api/users?token=${token}`)
     return <UsersSetter users={users.data.data} />
   } catch (error) {
-    if (isAxiosError(error) && error.response?.status === 403) {
-      return <TokenRefreshRedirect />
-    }
-    throw error
+    return handleFetcherError(error)
   }
 }
