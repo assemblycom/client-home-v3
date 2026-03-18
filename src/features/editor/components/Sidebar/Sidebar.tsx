@@ -48,7 +48,7 @@ const createAccordionItems = ({
     content: <BackgroundColor />,
   },
   {
-    title: 'Segments',
+    title: 'Segment',
     content: <Segment />,
     defaultOpen: expandSegments,
   },

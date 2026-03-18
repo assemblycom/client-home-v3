@@ -1,6 +1,7 @@
 'use client'
 
 import { useSidebarStore } from '@editor/stores/sidebarStore'
+import { useViewStore } from '@editor/stores/viewStore'
 import { SegmentCreationCard } from '@segments/components/SegmentCreationCard'
 import { SegmentDeletedFieldCard } from '@segments/components/SegmentDeletedFieldCard'
 import { SegmentList } from '@segments/components/segment-list/SegmentList'
@@ -11,6 +12,7 @@ export const Segment = () => {
   const { segments, segmentConfig, totalClients, isLoading, isFetching } = useSegmentStats()
   const { clientCustomFields, companyCustomFields, isLoading: customFieldsLoading } = useCustomFields()
   const setCurrentSegment = useSidebarStore((s) => s.setCurrentSegment)
+  const activeSegmentId = useViewStore((s) => s.activeSegmentId)
 
   const lockedCustomFieldId = segmentConfig?.customFieldId
   const allCustomFields = [...clientCustomFields, ...companyCustomFields]
@@ -24,22 +26,18 @@ export const Segment = () => {
     setCurrentSegment({})
   }
 
+  const activeSegment = segments?.find((s) => s.id === activeSegmentId) ?? segments?.[0]
+  const activeSegmentList = activeSegment ? [activeSegment] : []
+
   if (isLoading) {
     return (
       <div className="flex flex-col gap-4">
         <div className="h-4 w-3/4 animate-pulse rounded bg-gray-200" />
+        <div className="h-5 animate-pulse rounded-sm bg-gray-200" />
         <div className="overflow-hidden rounded border border-border-gray">
-          <div className="flex items-center gap-2 border-border-gray border-b px-4 py-3">
-            <div className="size-2 shrink-0 animate-pulse rounded-full bg-gray-200" />
-            <div className="h-4 w-20 animate-pulse rounded bg-gray-200" />
-          </div>
-          <div className="flex items-center gap-2 border-border-gray border-b px-4 py-3">
-            <div className="size-2 shrink-0 animate-pulse rounded-full bg-gray-200" />
-            <div className="h-4 w-16 animate-pulse rounded bg-gray-200" />
-          </div>
           <div className="flex items-center gap-2 px-4 py-3">
             <div className="size-2 shrink-0 animate-pulse rounded-full bg-gray-200" />
-            <div className="h-4 w-24 animate-pulse rounded bg-gray-200" />
+            <div className="h-4 w-20 animate-pulse rounded bg-gray-200" />
           </div>
         </div>
         <div className="h-24 animate-pulse rounded border border-border-gray bg-background-primary" />
@@ -52,9 +50,9 @@ export const Segment = () => {
       <p className="text-[13px] text-text-secondary leading-5.25">
         By default, all clients see the same content. Create segments to tailor your homepage for different clients.
       </p>
-      {!!segments?.length && (
+      {!!activeSegmentList.length && (
         <div className={isFetching ? 'pointer-events-none animate-pulse opacity-60' : ''}>
-          <SegmentList segments={segments} />
+          <SegmentList segments={activeSegmentList} />
         </div>
       )}
       {hasDeletedCustomField ? (
