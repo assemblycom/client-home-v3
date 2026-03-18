@@ -1,32 +1,34 @@
 'use client'
 
 import { AssemblyBridge } from '@assembly-js/app-bridge'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 /**
  * Rendered by server component fetchers when they receive a 403.
- * Refreshes the token via app-bridge and reloads the page with the fresh token,
- * so server components re-run with a valid token.
+ * Refreshes the token via app-bridge and triggers a soft navigation with the fresh token,
+ * so server components re-run with a valid token — without a full page reload.
  */
 export const TokenRefreshRedirect = () => {
   const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
 
   useEffect(() => {
     const refresh = async () => {
       try {
         console.info('TokenRefreshRedirect | Server-side 403 detected, refreshing token via app-bridge')
         const data = await AssemblyBridge.sessionToken.refresh()
-        console.info('TokenRefreshRedirect | Token refreshed, reloading with new token')
+        console.info('TokenRefreshRedirect | Token refreshed, navigating with new token')
         const url = new URL(window.location.href)
         url.searchParams.set('token', data.token)
-        window.location.replace(url.toString())
+        router.replace(`${url.pathname}${url.search}`)
       } catch (err) {
         console.error('TokenRefreshRedirect | Token refresh failed', err)
         setError('Your session has expired and could not be renewed. Please reload the page or contact support.')
       }
     }
     void refresh()
-  }, [])
+  }, [router])
 
   if (error) {
     return (
