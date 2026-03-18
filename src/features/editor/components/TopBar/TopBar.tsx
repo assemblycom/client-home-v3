@@ -66,9 +66,9 @@ export const TopBar = () => {
           <button
             type="button"
             onClick={toggleMobileSidebar}
-            className="flex cursor-pointer items-center justify-center rounded-sm p-1 outline outline-border-gray min-[860px]:hidden"
+            className="flex size-7 cursor-pointer items-center justify-center rounded-sm outline outline-border-gray min-[860px]:hidden"
           >
-            <Icon icon="Sidebar" width={16} height={16} />
+            <Icon icon={mobileSidebarOpen ? 'SidebarFilled' : 'Sidebar'} width={20} height={20} />
           </button>
         </div>
       </div>
