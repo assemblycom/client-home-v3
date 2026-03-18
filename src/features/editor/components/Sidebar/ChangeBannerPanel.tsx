@@ -2,7 +2,7 @@ import { Button, Icon } from '@assembly-js/design-system'
 import { useAuthStore } from '@auth/providers/auth.provider'
 import { useBannerSettingsMutation } from '@settings/hooks/useBannerSettingsMutation'
 import { useSettingsStore } from '@settings/providers/settings.provider'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Banner } from '@/features/banner'
 import { BannerUploadDropzone } from '@/features/banner/components/BannerUploadDropzone'
 import { useBannerMutation } from '@/features/banner/hooks/useBannerMutation'
@@ -22,6 +22,10 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
 
   const [selectedImage, setSelectedImage] = useState(bannerImages?.find((item) => item.id === bannerId))
   const [isUploading, setIsUploading] = useState(false)
+
+  useEffect(() => {
+    setSelectedImage(bannerImages?.find((item) => item.id === bannerId))
+  }, [bannerId, bannerImages])
 
   const handleRemoveBanner = () => {
     setSelectedImage(undefined)
