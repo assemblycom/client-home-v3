@@ -13,3 +13,6 @@ export const UserSchema = z
   })
 
 export type User = z.infer<typeof UserSchema>
+
+/** Client-side user identity — excludes token to prevent stale-token bugs. */
+export type ClientUser = Omit<User, 'token'>

@@ -10,7 +10,6 @@ import { Heading } from '../Heading'
 import { Subheading } from '../Subheading'
 
 interface PreviewProps {
-  token: string
   content: string
   backgroundColor: string
   bannerUrl?: string | null
@@ -18,14 +17,7 @@ interface PreviewProps {
   bannerPositionY?: number
 }
 
-export function Preview({
-  token,
-  content,
-  backgroundColor,
-  bannerUrl,
-  bannerPositionX,
-  bannerPositionY,
-}: PreviewProps) {
+export function Preview({ content, backgroundColor, bannerUrl, bannerPositionX, bannerPositionY }: PreviewProps) {
   const displayMode = useViewStore((store) => store.displayMode)
   const workspace = useViewStore((store) => store.workspace)
   const isDark = isDarkColor(backgroundColor)
@@ -59,7 +51,7 @@ export function Preview({
               <Banner src={bannerUrl} alt="Workspace Banner" positionX={bannerPositionX} positionY={bannerPositionY} />
             ) : null}
             <ActionsCard />
-            <ReadonlyEditor content={content} token={token} />
+            <ReadonlyEditor content={content} />
           </div>
         )}
       </div>

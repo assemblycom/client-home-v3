@@ -2,7 +2,6 @@
 
 import { CustomFieldEntityType, CustomFieldType, ListCustomFieldResponseSchema } from '@assembly/types'
 import type { IconType } from '@assembly-js/design-system'
-import { useAuthStore } from '@auth/providers/auth.provider'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/core/axios.instance'
 
@@ -27,12 +26,10 @@ export type CustomFieldItem = {
 }
 
 export function useCustomFields() {
-  const token = useAuthStore((s) => s.token)
-
   const { data: clientCustomFields, isLoading: clientIsLoading } = useQuery({
     queryKey: [CUSTOM_FIELDS_QUERY_KEY, CustomFieldEntityType.CLIENT],
     queryFn: async (): Promise<CustomFieldItem[]> => {
-      const res = await api.get(`/api/custom-fields/${CustomFieldEntityType.CLIENT}?token=${token}`)
+      const res = await api.get(`/api/custom-fields/${CustomFieldEntityType.CLIENT}`)
       const parsed = ListCustomFieldResponseSchema.parse(res.data)
       return parsed.data
         .sort((a, b) => a.order - b.order)
@@ -43,7 +40,7 @@ export function useCustomFields() {
   const { data: companyCustomFields, isLoading: companyIsLoading } = useQuery({
     queryKey: [CUSTOM_FIELDS_QUERY_KEY, CustomFieldEntityType.COMPANY],
     queryFn: async (): Promise<CustomFieldItem[]> => {
-      const res = await api.get(`/api/custom-fields/${CustomFieldEntityType.COMPANY}?token=${token}`)
+      const res = await api.get(`/api/custom-fields/${CustomFieldEntityType.COMPANY}`)
       const parsed = ListCustomFieldResponseSchema.parse(res.data)
       return parsed.data
         .sort((a, b) => a.order - b.order)

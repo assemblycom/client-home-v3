@@ -12,9 +12,7 @@ import { api } from '@/lib/core/axios.instance'
 const NOTIFICATION_COUNTS_QUERY_KEY = 'notification-counts'
 
 export function useNotificationCounts() {
-  const { clientId, companyId, token } = useAuthStore(
-    useShallow((s) => ({ clientId: s.clientId, companyId: s.companyId, token: s.token })),
-  )
+  const { clientId, companyId } = useAuthStore(useShallow((s) => ({ clientId: s.clientId, companyId: s.companyId })))
 
   const previewClient = useUsersStore((store) => store.previewClient)
   const viewMode = useViewStore((store) => store.viewMode)
@@ -27,7 +25,7 @@ export function useNotificationCounts() {
     queryKey: [NOTIFICATION_COUNTS_QUERY_KEY, targetClientId],
     queryFn: async (): Promise<NotificationCountsDto> => {
       const res = await api.get<{ data: NotificationCountsDto }>(
-        `/api/users/${targetClientId}/notification-counts?token=${token}&companyId=${targetCompanyId}`,
+        `/api/users/${targetClientId}/notification-counts?companyId=${targetCompanyId}`,
       )
       return NotificationCountsDtoSchema.parse(res.data.data)
     },

@@ -1,6 +1,5 @@
 'use client'
 
-import { useAuthStore } from '@auth/providers/auth.provider'
 import { ReadonlyEditor } from '@editor/components/Editor/ReadonlyEditor'
 import { useViewStore } from '@editor/stores/viewStore'
 import { useSettingsStore } from '@settings/providers/settings.provider'
@@ -15,7 +14,6 @@ import { Heading } from './Heading'
 import { Subheading } from './Subheading'
 
 export const ClientEditorWrapper = () => {
-  const token = useAuthStore((store) => store.token)
   const content = useSettingsStore((store) => store.content)
   const backgroundColor = useSettingsStore((store) => store.backgroundColor)
   const setTasksAppId = useViewStore((store) => store.setTasksAppId)
@@ -28,7 +26,7 @@ export const ClientEditorWrapper = () => {
   useQuery({
     queryKey: ['tasks-app-id'],
     queryFn: async (): Promise<string> => {
-      const res = await api.get<{ data: string }>(`/api/workspace/tasks-app-id?token=${token}`)
+      const res = await api.get<{ data: string }>('/api/workspace/tasks-app-id')
       setTasksAppId(res.data.data)
       return res.data.data
     },
@@ -54,7 +52,7 @@ export const ClientEditorWrapper = () => {
       </div>
       {bannerUrl ? (
         <Banner
-          src={getImageUrl(bannerUrl.path, token)}
+          src={getImageUrl(bannerUrl.path)}
           alt="Workspace Banner"
           positionX={bannerPositionX}
           positionY={bannerPositionY}
@@ -62,7 +60,7 @@ export const ClientEditorWrapper = () => {
       ) : null}
 
       <ActionsCard readonly />
-      <ReadonlyEditor token={token} content={content} />
+      <ReadonlyEditor content={content} />
     </div>
   )
 }

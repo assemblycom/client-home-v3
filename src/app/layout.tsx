@@ -41,7 +41,12 @@ export default async function RootLayout({
       <body className={`${inter.className} antialiased`}>
         <AppProvider>
           <HydrationBoundary state={dehydrate(queryClient)}>
-            <AuthProvider {...user}>
+            <AuthProvider
+              internalUserId={user.internalUserId}
+              clientId={user.clientId}
+              companyId={user.companyId}
+              workspaceId={user.workspaceId}
+            >
               <SettingsProvider settings={settings}>{children}</SettingsProvider>
             </AuthProvider>
           </HydrationBoundary>

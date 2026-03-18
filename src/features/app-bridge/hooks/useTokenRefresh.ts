@@ -1,10 +1,9 @@
 import { AssemblyBridge } from '@assembly-js/app-bridge'
-import { useAuthStore } from '@auth/providers/auth.provider'
 import { useEffect } from 'react'
 
 /**
  * Subscribes to session token updates from the parent dashboard via app-bridge.
- * Updates the auth store token and the page URL when the parent refreshes it.
+ * Updates the page URL when the parent refreshes the token.
  *
  * Keeping the URL token fresh is critical: Next.js middleware reads `?token=` from
  * the page URL to authenticate server component renders. Without this, any SSR
@@ -14,8 +13,6 @@ import { useEffect } from 'react'
  * triggering a Next.js server-side re-render.
  */
 export const useTokenRefresh = (portalUrl?: string) => {
-  const setToken = useAuthStore((s) => s.setToken)
-
   useEffect(() => {
     AssemblyBridge.configure({ debug: true })
 
@@ -34,7 +31,6 @@ export const useTokenRefresh = (portalUrl?: string) => {
 
     const unsubscribe = AssemblyBridge.sessionToken.onTokenUpdate((data) => {
       console.info('[Bridge] token update received', data)
-      setToken(data.token)
 
       // Silently replace the URL token so the middleware sees a fresh token on
       // any subsequent server component render (Suspense retry, navigation, etc.)
@@ -48,5 +44,5 @@ export const useTokenRefresh = (portalUrl?: string) => {
       window.removeEventListener('message', handleRawMessage)
       unsubscribe()
     }
-  }, [portalUrl, setToken])
+  }, [portalUrl])
 }

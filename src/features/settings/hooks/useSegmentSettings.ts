@@ -1,6 +1,5 @@
 'use client'
 
-import { useAuthStore } from '@auth/providers/auth.provider'
 import { useEditorStore } from '@editor/stores/editorStore'
 import { useViewStore } from '@editor/stores/viewStore'
 import { SETTINGS_QUERY_KEY } from '@settings/constants'
@@ -12,7 +11,6 @@ import { ROUTES } from '@/app/routes'
 import { api } from '@/lib/core/axios.instance'
 
 export const useSegmentSettings = () => {
-  const token = useAuthStore((s) => s.token)
   const activeSegmentId = useViewStore((s) => s.activeSegmentId)
   const setSettings = useSettingsStore((s) => s.setSettings)
   const setInitialSettings = useSettingsStore((s) => s.setInitialSettings)
@@ -23,7 +21,7 @@ export const useSegmentSettings = () => {
   const { data } = useQuery({
     queryKey: [SETTINGS_QUERY_KEY, activeSegmentId ?? null],
     queryFn: async (): Promise<SettingsResponseDto> => {
-      const params = new URLSearchParams({ token: token ?? '' })
+      const params = new URLSearchParams()
       if (activeSegmentId) params.set('segmentId', activeSegmentId)
 
       const res = await api.get<{ data: SettingsResponseDto }>(`${ROUTES.api.settings}/?${params}`)

@@ -1,5 +1,4 @@
 import { Button, Icon } from '@assembly-js/design-system'
-import { useAuthStore } from '@auth/providers/auth.provider'
 import { useBannerSettingsMutation } from '@settings/hooks/useBannerSettingsMutation'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -16,7 +15,6 @@ interface ChangeBannerPanelProps {
 export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
   const bannerImages = useSettingsStore((store) => store?.bannerImages)
   const bannerId = useSettingsStore((store) => store?.bannerImageId)
-  const token = useAuthStore((store) => store.token)
   const setBannerImage = useSettingsStore((s) => s.setBannerImageId)
   const updateBannerMutation = useBannerSettingsMutation()
   const createBannerMutation = useBannerMutation()
@@ -43,7 +41,7 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
   const uploadFile = useCallback(
     (file: File) => {
       setIsUploading(true)
-      handleBannerFileUpload(file, token)
+      handleBannerFileUpload(file)
         .then((mediaMetadata) => {
           createBannerMutation.mutate(
             {
@@ -67,7 +65,7 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
           setIsUploading(false)
         })
     },
-    [token, createBannerMutation, setBannerImage, updateBannerMutation],
+    [createBannerMutation, setBannerImage, updateBannerMutation],
   )
 
   const onBannerUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,7 +107,7 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
           {hasBanner ? (
             <>
               <div className="group/banner relative w-full">
-                <Banner src={getImageUrl(currentBannerPath, token)} alt="banner" />
+                <Banner src={getImageUrl(currentBannerPath)} alt="banner" />
                 <button
                   type="button"
                   onClick={handleRemoveBanner}
@@ -152,7 +150,7 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
                 className="block w-full cursor-pointer border-none bg-transparent p-0"
                 type="button"
               >
-                <Banner src={getImageUrl(banner.path, token)} isSelected={selectedImage?.id === banner?.id} />
+                <Banner src={getImageUrl(banner.path)} isSelected={selectedImage?.id === banner?.id} />
               </button>
               {banner.workspaceId !== '*' && selectedImage?.id !== banner.id && (
                 <button
