@@ -130,10 +130,18 @@ body {
   }
 
   h2 {
-    @apply text-lg leading-6 font-medium mt-3 mb-1;
+    @apply text-[16px] leading-6 font-medium mt-3 mb-1;
   }
 
   h2:first-child {
+    @apply mt-0;
+  }
+
+  h3 {
+    @apply text-sm leading-5.5 font-medium mt-3 mb-1;
+  }
+
+  h3:first-child {
     @apply mt-0;
   }
 
