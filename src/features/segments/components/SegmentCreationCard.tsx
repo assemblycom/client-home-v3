@@ -47,7 +47,6 @@ export const SegmentCreationCard = ({
       {
         label: 'Company',
         options: companyCustomFields.map((f) => ({ value: f.id, label: f.name })),
-        optionClassName: 'font-medium',
       },
     ],
     [clientCustomFields, companyCustomFields],
