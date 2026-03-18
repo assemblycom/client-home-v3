@@ -17,6 +17,8 @@ export const BannerOptions = ({ onChangeBanner }: BannerProps) => {
   const activeBanner = bannerImages?.find((item) => item.id === bannerId)
   const token = useAuthStore((store) => store.token)
   const setBannerRepositioning = useSidebarStore((store) => store.setBannerRepositioning)
+  const mobileSidebarOpen = useSidebarStore((store) => store.mobileSidebarOpen)
+  const toggleMobileSidebar = useSidebarStore((store) => store.toggleMobileSidebar)
 
   return (
     <div className="flex flex-col space-y-3">
@@ -31,7 +33,10 @@ export const BannerOptions = ({ onChangeBanner }: BannerProps) => {
       <Button
         label="Reposition banner"
         variant="secondary"
-        onClick={() => setBannerRepositioning(true)}
+        onClick={() => {
+          setBannerRepositioning(true)
+          if (mobileSidebarOpen) toggleMobileSidebar()
+        }}
         className="w-full"
       />
     </div>
