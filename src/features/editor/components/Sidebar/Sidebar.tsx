@@ -78,7 +78,9 @@ export const Sidebar = ({ className }: SidebarProps) => {
           <SegmentFormPanel key={currentSegment.id ?? 'new'} />
         ) : (
           <>
-            <div className="flex h-14 items-center border-border-gray border-b px-6 text-custom-xl">Customization</div>
+            <div className="border-border-gray border-b">
+              <div className="flex h-14 items-center px-6 text-custom-xl">Customization</div>
+            </div>
             <div className="flex flex-1 flex-col overflow-y-auto py-5">
               {accordionItems.map((item) => (
                 <Accordion
