@@ -43,6 +43,7 @@ export const Banner = ({
     },
     [onRepositioningChange],
   )
+  const [showControls, setShowControls] = useState(false)
   const [currentX, setCurrentX] = useState(positionX)
   const [currentY, setCurrentY] = useState(positionY)
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null)
@@ -54,6 +55,18 @@ export const Banner = ({
     setCurrentY(positionY)
   }, [positionX, positionY])
 
+  // Dismiss controls when tapping outside the banner
+  useEffect(() => {
+    if (!showControls) return
+    const handleClickOutside = (e: PointerEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setShowControls(false)
+      }
+    }
+    window.addEventListener('pointerdown', handleClickOutside)
+    return () => window.removeEventListener('pointerdown', handleClickOutside)
+  }, [showControls])
+
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
       if (!isRepositioning) return
@@ -64,16 +77,32 @@ export const Banner = ({
     [isRepositioning, currentX, currentY],
   )
 
-  const handleMouseMove = useCallback(
-    (e: MouseEvent) => {
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent) => {
+      if (!isRepositioning) {
+        if (editable) {
+          e.preventDefault()
+          setShowControls((prev) => !prev)
+        }
+        return
+      }
+      const touch = e.touches[0]
+      setDragStart({ x: touch.clientX, y: touch.clientY })
+      setDragStartPosition({ x: currentX, y: currentY })
+    },
+    [isRepositioning, editable, currentX, currentY],
+  )
+
+  const moveDrag = useCallback(
+    (clientX: number, clientY: number) => {
       if (!dragStart || !containerRef.current) return
 
       const rect = containerRef.current.getBoundingClientRect()
       const sensitivityX = 50 / rect.width
       const sensitivityY = 50 / rect.height
 
-      const deltaX = -(e.clientX - dragStart.x) * sensitivityX
-      const deltaY = -(e.clientY - dragStart.y) * sensitivityY
+      const deltaX = -(clientX - dragStart.x) * sensitivityX
+      const deltaY = -(clientY - dragStart.y) * sensitivityY
 
       setCurrentX(Math.max(0, Math.min(100, dragStartPosition.x + deltaX)))
       setCurrentY(Math.max(0, Math.min(100, dragStartPosition.y + deltaY)))
@@ -81,20 +110,30 @@ export const Banner = ({
     [dragStart, dragStartPosition],
   )
 
-  const handleMouseUp = useCallback(() => {
+  const endDrag = useCallback(() => {
     setDragStart(null)
   }, [])
 
   useEffect(() => {
     if (dragStart !== null) {
-      window.addEventListener('mousemove', handleMouseMove)
-      window.addEventListener('mouseup', handleMouseUp)
+      const onMouseMove = (e: MouseEvent) => moveDrag(e.clientX, e.clientY)
+      const onTouchMove = (e: TouchEvent) => {
+        e.preventDefault()
+        moveDrag(e.touches[0].clientX, e.touches[0].clientY)
+      }
+
+      window.addEventListener('mousemove', onMouseMove)
+      window.addEventListener('mouseup', endDrag)
+      window.addEventListener('touchmove', onTouchMove, { passive: false })
+      window.addEventListener('touchend', endDrag)
       return () => {
-        window.removeEventListener('mousemove', handleMouseMove)
-        window.removeEventListener('mouseup', handleMouseUp)
+        window.removeEventListener('mousemove', onMouseMove)
+        window.removeEventListener('mouseup', endDrag)
+        window.removeEventListener('touchmove', onTouchMove)
+        window.removeEventListener('touchend', endDrag)
       }
     }
-  }, [dragStart, handleMouseMove, handleMouseUp])
+  }, [dragStart, moveDrag, endDrag])
 
   const handleSave = () => {
     onSavePosition?.(Math.round(currentX), Math.round(currentY))
@@ -108,6 +147,8 @@ export const Banner = ({
   }
 
   if (hasError) return null
+
+  const controlsVisible = showControls
 
   return (
     <div
@@ -125,6 +166,7 @@ export const Banner = ({
         unoptimized
         draggable={false}
         onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
         onLoad={() => setIsLoaded(true)}
         onError={() => setHasError(true)}
       />
@@ -183,7 +225,12 @@ export const Banner = ({
 
       {/* Normal mode: */}
       {editable && !isRepositioning && (
-        <div className="absolute top-2.5 right-2.5 z-10 flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+        <div
+          className={cn(
+            'absolute top-2.5 right-2.5 z-10 flex items-center gap-1 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100',
+            controlsVisible ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0',
+          )}
+        >
           <button
             type="button"
             onClick={onChangeBanner}
