@@ -170,7 +170,7 @@ export const SegmentFormPanel = () => {
               setName(e.target.value)
               setErrors((prev) => ({ ...prev, name: undefined }))
             }}
-            placeholder="e.g. Gold"
+            placeholder="Gold"
             className={`w-full rounded border bg-white px-3 py-2 text-sm text-text-primary outline-none ${
               errors.name ? 'border-error' : 'border-border-gray focus:border-primary'
             }`}
