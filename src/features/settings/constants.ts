@@ -15,22 +15,6 @@ export const defaultContent = `<callout>ℹ️ This page is an example. Edit the
 <p></p>
 <h2>💬 Messages</h2>
 <p>Questions? Chat with the <autofill-field data-value="{{workspace.brand}}"></autofill-field> team and get answers.</p>
-<hr>
-<callout>⚠️ Apps below should show if they are enabled in the workspace. Ignore for now.</callout>
-<p></p>
-<h2>📂 Files</h2>
-<p>Use this tab to share files with the <autofill-field data-value="{{workspace.brand}}"></autofill-field> team — you can upload any required documents and assets here. This is where we will store files for reference in the future.</p>
-<p></p>
-<h2>📜 Contracts</h2>
-<p>View and sign contracts shared by our team.</p>
-<p></p>
-<h2>📤 Forms</h2>
-<p>Fill out forms with all relevant information.</p>
-<p></p>
-<h2>💵 Billing</h2>
-<p>Here you will see any active subscriptions you have and any invoices after we send them to you.</p>
-<p></p>
-<h2>🆘 Helpdesk</h2>
-<p>Access a collection of helpful articles we have put together.</p>`
+`
 
 export const SETTINGS_QUERY_KEY = 'settings'

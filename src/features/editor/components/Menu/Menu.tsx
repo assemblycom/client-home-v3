@@ -1,3 +1,4 @@
+import { SlashMenu, Toolbar, ToolbarProvider } from '@assembly-js/design-system'
 import {
   type ActionConfig,
   editorActionConfig,
@@ -8,7 +9,6 @@ import {
 } from '@editor/components/Menu/menuConfig'
 import { useEditorStore } from '@editor/stores/editorStore'
 import type { Editor, Range } from '@tiptap/core'
-import { SlashMenu, Toolbar, ToolbarProvider } from 'copilot-design-system'
 import { useEffect, useMemo, useState } from 'react'
 import { cn } from '@/utils/tailwind'
 
@@ -79,7 +79,7 @@ export const Menu = ({ mode, query, editor, range, items }: MenuProps) => {
         <Toolbar
           variant="sticky"
           className={cn(
-            'cop-bg-white [&_button:not([data-active=true]):not([aria-pressed=true]):not(:hover)]:!bg-white [&_button:hover]:!bg-background-secondary [&_button[data-active=true]]:!bg-background-secondary [&_button[aria-pressed=true]]:!bg-background-secondary [&_button:active]:!bg-background-secondary',
+            'cop-bg-white [&_button:not([data-active=true]):not([aria-pressed=true]):not(:hover)]:!bg-white [&_button:hover]:!bg-background-secondary [&_button[data-active=true]]:!bg-background-secondary [&_button[aria-pressed=true]]:!bg-background-secondary [&_button:active]:!bg-background-secondary [&_.cop-absolute.cop-top-full]:!z-[999]',
           )}
         />
       )}

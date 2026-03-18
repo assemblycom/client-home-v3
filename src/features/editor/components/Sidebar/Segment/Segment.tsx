@@ -1,17 +1,72 @@
 'use client'
-import { Button } from 'copilot-design-system'
-import { SegmentCard } from '@/features/editor/components/Sidebar/Segment/SegmentCard'
+
+import { useSidebarStore } from '@editor/stores/sidebarStore'
+import { SegmentCreationCard } from '@segments/components/SegmentCreationCard'
+import { SegmentDeletedFieldCard } from '@segments/components/SegmentDeletedFieldCard'
+import { SegmentList } from '@segments/components/segment-list/SegmentList'
+import { useSegmentStats } from '@segments/hooks/useSegments'
+import { useCustomFields } from '@/features/custom-fields/hooks/useCustomFields'
 
 export const Segment = () => {
+  const { segments, segmentConfig, totalClients, isLoading, isFetching } = useSegmentStats()
+  const { clientCustomFields, companyCustomFields, isLoading: customFieldsLoading } = useCustomFields()
+  const setCurrentSegment = useSidebarStore((s) => s.setCurrentSegment)
+
+  const lockedCustomFieldId = segmentConfig?.customFieldId
+  const allCustomFields = [...clientCustomFields, ...companyCustomFields]
+  const hasDeletedCustomField =
+    !customFieldsLoading &&
+    !!segmentConfig?.customFieldId &&
+    allCustomFields.length > 0 &&
+    !allCustomFields.some((f) => f.id === segmentConfig.customFieldId)
+
+  const handleCreateSegment = () => {
+    setCurrentSegment({})
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-4">
+        <div className="h-4 w-3/4 animate-pulse rounded bg-gray-200" />
+        <div className="overflow-hidden rounded border border-border-gray">
+          <div className="flex items-center gap-2 border-border-gray border-b px-4 py-3">
+            <div className="size-2 shrink-0 animate-pulse rounded-full bg-gray-200" />
+            <div className="h-4 w-20 animate-pulse rounded bg-gray-200" />
+          </div>
+          <div className="flex items-center gap-2 border-border-gray border-b px-4 py-3">
+            <div className="size-2 shrink-0 animate-pulse rounded-full bg-gray-200" />
+            <div className="h-4 w-16 animate-pulse rounded bg-gray-200" />
+          </div>
+          <div className="flex items-center gap-2 px-4 py-3">
+            <div className="size-2 shrink-0 animate-pulse rounded-full bg-gray-200" />
+            <div className="h-4 w-24 animate-pulse rounded bg-gray-200" />
+          </div>
+        </div>
+        <div className="h-24 animate-pulse rounded border border-border-gray bg-background-primary" />
+      </div>
+    )
+  }
+
   return (
-    <>
-      <div className="text-[13px] text-text-secondary leading-5.25">
-        By default, all clients see the same content. Create segments to tailor your homepage for certain clients.
-      </div>
-      <div className="mt-3 mb-2 flex flex-col gap-3">
-        <SegmentCard />
-        <Button label="Create Segment" variant="secondary" className="w-full" />
-      </div>
-    </>
+    <div className="flex flex-col gap-4">
+      <p className="text-[13px] text-text-secondary leading-5.25">
+        By default, all clients see the same content. Create segments to tailor your homepage for different clients.
+      </p>
+      {!!segments?.length && (
+        <div className={isFetching ? 'pointer-events-none animate-pulse opacity-60' : ''}>
+          <SegmentList segments={segments} />
+        </div>
+      )}
+      {hasDeletedCustomField ? (
+        <SegmentDeletedFieldCard />
+      ) : (
+        <SegmentCreationCard
+          segmentCount={segments?.length || 0}
+          lockedCustomFieldId={lockedCustomFieldId}
+          hasClients={!!totalClients}
+          onCreateSegment={handleCreateSegment}
+        />
+      )}
+    </div>
   )
 }

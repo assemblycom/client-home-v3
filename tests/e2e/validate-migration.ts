@@ -139,7 +139,12 @@ const processWorkspace = async (
       clientResult = { token, payload, ...result }
     }
   } catch (err) {
-    clientResult = { token: '', payload: null, status: 'failed', errors: `Client fetch/test failed: ${err}` }
+    clientResult = {
+      token: '',
+      payload: null,
+      status: 'failed',
+      errors: `Client fetch/test failed: ${JSON.stringify(err)}`,
+    }
   }
   return { internalUser: internalResult, client: clientResult }
 }

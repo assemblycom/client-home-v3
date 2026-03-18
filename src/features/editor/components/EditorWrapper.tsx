@@ -6,7 +6,8 @@ import { Heading } from '@editor/components/Heading'
 import { Preview } from '@editor/components/Preview'
 import { Subheading } from '@editor/components/Subheading'
 import { useAppControls } from '@editor/hooks/useAppControls'
-import { useSettingsMutation } from '@settings/hooks/useSettingsMutation'
+import { useBannerSettingsMutation } from '@settings/hooks/useBannerSettingsMutation'
+import { useSegmentSettings } from '@settings/hooks/useSegmentSettings'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import { Activity } from 'react'
 import { ActionsCard } from '@/features/action-items/components/actions-card'
@@ -33,22 +34,27 @@ export function EditorWrapper({ className }: EditorWrapperProps) {
   const bannerPositionX = useSettingsStore((store) => store.bannerPositionX) ?? 50
   const bannerPositionY = useSettingsStore((store) => store.bannerPositionY) ?? 50
   const setSidebarView = useSidebarStore((store) => store.setSidebarView)
+  const bannerRepositioning = useSidebarStore((store) => store.bannerRepositioning)
+  const setBannerRepositioning = useSidebarStore((store) => store.setBannerRepositioning)
+  const mobileSidebarOpen = useSidebarStore((store) => store.mobileSidebarOpen)
+  const toggleMobileSidebar = useSidebarStore((store) => store.toggleMobileSidebar)
 
-  const { mutate: updateSettings } = useSettingsMutation()
+  const { mutate: updateBannerSettings } = useBannerSettingsMutation()
 
   const isDark = isDarkColor(backgroundColor)
 
+  useSegmentSettings()
   useAppControls()
 
   return (
-    <div className={cn('w-full grow overflow-x-hidden overflow-y-scroll', className)}>
+    <div
+      className={cn('w-full grow overflow-x-hidden overflow-y-scroll @md:p-6 p-4', isDark && 'dark', className)}
+      style={{ '--bg-color': backgroundColor } as React.CSSProperties}
+    >
       <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
         <div
-          className={cn(
-            'mx-auto flex min-h-full w-full max-w-xl flex-col gap-5 @max-md:rounded-t-none px-6 pt-6.5 pb-6.5',
-            isDark && 'dark',
-          )}
-          style={{ backgroundColor, '--bg-color': backgroundColor } as React.CSSProperties}
+          className="@container mx-auto flex min-h-full w-full max-w-xl flex-col gap-5 rounded-xl @max-md:rounded-t-none border border-border-gray px-6 py-5"
+          style={{ backgroundColor }}
         >
           <div className="flex flex-col gap-1.5">
             <Heading />
@@ -61,9 +67,14 @@ export function EditorWrapper({ className }: EditorWrapperProps) {
               editable
               positionX={bannerPositionX}
               positionY={bannerPositionY}
-              onChangeBanner={() => setSidebarView('change-banner')}
+              isRepositioning={bannerRepositioning}
+              onRepositioningChange={setBannerRepositioning}
+              onChangeBanner={() => {
+                setSidebarView('change-banner')
+                if (!mobileSidebarOpen && window.innerWidth < 860) toggleMobileSidebar()
+              }}
               onSavePosition={(positionX, positionY) =>
-                updateSettings({ bannerPositionX: positionX, bannerPositionY: positionY })
+                updateBannerSettings({ bannerPositionX: positionX, bannerPositionY: positionY })
               }
             />
           ) : null}

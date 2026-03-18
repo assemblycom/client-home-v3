@@ -1,9 +1,9 @@
 'use client'
 
 import { CustomFieldEntityType, CustomFieldType, ListCustomFieldResponseSchema } from '@assembly/types'
+import type { IconType } from '@assembly-js/design-system'
 import { useAuthStore } from '@auth/providers/auth.provider'
 import { useQuery } from '@tanstack/react-query'
-import type { IconType } from 'copilot-design-system'
 import { api } from '@/lib/core/axios.instance'
 
 const CUSTOM_FIELDS_QUERY_KEY = 'custom-fields'
@@ -18,9 +18,11 @@ const CUSTOM_FIELD_TYPE_ICON: Record<CustomFieldType, IconType> = {
   [CustomFieldType.TAGS]: 'Tag',
 }
 
-type CustomFieldItem = {
+export type CustomFieldItem = {
+  id: string
   key: string
   name: string
+  type: CustomFieldType
   icon: IconType
 }
 
@@ -34,7 +36,7 @@ export function useCustomFields() {
       const parsed = ListCustomFieldResponseSchema.parse(res.data)
       return parsed.data
         .sort((a, b) => a.order - b.order)
-        .map(({ key, name, type }) => ({ key, name, icon: CUSTOM_FIELD_TYPE_ICON[type] }))
+        .map(({ id, key, name, type }) => ({ id, key, name, type, icon: CUSTOM_FIELD_TYPE_ICON[type] }))
     },
   })
 
@@ -45,7 +47,7 @@ export function useCustomFields() {
       const parsed = ListCustomFieldResponseSchema.parse(res.data)
       return parsed.data
         .sort((a, b) => a.order - b.order)
-        .map(({ key, name, type }) => ({ key, name, icon: CUSTOM_FIELD_TYPE_ICON[type] }))
+        .map(({ id, key, name, type }) => ({ id, key, name, type, icon: CUSTOM_FIELD_TYPE_ICON[type] }))
     },
   })
 

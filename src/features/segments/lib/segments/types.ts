@@ -10,6 +10,5 @@ export const SegmentCreateSchema = createInsertSchema(segments).omit({
   createdById: true,
   createdAt: true,
   updatedAt: true,
-  deletedAt: true,
 })
 export type SegmentCreatePayload = z.infer<typeof SegmentCreateSchema>

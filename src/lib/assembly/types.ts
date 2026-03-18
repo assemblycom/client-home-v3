@@ -152,6 +152,8 @@ export const TasksResponseSchema = z.object({
   data: z
     .object({
       status: z.enum(TaskStatus),
+      companyId: z.string().nullish(),
+      isArchived: z.boolean(),
     })
     .array(),
 })
@@ -183,4 +185,18 @@ const CustomFieldSchema = z.object({
 
 export const ListCustomFieldResponseSchema = z.object({
   data: z.array(CustomFieldSchema),
+})
+
+// Response schema for `/custom-fields/{id}/options` endpoint
+export const CustomFieldOptionSchema = z.object({
+  id: z.string(),
+  key: z.string(),
+  label: z.string(),
+  color: z.string().optional(),
+  object: z.string().optional(),
+})
+export type CustomFieldOption = z.infer<typeof CustomFieldOptionSchema>
+
+export const ListCustomFieldOptionsResponseSchema = z.object({
+  data: z.array(CustomFieldOptionSchema),
 })

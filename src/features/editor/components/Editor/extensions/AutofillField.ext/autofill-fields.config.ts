@@ -1,4 +1,4 @@
-import type { IconType } from 'copilot-design-system'
+import type { IconType } from '@assembly-js/design-system'
 import camelCase from 'lodash/camelCase'
 
 export type FieldEntityType = 'client' | 'company' | 'workspace'

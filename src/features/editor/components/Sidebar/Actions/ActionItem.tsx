@@ -1,6 +1,6 @@
+import { Icon, Toggle } from '@assembly-js/design-system'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { Icon, Toggle } from 'copilot-design-system'
 import type { ActionItemIcon } from '@/features/editor/components/Sidebar/Actions/type'
 
 type ActionItemProps = {

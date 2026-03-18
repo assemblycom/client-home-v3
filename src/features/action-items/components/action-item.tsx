@@ -1,7 +1,7 @@
+import { Icon } from '@assembly-js/design-system'
 import { useAuthStore } from '@auth/providers/auth.provider'
 import type { ActionDefinition } from '@editor/components/Sidebar/Actions/constant'
 import { useViewStore, ViewMode } from '@editor/stores/viewStore'
-import { Icon } from 'copilot-design-system'
 import { HandleBarTemplate } from '@/features/handlebar-template/components/handle-bar-template'
 import { cn } from '@/utils/tailwind'
 
@@ -72,7 +72,7 @@ export const ActionItem = ({ action, isLoading, mode, className, count }: Action
 
       <div className="flex items-center gap-2 text-body-md text-text-secondary dark-bg:text-white/70">
         <HandleBarTemplate
-          className={cn(mode === ViewMode.PREVIEW ? 'text-text-primary' : '')}
+          className={cn(mode === ViewMode.PREVIEW ? 'text-text-primary dark-bg:text-white' : '')}
           mode={mode}
           template={action.template}
           fallbackValue={count ?? 0}

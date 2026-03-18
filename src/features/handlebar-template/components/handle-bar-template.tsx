@@ -37,23 +37,20 @@ export function HandleBarTemplate({
   if (mode === ViewMode.EDITOR) {
     const label = displayContent ?? template
     return (
-      <>
-        <span className="inline-flex align-baseline">
-          <div
-            title={template}
-            style={{ fontSize: 'inherit', lineHeight: 1.25 }}
-            className={cn(
-              'relative inline-block w-fit max-w-full justify-center overflow-clip rounded border border-border-gray bg-white px-1 font-normal text-text-secondary transition-all dark-bg:border-white/20 dark-bg:bg-white/15 dark-bg:text-white/70',
-              isLoading && 'border-transparent text-transparent',
-              className,
-            )}
-          >
-            {isLoading && <span className="absolute size-full animate-pulse bg-gray-200" />}
-            <span className="line-clamp-1 text-ellipsis break-all">{label}</span>
-          </div>
-        </span>
-        &nbsp;
-      </>
+      <span className="inline-flex align-baseline">
+        <div
+          title={template}
+          style={{ fontSize: 'inherit', lineHeight: 1.25 }}
+          className={cn(
+            'relative inline-block w-fit max-w-full justify-center overflow-clip rounded border border-border-gray bg-white px-1 font-normal text-text-secondary transition-all dark-bg:border-white/20 dark-bg:bg-white/15 dark-bg:text-white/70',
+            isLoading && 'border-transparent text-transparent',
+            className,
+          )}
+        >
+          {isLoading && <span className="absolute size-full animate-pulse bg-gray-200" />}
+          <span className="line-clamp-1 text-ellipsis break-all">{label}</span>
+        </div>
+      </span>
     )
   }
 
