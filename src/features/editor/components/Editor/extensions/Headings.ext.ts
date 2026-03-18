@@ -5,6 +5,7 @@ declare module '@tiptap/core' {
     headingCommands: {
       setHeading1: () => ReturnType
       setHeading2: () => ReturnType
+      setHeading3: () => ReturnType
     }
   }
 }
@@ -23,6 +24,11 @@ export const Headings = Extension.create({
         () =>
         ({ chain }) =>
           chain().setNode('heading', { level: 2 }).run(),
+
+      setHeading3:
+        () =>
+        ({ chain }) =>
+          chain().setNode('heading', { level: 3 }).run(),
     }
   },
 })
