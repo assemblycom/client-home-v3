@@ -50,14 +50,14 @@ export const ClientEditorWrapper = () => {
         <Heading readonly />
         <Subheading readonly />
       </div>
-      {bannerUrl ? (
+      {bannerUrl && getImageUrl(bannerUrl.path) && (
         <Banner
-          src={getImageUrl(bannerUrl.path)}
+          src={getImageUrl(bannerUrl.path) ?? ''}
           alt="Workspace Banner"
           positionX={bannerPositionX}
           positionY={bannerPositionY}
         />
-      ) : null}
+      )}
 
       <ActionsCard readonly />
       <ReadonlyEditor content={content} />

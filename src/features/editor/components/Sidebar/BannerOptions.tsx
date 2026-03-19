@@ -20,7 +20,7 @@ export const BannerOptions = ({ onChangeBanner }: BannerProps) => {
 
   return (
     <div className="flex flex-col space-y-3">
-      {bannerId && <Banner src={getImageUrl(activeBanner?.path)} />}
+      {bannerId && getImageUrl(activeBanner?.path) && <Banner src={getImageUrl(activeBanner?.path) ?? ''} />}
 
       <Button
         label={`${bannerId ? 'Change' : 'Add'} banner`}
