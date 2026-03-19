@@ -74,7 +74,7 @@ export const Menu = ({ mode, query, editor, range, items }: MenuProps) => {
       getActionState={(actionId) => getActionState(activeEditor, actionId)}
     >
       {mode === MenuMode.SLASH_MENU ? (
-        <SlashMenu overrideActions={filteredActionIds} />
+        <SlashMenu overrideActions={filteredActionIds} className="!cop-py-0 cop-overflow-hidden" />
       ) : (
         <Toolbar
           variant="sticky"
