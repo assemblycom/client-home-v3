@@ -58,9 +58,9 @@ export function EditorWrapper({ className }: EditorWrapperProps) {
             <Heading />
             <Subheading />
           </div>
-          {bannerUrl ? (
+          {bannerUrl && getImageUrl(bannerUrl.path) && (
             <Banner
-              src={getImageUrl(bannerUrl.path)}
+              src={getImageUrl(bannerUrl.path) ?? ''}
               alt="Workspace Banner"
               editable
               positionX={bannerPositionX}
@@ -75,7 +75,7 @@ export function EditorWrapper({ className }: EditorWrapperProps) {
                 updateBannerSettings({ bannerPositionX: positionX, bannerPositionY: positionY })
               }
             />
-          ) : null}
+          )}
           <ActionsCard />
           <Editor content={content} />
         </div>

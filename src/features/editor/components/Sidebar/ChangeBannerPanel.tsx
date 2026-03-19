@@ -107,7 +107,7 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
           {hasBanner ? (
             <>
               <div className="group/banner relative w-full">
-                <Banner src={getImageUrl(currentBannerPath)} alt="banner" />
+                {getImageUrl(currentBannerPath) && <Banner src={getImageUrl(currentBannerPath) ?? ''} alt="banner" />}
                 <button
                   type="button"
                   onClick={handleRemoveBanner}
@@ -150,7 +150,9 @@ export const ChangeBannerPanel = ({ onBack }: ChangeBannerPanelProps) => {
                 className="block w-full cursor-pointer border-none bg-transparent p-0"
                 type="button"
               >
-                <Banner src={getImageUrl(banner.path)} isSelected={selectedImage?.id === banner?.id} />
+                {getImageUrl(banner.path) && (
+                  <Banner src={getImageUrl(banner.path) ?? ''} isSelected={selectedImage?.id === banner?.id} />
+                )}
               </button>
               {banner.workspaceId !== '*' && selectedImage?.id !== banner.id && (
                 <button
