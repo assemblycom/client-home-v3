@@ -37,9 +37,6 @@ export const FreshTokenRedirect = ({ redirectPath }: { redirectPath: string }) =
           return
         }
 
-        console.clear()
-        console.log(tokenData)
-
         navigateToPage(tokenData.token)
       } catch (err) {
         if (!cancelled) {
