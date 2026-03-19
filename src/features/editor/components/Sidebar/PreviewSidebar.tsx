@@ -1,14 +1,20 @@
 'use client'
 
 import { Callout, Icon } from '@assembly-js/design-system'
-import { useViewStore } from '@editor/stores/viewStore'
 import { useUsersStore } from '@users/stores/usersStore'
 import { PreviewProperty } from './PreviewProperty'
+
+const getDashboardOrigin = () => {
+  try {
+    return new URL(document.referrer).origin
+  } catch {
+    return null
+  }
+}
 
 export const PreviewSidebar = () => {
   const client = useUsersStore((store) => store.previewClient)
   const company = useUsersStore((store) => store.previewCompany)
-  const portalUrl = useViewStore((store) => store.workspace?.portalUrl)
 
   const values = [
     client?.firstName,
@@ -29,8 +35,12 @@ export const PreviewSidebar = () => {
             title="Heads up — missing client data"
             description="Some values are missing. Check your CRM before publishing."
             footerAction={{
-              href: portalUrl,
-              target: '_blank',
+              onClick: () => {
+                const dashboardOrigin = getDashboardOrigin()
+                if (dashboardOrigin) {
+                  window.open(`${dashboardOrigin}/clients/users`, '_top')
+                }
+              },
               style: { fontFamily: 'Inter', fontSize: '14px', fontWeight: 400, lineHeight: '22px' },
               children: (
                 <>
