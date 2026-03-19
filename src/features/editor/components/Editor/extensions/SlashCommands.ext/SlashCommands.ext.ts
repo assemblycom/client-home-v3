@@ -60,7 +60,6 @@ export const SlashCommandsExt = Extension.create({
                   showOnCreate: props.items.length > 0,
                   interactive: true,
                   trigger: 'manual',
-                  duration: [300, 0],
                   offset: [0, 5],
                   placement: 'bottom-start',
                   popperOptions: {
