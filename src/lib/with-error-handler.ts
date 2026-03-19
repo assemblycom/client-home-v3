@@ -1,4 +1,9 @@
-import { AssemblyInvalidTokenError, AssemblyNoTokenError } from '@assembly/errors'
+import {
+  AssemblyInvalidTokenError,
+  AssemblyMissingHeadersError,
+  AssemblyNoTokenError,
+  AssemblyTokenParseError,
+} from '@assembly/errors'
 import httpStatus from 'http-status'
 import { type NextRequest, NextResponse } from 'next/server'
 import z, { ZodError } from 'zod'
@@ -53,7 +58,15 @@ export function withErrorHandler<P extends Record<string, string>>(
         message = env.VERCEL_ENV === 'production' ? 'Failed to parse request body' : z.prettifyError(error)
         logger.error('ZodError :: ', z.prettifyError(error), '\n', error)
       } else if (error instanceof AssemblyNoTokenError) {
-        logger.warn('AssemblyNoTokenError :: Found no token for request')
+        logger.warn('AssemblyNoTokenError :: No token query param in request')
+        message = error.message
+        status = httpStatus.UNAUTHORIZED
+      } else if (error instanceof AssemblyTokenParseError) {
+        logger.warn('AssemblyTokenParseError :: Token present but failed to parse')
+        message = error.message
+        status = httpStatus.BAD_REQUEST
+      } else if (error instanceof AssemblyMissingHeadersError) {
+        logger.warn('AssemblyMissingHeadersError :: Proxy did not inject auth headers')
         message = error.message
         status = httpStatus.UNAUTHORIZED
       } else if (error instanceof AssemblyInvalidTokenError) {

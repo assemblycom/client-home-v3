@@ -1,4 +1,4 @@
-import { AssemblyNoTokenError } from '@assembly/errors'
+import { AssemblyMissingHeadersError } from '@assembly/errors'
 import { BannerImagesFetcher } from '@media/components/BannerImagesFetcher'
 import { UsersFetcher } from '@users/components/UsersFetcher'
 import { headers } from 'next/headers'
@@ -10,7 +10,7 @@ import { WorkspaceFetcher } from '@/features/workspace/components/WorkspaceFetch
 export default async function Home() {
   const appHeaders = await headers()
   const token = appHeaders.get(AuthenticatedAPIHeaders.CUSTOM_APP_TOKEN)
-  if (!token) throw new AssemblyNoTokenError()
+  if (!token) throw new AssemblyMissingHeadersError()
 
   return (
     <>

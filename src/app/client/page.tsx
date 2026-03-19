@@ -1,4 +1,4 @@
-import { AssemblyNoTokenError } from '@assembly/errors'
+import { AssemblyMissingHeadersError } from '@assembly/errors'
 import { ClientEditorWrapper } from '@editor/components/ClientEditorWrapper'
 import { BannerImagesFetcher } from '@media/components/BannerImagesFetcher'
 import { ClientContextFetcher } from '@users/components/ClientContextFetcher'
@@ -10,7 +10,7 @@ import { WorkspaceFetcher } from '@/features/workspace/components/WorkspaceFetch
 export default async function ClientPage() {
   const appHeaders = await headers()
   const token = appHeaders.get(AuthenticatedAPIHeaders.CUSTOM_APP_TOKEN)
-  if (!token) throw new AssemblyNoTokenError()
+  if (!token) throw new AssemblyMissingHeadersError()
 
   return (
     <div className="flex h-screen w-full overflow-x-hidden">

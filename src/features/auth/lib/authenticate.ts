@@ -1,5 +1,5 @@
 import AssemblyClient from '@assembly/assembly-client'
-import { AssemblyInvalidTokenError, AssemblyNoTokenError } from '@assembly/errors'
+import { AssemblyInvalidTokenError, AssemblyNoTokenError, AssemblyTokenParseError } from '@assembly/errors'
 import type { User } from '@auth/lib/user.entity'
 import { getSanitizedHeaders, isAuthorized } from '@auth/lib/utils'
 import { type NextRequest, NextResponse } from 'next/server'
@@ -20,10 +20,14 @@ import type { Token } from '@/lib/assembly/types'
  * @throws AssemblyConnectionError when unable to connect to Assembly API
  */
 const authenticateToken = async (token?: unknown): Promise<Token> => {
-  console.info('Authorizing', token, 'with API key', env.ASSEMBLY_API_KEY)
   const tokenParsed = z.string().min(1).safeParse(token)
   if (!tokenParsed.success) {
-    throw new AssemblyNoTokenError()
+    console.error('AssemblyTokenParseError :: Token was present but failed validation', {
+      tokenType: typeof token,
+      tokenLength: typeof token === 'string' ? token.length : 0,
+      isEmpty: token === '',
+    })
+    throw new AssemblyTokenParseError()
   }
 
   const assembly = new AssemblyClient(tokenParsed.data)
@@ -52,6 +56,11 @@ export const authenticateProxy = async (req: NextRequest): Promise<NextResponse>
 
   const token = req.nextUrl.searchParams.get('token')
   if (!token) {
+    console.error('AssemblyNoTokenError :: No token query param found', {
+      url: req.nextUrl.pathname,
+      hasSearchParams: req.nextUrl.searchParams.toString().length > 0,
+      searchParamKeys: [...req.nextUrl.searchParams.keys()],
+    })
     throw new AssemblyNoTokenError()
   }
 
