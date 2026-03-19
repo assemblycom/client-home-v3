@@ -37,14 +37,14 @@ export const SegmentSelector = () => {
         <Icon icon="ChevronDown" name="arrow-down" height={10} width={10} className="text-text-primary" />
       </button>
       <Popper isOpen={isOpen} setIsOpen={setIsOpen} triggerRef={triggerRef} className="bg-white!">
-        <div className="flex flex-col rounded-md border border-border-gray bg-white py-1 shadow-md">
+        <div className="flex flex-col overflow-hidden rounded-md border border-border-gray bg-white shadow-md">
           {segments.map((segment) => (
             <button
               type="button"
               key={segment.settingId}
               onClick={() => handleSelect(segment.id ?? null)}
               className={cn(
-                'flex items-center gap-2 px-3 py-1.5 text-left text-body-sm hover:bg-background-secondary',
+                'flex w-full items-center gap-2 px-3 py-1.5 text-left text-body-sm hover:bg-background-secondary',
                 activeSegmentId === segment.id && 'bg-background-secondary',
               )}
             >
