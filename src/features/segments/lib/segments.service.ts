@@ -1,7 +1,7 @@
 import AssemblyClient from '@assembly/assembly-client'
 import { MAX_FETCH_ASSEMBLY_RESOURCES } from '@assembly/constants'
 import type { ClientResponse, CompanyResponse } from '@assembly/types'
-import { CustomFieldEntityType } from '@assembly/types'
+import { CustomFieldEntityType, CustomFieldType } from '@assembly/types'
 import type { User } from '@auth/lib/user.entity'
 import type { ConditionsRepository } from '@segments/lib/conditions/conditions.repository'
 import ConditionsDrizzleRepository from '@segments/lib/conditions/conditions.repository'
@@ -88,11 +88,19 @@ export default class SegmentsService extends BaseService {
     const { data: customFields } = await this.assembly.listCustomFields({
       entityType,
     })
-    const validKeys = customFields.map((cf) => cf.key)
+    const field = customFields.find((cf) => cf.key === customField)
 
-    if (!validKeys.includes(customField)) {
+    if (!field) {
+      const validKeys = customFields.map((cf) => cf.key)
       throw new APIError(
         `Invalid customField "${customField}". Must be one of: ${validKeys.join(', ')}`,
+        httpStatus.UNPROCESSABLE_ENTITY,
+      )
+    }
+
+    if (field.type !== CustomFieldType.TAGS) {
+      throw new APIError(
+        `Custom field "${customField}" is of type "${field.type}". Only tag (multiSelect) custom fields are supported for segments.`,
         httpStatus.UNPROCESSABLE_ENTITY,
       )
     }
