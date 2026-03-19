@@ -96,13 +96,14 @@ export const Embed = (props: EmbedProps) => {
 
   return (
     <NodeViewWrapper ref={parentRef}>
-      <div className="embed group relative inline-block py-2">
+      <div className="embed group relative inline-block max-w-full py-2">
         <div
           ref={containerRef}
           className={cn('embed__container', props.selected && 'outline-2 outline-border-gray outline-offset-3')}
           style={{
             height: props.node.attrs.height,
             width: props.node.attrs.width,
+            maxWidth: '100%',
           }}
         >
           {iframeElement}
