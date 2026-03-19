@@ -10,6 +10,7 @@ import { SETTINGS_QUERY_KEY } from '@settings/constants'
 import SettingsActionsService from '@settings/lib/settings-actions.service'
 import { SettingsProvider } from '@settings/providers/settings.provider'
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
+import { AxiosTokenRefreshSetup } from '@/features/app-bridge/components/AxiosTokenRefreshSetup'
 import { getQueryClient } from '@/lib/core/query.utils'
 
 const inter = Inter({
@@ -47,6 +48,7 @@ export default async function RootLayout({
               companyId={user.companyId}
               workspaceId={user.workspaceId}
             >
+              <AxiosTokenRefreshSetup />
               <SettingsProvider settings={settings}>{children}</SettingsProvider>
             </AuthProvider>
           </HydrationBoundary>
