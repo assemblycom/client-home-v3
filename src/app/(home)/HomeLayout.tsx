@@ -20,7 +20,7 @@ export const HomeLayout = () => {
   }, [mobileSidebarOpen, toggleMobileSidebar])
 
   return (
-    <div className="flex h-screen w-screen max-w-screen">
+    <div className="flex h-screen w-full max-w-full overflow-x-hidden">
       <div className="@container flex h-screen flex-1 flex-col overflow-hidden">
         <TopBar />
         {mobileSidebarOpen ? <Sidebar className="flex min-h-0 flex-1 min-[860px]:hidden" /> : null}
