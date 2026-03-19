@@ -1,6 +1,6 @@
 'use client'
 
-import { CustomFieldEntityType } from '@assembly/types'
+import { CustomFieldEntityType, CustomFieldType } from '@assembly/types'
 import { Button, Icon, Tooltip } from '@assembly-js/design-system'
 import { Select } from '@segments/components/Select'
 import { useSegmentConfigMutation } from '@segments/hooks/useSegmentConfigMutation'
@@ -33,23 +33,29 @@ export const SegmentCreationCard = ({
   const [error, setError] = useState<string | null>(null)
   const upsertConfig = useSegmentConfigMutation()
 
-  const allCustomFields = useMemo(
-    () => [...clientCustomFields, ...companyCustomFields],
-    [clientCustomFields, companyCustomFields],
+  const tagClientFields = useMemo(
+    () => clientCustomFields.filter((f) => f.type === CustomFieldType.TAGS),
+    [clientCustomFields],
   )
+  const tagCompanyFields = useMemo(
+    () => companyCustomFields.filter((f) => f.type === CustomFieldType.TAGS),
+    [companyCustomFields],
+  )
+
+  const allCustomFields = useMemo(() => [...tagClientFields, ...tagCompanyFields], [tagClientFields, tagCompanyFields])
 
   const groups = useMemo(
     () => [
       {
         label: 'Client',
-        options: clientCustomFields.map((f) => ({ value: f.id, label: f.name })),
+        options: tagClientFields.map((f) => ({ value: f.id, label: f.name })),
       },
       {
         label: 'Company',
-        options: companyCustomFields.map((f) => ({ value: f.id, label: f.name })),
+        options: tagCompanyFields.map((f) => ({ value: f.id, label: f.name })),
       },
     ],
-    [clientCustomFields, companyCustomFields],
+    [tagClientFields, tagCompanyFields],
   )
 
   if (segmentCount >= MAX_SEGMENTS) return null
@@ -57,7 +63,7 @@ export const SegmentCreationCard = ({
   // Lock the custom field selector when custom segments exist (more than just default)
   const hasCustomSegments = segmentCount > 1
   const isLocked = hasCustomSegments && !!lockedCustomFieldId
-  const hasCustomFields = clientCustomFields.length > 0 || companyCustomFields.length > 0
+  const hasCustomFields = tagClientFields.length > 0 || tagCompanyFields.length > 0
   const isDisabled = !hasClients || !hasCustomFields
 
   const handleCreate = async () => {

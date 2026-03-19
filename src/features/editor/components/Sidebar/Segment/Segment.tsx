@@ -1,5 +1,6 @@
 'use client'
 
+import { CustomFieldType } from '@assembly/types'
 import { useSidebarStore } from '@editor/stores/sidebarStore'
 import { useViewStore } from '@editor/stores/viewStore'
 import { SegmentCreationCard } from '@segments/components/SegmentCreationCard'
@@ -15,12 +16,12 @@ export const Segment = () => {
   const activeSegmentId = useViewStore((s) => s.activeSegmentId)
 
   const lockedCustomFieldId = segmentConfig?.customFieldId
-  const allCustomFields = [...clientCustomFields, ...companyCustomFields]
+  const allTagFields = [...clientCustomFields, ...companyCustomFields].filter((f) => f.type === CustomFieldType.TAGS)
   const hasDeletedCustomField =
     !customFieldsLoading &&
     !!segmentConfig?.customFieldId &&
-    allCustomFields.length > 0 &&
-    !allCustomFields.some((f) => f.id === segmentConfig.customFieldId)
+    allTagFields.length > 0 &&
+    !allTagFields.some((f) => f.id === segmentConfig.customFieldId)
 
   const handleCreateSegment = () => {
     setCurrentSegment({})
