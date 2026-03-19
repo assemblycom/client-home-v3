@@ -2,6 +2,7 @@
 
 import { CustomFieldEntityType, CustomFieldType } from '@assembly/types'
 import { Button, Icon, Tooltip } from '@assembly-js/design-system'
+import { useViewStore } from '@editor/stores/viewStore'
 import { Select } from '@segments/components/Select'
 import { useSegmentConfigMutation } from '@segments/hooks/useSegmentConfigMutation'
 import { useEffect, useMemo, useState } from 'react'
@@ -23,6 +24,7 @@ export const SegmentCreationCard = ({
   onCreateSegment,
 }: SegmentCreationCardProps) => {
   const { clientCustomFields, companyCustomFields, isLoading } = useCustomFields()
+  const labels = useViewStore((store) => store.workspace?.labels)
   const [selectedId, setSelectedId] = useState<string>('')
 
   useEffect(() => {
@@ -47,15 +49,15 @@ export const SegmentCreationCard = ({
   const groups = useMemo(
     () => [
       {
-        label: 'Client',
+        label: labels?.individualTerm ?? 'Client',
         options: tagClientFields.map((f) => ({ value: f.id, label: f.name })),
       },
       {
-        label: 'Company',
+        label: labels?.groupTerm ?? 'Company',
         options: tagCompanyFields.map((f) => ({ value: f.id, label: f.name })),
       },
     ],
-    [tagClientFields, tagCompanyFields],
+    [tagClientFields, tagCompanyFields, labels],
   )
 
   if (segmentCount >= MAX_SEGMENTS) return null
