@@ -13,7 +13,7 @@ export default async function ClientPage() {
   if (!token) throw new AssemblyNoTokenError()
 
   return (
-    <div className="flex h-screen w-screen">
+    <div className="flex h-screen w-full overflow-x-hidden">
       <Suspense>
         <ClientContextFetcher token={token} />
       </Suspense>
