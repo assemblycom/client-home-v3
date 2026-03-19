@@ -60,6 +60,7 @@ export const SlashCommandsExt = Extension.create({
                   showOnCreate: props.items.length > 0,
                   interactive: true,
                   trigger: 'manual',
+                  duration: [300, 0],
                   offset: [0, 5],
                   placement: 'bottom-start',
                   popperOptions: {
@@ -79,17 +80,18 @@ export const SlashCommandsExt = Extension.create({
             },
 
             onUpdate: (props: SuggestionProps<ActionConfig>) => {
+              if (props.items.length === 0) {
+                popup?.hide()
+                return
+              }
+
               renderer?.updateProps(props)
 
               popup?.setProps({
                 getReferenceClientRect: (props.clientRect ?? fallbackClientRect) as GetReferenceClientRect,
               })
 
-              if (props.items.length > 0) {
-                popup?.show()
-              } else {
-                popup?.hide()
-              }
+              popup?.show()
             },
 
             onKeyDown: ({ event }) => {
