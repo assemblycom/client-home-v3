@@ -153,7 +153,10 @@ export const Banner = ({
   return (
     <div
       ref={containerRef}
-      className={cn('group relative aspect-[5/1] w-full shrink-0 overflow-hidden rounded-lg', className)}
+      className={cn(
+        'group relative aspect-[3/1] w-full shrink-0 overflow-hidden rounded-lg sm:aspect-[4/1] lg:aspect-[5/1]',
+        className,
+      )}
     >
       <Image
         src={src}
