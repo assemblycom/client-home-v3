@@ -124,9 +124,28 @@ export const SegmentCreationCard = ({
             <Icon icon="QuestionMark" width={14} height={14} className="cursor-pointer text-text-secondary" />
           </Tooltip>
         </div>
+      ) : isLocked ? (
+        <Tooltip
+          content="You can only segment by one custom field at a time. To change the custom field, delete your existing segments first."
+          tooltipClassname="text-body-sm max-w-[240px]"
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          transformOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        >
+          <div>
+            <Select
+              value={lockedCustomFieldId}
+              onChange={() => undefined}
+              options={[]}
+              groups={groups}
+              placeholder="Select custom field"
+              disabled
+              error={!!error}
+            />
+          </div>
+        </Tooltip>
       ) : (
         <Select
-          value={isLocked ? lockedCustomFieldId : selectedId}
+          value={selectedId}
           onChange={(value) => {
             setSelectedId(value)
             setError(null)
@@ -134,7 +153,7 @@ export const SegmentCreationCard = ({
           options={[]}
           groups={groups}
           placeholder="Select custom field"
-          disabled={isLocked || isLoading}
+          disabled={isLoading}
           error={!!error}
         />
       )}
