@@ -1,27 +1,17 @@
 'use client'
 
 import type { User } from '@auth/lib/user.entity'
-import { type AuthStore, type AuthStoreApi, createAuthStore } from '@auth/stores/authStore'
-import { createContext, type PropsWithChildren, useContext, useRef } from 'react'
-import { useStore } from 'zustand/react'
+import { authStore, TOKEN_TTL_MS } from '@auth/stores/authStore'
+import { type PropsWithChildren, useRef } from 'react'
 
-const AuthContext = createContext<AuthStoreApi | null>(null)
+export { useAuthStore } from '@auth/stores/authStore'
 
-export function AuthProvider({ children, ...props }: PropsWithChildren<User>) {
-  const storeRef = useRef<AuthStoreApi | null>(null)
-  if (storeRef.current === null) {
-    storeRef.current = createAuthStore(props)
+export const AuthProvider = ({ children, ...user }: PropsWithChildren<User>) => {
+  const initialized = useRef(false)
+  if (!initialized.current) {
+    authStore.setState({ ...user, tokenExpiresAt: Date.now() + TOKEN_TTL_MS })
+    initialized.current = true
   }
 
-  return <AuthContext.Provider value={storeRef.current}>{children}</AuthContext.Provider>
-}
-
-export const useAuthStore = <T,>(selector: (store: AuthStore) => T): T => {
-  const authStoreApi = useContext(AuthContext)
-
-  if (!authStoreApi) {
-    throw new Error(`useAuthStore must be used within AuthProvider`)
-  }
-
-  return useStore(authStoreApi, selector)
+  return children
 }

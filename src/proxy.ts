@@ -1,5 +1,6 @@
 import { authenticateProxy } from '@auth/lib/authenticate'
 import type { NextRequest } from 'next/server'
+import logger from '@/lib/logger'
 import { withErrorHandler } from '@/lib/with-error-handler'
 
 /**

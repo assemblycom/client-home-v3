@@ -1,30 +1,29 @@
 import { AssemblyNoTokenError } from '@assembly/errors'
+import { ClientEditorWrapper } from '@editor/components/ClientEditorWrapper'
 import { BannerImagesFetcher } from '@media/components/BannerImagesFetcher'
-import { UsersFetcher } from '@users/components/UsersFetcher'
+import { ClientContextFetcher } from '@users/components/ClientContextFetcher'
 import { headers } from 'next/headers'
 import { Suspense } from 'react'
-import { HomeLayout } from '@/app/(home)/HomeLayout'
 import { AuthenticatedAPIHeaders } from '@/app/types'
 import { WorkspaceFetcher } from '@/features/workspace/components/WorkspaceFetcher'
 
-export default async function Home() {
+export default async function ClientPage() {
   const appHeaders = await headers()
   const token = appHeaders.get(AuthenticatedAPIHeaders.CUSTOM_APP_TOKEN)
   if (!token) throw new AssemblyNoTokenError()
 
   return (
-    <>
-      <Suspense fallback={null}>
-        <UsersFetcher token={token} />
+    <div className="flex h-screen w-screen">
+      <Suspense>
+        <ClientContextFetcher token={token} />
       </Suspense>
-      <Suspense fallback={null}>
+      <Suspense>
         <WorkspaceFetcher token={token} />
       </Suspense>
-      <Suspense fallback={null}>
+      <Suspense>
         <BannerImagesFetcher token={token} />
       </Suspense>
-
-      <HomeLayout />
-    </>
+      <ClientEditorWrapper />
+    </div>
   )
 }

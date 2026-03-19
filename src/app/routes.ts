@@ -1,6 +1,8 @@
 export const ROUTES = Object.freeze({
   home: '/',
   client: '/client',
+  proxyHome: '/proxy',
+  proxyClient: '/proxy/client',
   api: {
     health: '/api/health',
     settings: '/api/settings',
@@ -53,6 +55,7 @@ export const authorizedRoutes: Record<string, RouteRule[]> = {
     ROUTES.api.segment,
     ROUTES.api.segmentConfig,
     ROUTES.api.segmentStats,
+    ROUTES.proxyHome,
   ],
   clientUsers: [
     ROUTES.api.workspace,
@@ -60,6 +63,7 @@ export const authorizedRoutes: Record<string, RouteRule[]> = {
     ROUTES.client,
     ROUTES.api.listCustomFields,
     ROUTES.api.tasksAppId,
+    ROUTES.proxyClient,
     {
       path: ROUTES.api.settings,
       methods: ['GET'],

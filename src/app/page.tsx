@@ -2,6 +2,6 @@
 
 import { FreshTokenRedirect } from '@app-bridge/components/FreshTokenRedirect'
 
-export default function Client() {
-  return <FreshTokenRedirect redirectPath="/proxy/client" />
+export default function Home() {
+  return <FreshTokenRedirect redirectPath="/proxy" />
 }

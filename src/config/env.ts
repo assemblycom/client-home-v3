@@ -24,5 +24,5 @@ const vercelUrl = currentEnv === 'production' ? process.env.VERCEL_PROJECT_PRODU
 
 export default EnvSchema.parse({
   ...process.env,
-  VERCEL_URL: !vercelUrl ? 'http://localhost:3000' : vercelUrl.startsWith('http') ? vercelUrl : `https://${vercelUrl}`,
+  VERCEL_URL: !vercelUrl ? 'http://localhost:3000' : vercelUrl.startsWith('http') ? vercelUrl : `http://${vercelUrl}`,
 })

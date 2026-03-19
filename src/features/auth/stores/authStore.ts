@@ -1,7 +1,12 @@
 import type { User } from '@auth/lib/user.entity'
-import { createStore, type StoreApi } from 'zustand'
+import { createStore } from 'zustand'
+import { useStore } from 'zustand/react'
 
-interface AuthState extends User {}
+export const TOKEN_TTL_MS = 5 * 60 * 1000 // 5 minutes
+
+interface AuthState extends User {
+  tokenExpiresAt: number
+}
 
 interface AuthAction {
   setUser: (user: User) => void
@@ -10,11 +15,12 @@ interface AuthAction {
 
 export type AuthStore = AuthState & AuthAction
 
-export const createAuthStore = (user: User) =>
-  createStore<AuthStore>()((set) => ({
-    ...user,
-    setUser: (user: User) => set(() => user),
-    setToken: (token: string) => set({ token }),
-  }))
+export const authStore = createStore<AuthStore>()((set) => ({
+  token: '',
+  workspaceId: '',
+  tokenExpiresAt: 0,
+  setUser: (user: User) => set(() => ({ ...user, tokenExpiresAt: Date.now() + TOKEN_TTL_MS })),
+  setToken: (token: string) => set({ token, tokenExpiresAt: Date.now() + TOKEN_TTL_MS }),
+}))
 
-export type AuthStoreApi = StoreApi<AuthStore>
+export const useAuthStore = <T>(selector: (store: AuthStore) => T): T => useStore(authStore, selector)
