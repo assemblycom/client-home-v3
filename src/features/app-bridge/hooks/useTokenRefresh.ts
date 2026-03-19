@@ -1,3 +1,4 @@
+import { resetFetcherRetryCount } from '@app-bridge/components/TokenRefreshRedirect'
 import { AssemblyBridge } from '@assembly-js/app-bridge'
 import { useEffect } from 'react'
 
@@ -14,6 +15,9 @@ import { useEffect } from 'react'
  */
 export const useTokenRefresh = (portalUrl?: string) => {
   useEffect(() => {
+    // App loaded successfully — reset retry counters so future stale tokens get fresh attempts
+    resetFetcherRetryCount()
+
     AssemblyBridge.configure({ debug: true })
 
     if (portalUrl) {
