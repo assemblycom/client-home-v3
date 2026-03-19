@@ -71,7 +71,7 @@ export function AutofillSuggestionMenu({ ref, ...props }: Props) {
   }
 
   return (
-    <div className="max-h-72 min-w-48 overflow-y-auto rounded-md border border-border-gray bg-white py-1 shadow-md">
+    <div className="max-h-72 min-w-48 overflow-y-auto overflow-hidden rounded-md border border-border-gray bg-white shadow-md">
       {filteredItems.map((item, index) => (
         <button
           type="button"

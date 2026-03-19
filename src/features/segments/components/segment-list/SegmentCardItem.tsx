@@ -59,7 +59,7 @@ export const SegmentCardItem = ({ data, onEdit, onDelete, isLoading }: Props) =>
             />
           )}
           {menuOpen && !isLoading && (
-            <div className="absolute top-full right-0 z-10 w-[200px] rounded border border-border-gray bg-white py-1 shadow-lg">
+            <div className="absolute top-full right-0 z-10 w-[200px] overflow-hidden rounded border border-border-gray bg-white shadow-lg">
               <button
                 type="button"
                 className="flex w-full items-center gap-3 px-4 py-1.5 text-left text-sm text-text-primary hover:bg-gray-50"

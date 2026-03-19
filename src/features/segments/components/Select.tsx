@@ -212,7 +212,7 @@ export const Select = ({
         <div
           ref={listRef}
           role="listbox"
-          className="absolute z-10 mt-1 max-h-48 w-full overflow-y-auto rounded border border-border-popper bg-white pb-1 shadow-[0px_6px_20px_rgba(0,0,0,0.07)]"
+          className="absolute z-10 mt-1 max-h-48 w-full overflow-hidden overflow-y-auto rounded border border-border-popper bg-white shadow-[0px_6px_20px_rgba(0,0,0,0.07)]"
         >
           {renderOptions()}
         </div>

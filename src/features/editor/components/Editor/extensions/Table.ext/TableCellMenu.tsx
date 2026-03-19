@@ -181,7 +181,7 @@ export const TableCellMenu = ({ editor }: { editor: Editor }) => {
             left: dropdownLeft,
             zIndex: 50,
           }}
-          className="min-w-[180px] rounded-md border border-gray-200 bg-white py-1 shadow-lg"
+          className="min-w-[180px] overflow-hidden rounded-md border border-gray-200 bg-white shadow-lg"
         >
           {TABLE_ACTIONS.map((action) => (
             <button
