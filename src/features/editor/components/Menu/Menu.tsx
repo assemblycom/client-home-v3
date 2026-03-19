@@ -79,7 +79,7 @@ export const Menu = ({ mode, query, editor, range, items }: MenuProps) => {
         <Toolbar
           variant="sticky"
           className={cn(
-            'cop-bg-white [&_button:not([data-active=true]):not([aria-pressed=true]):not(:hover)]:!bg-white [&_button:hover]:!bg-background-secondary [&_button[data-active=true]]:!bg-background-secondary [&_button[aria-pressed=true]]:!bg-background-secondary [&_button:active]:!bg-background-secondary [&_.cop-absolute.cop-top-full]:!z-[999]',
+            'cop-bg-white [&_button:not([data-active=true]):not([aria-pressed=true]):not(:hover)]:!bg-white [&_button:hover]:!bg-background-secondary [&_button[data-active=true]]:!bg-background-secondary [&_button[aria-pressed=true]]:!bg-background-secondary [&_button:active]:!bg-background-secondary [&_.cop-absolute.cop-top-full]:!z-[999] [&_.cop-absolute.cop-top-full]:!w-[115px]',
           )}
         />
       )}
