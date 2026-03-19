@@ -11,12 +11,30 @@ export const AssemblyInvalidTokenError = baseServerErrorFactory(
 )
 
 /**
- * Raised when no token is provided for server component / action / API route
+ * Raised when no token is provided in the request query string
  */
 export const AssemblyNoTokenError = baseServerErrorFactory(
   'AssemblyNoTokenError',
   'Custom app token is not provided',
   status.BAD_REQUEST,
+)
+
+/**
+ * Raised when a token is present but cannot be parsed (empty string, wrong format, etc.)
+ */
+export const AssemblyTokenParseError = baseServerErrorFactory(
+  'AssemblyTokenParseError',
+  'Custom app token is present but could not be parsed',
+  status.BAD_REQUEST,
+)
+
+/**
+ * Raised when the proxy did not inject the expected auth headers for a server component
+ */
+export const AssemblyMissingHeadersError = baseServerErrorFactory(
+  'AssemblyMissingHeadersError',
+  'Authenticated headers were not set by the proxy',
+  status.UNAUTHORIZED,
 )
 
 /**
