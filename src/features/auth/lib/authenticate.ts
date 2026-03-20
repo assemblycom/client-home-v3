@@ -1,5 +1,5 @@
 import AssemblyClient from '@assembly/assembly-client'
-import { AssemblyInvalidTokenError, AssemblyNoTokenError, AssemblyTokenParseError } from '@assembly/errors'
+import { AssemblyInvalidTokenError, AssemblyTokenParseError } from '@assembly/errors'
 import type { User } from '@auth/lib/user.entity'
 import { getSanitizedHeaders, isAuthorized } from '@auth/lib/utils'
 import { HttpStatusCode } from 'axios'

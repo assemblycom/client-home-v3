@@ -27,17 +27,35 @@ export default class UsersService extends BaseService {
     return new UsersService(user, assembly)
   }
 
+  private async getAllClientsForWorkspace(): Promise<ClientResponse[]> {
+    const clients: ClientResponse[] = []
+    let nextToken: string | undefined
+
+    while (true) {
+      const response = await this.assembly.getClients({ limit: 5000, nextToken })
+      clients.push(...(response.data ?? []))
+
+      if (response.nextToken) {
+        nextToken = response.nextToken
+      } else {
+        break
+      }
+    }
+
+    return clients
+  }
+
   async getClients(): Promise<UsersDto> {
     const [clients, companies] = await Promise.all([
-      this.assembly.getClients({ limit: MAX_FETCH_ASSEMBLY_RESOURCES }),
+      this.getAllClientsForWorkspace(),
       this.assembly.getCompanies({ limit: MAX_FETCH_ASSEMBLY_RESOURCES }),
     ])
-    if (!clients || !clients.data)
+    if (!clients || clients.length === 0)
       throw new APIError('Could not fetch clients list from assembly', HttpStatusCode.InternalServerError)
 
     // NOTE: Do not check for !companies || !companies.data since companies can be disabled in workspace
 
-    const flattenedClients = clients.data.flatMap((client) => {
+    const flattenedClients = clients.flatMap((client) => {
       const companyIds = client.companyIds ?? [undefined]
 
       return companyIds.map((companyId) => this.getParsedClientData(client, companyId))
