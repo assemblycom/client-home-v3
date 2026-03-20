@@ -1,5 +1,5 @@
 import AssemblyClient from '@assembly/assembly-client'
-import { AssemblyInvalidTokenError, AssemblyNoTokenError, AssemblyTokenParseError } from '@assembly/errors'
+import { AssemblyInvalidTokenError, AssemblyTokenParseError } from '@assembly/errors'
 import type { User } from '@auth/lib/user.entity'
 import { getSanitizedHeaders, isAuthorized } from '@auth/lib/utils'
 import { HttpStatusCode } from 'axios'
@@ -10,7 +10,6 @@ import { AuthenticatedAPIHeaders } from '@/app/types'
 import { NotFoundError } from '@/errors/not-found.error'
 import { UnauthorizedError } from '@/errors/unauthorized.error'
 import type { Token } from '@/lib/assembly/types'
-import logger from '@/lib/logger'
 
 /**
  * Authenticates a Assembly user by token
@@ -73,10 +72,6 @@ export const authenticateProxy = async (req: NextRequest): Promise<NextResponse>
   const tokenPayload = await authenticateToken(token)
 
   if ((tokenPayload.internalUserId && !isInternal) || (tokenPayload.clientId && !isClient)) {
-    logger.info({
-      tokenPayload,
-      isInternal,
-    })
     throw new UnauthorizedError()
   }
 
