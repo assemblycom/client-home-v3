@@ -2,6 +2,7 @@ import AssemblyClient from '@assembly/assembly-client'
 import { AssemblyInvalidTokenError, AssemblyNoTokenError, AssemblyTokenParseError } from '@assembly/errors'
 import type { User } from '@auth/lib/user.entity'
 import { getSanitizedHeaders, isAuthorized } from '@auth/lib/utils'
+import { HttpStatusCode } from 'axios'
 import { type NextRequest, NextResponse } from 'next/server'
 import z from 'zod'
 import { authorizedRoutes } from '@/app/routes'
@@ -55,12 +56,17 @@ export const authenticateProxy = async (req: NextRequest): Promise<NextResponse>
 
   const token = req.nextUrl.searchParams.get('token')
   if (!token) {
-    console.error('AssemblyNoTokenError :: No token query param found', {
+    console.warn('AssemblyNoTokenError :: No token query param found', {
       url: req.nextUrl.pathname,
       hasSearchParams: req.nextUrl.searchParams.toString().length > 0,
       searchParamKeys: [...req.nextUrl.searchParams.keys()],
     })
-    throw new AssemblyNoTokenError()
+    return NextResponse.json(
+      {
+        message: 'Unauthorized',
+      },
+      { status: HttpStatusCode.Unauthorized },
+    )
   }
 
   const tokenPayload = await authenticateToken(token)
