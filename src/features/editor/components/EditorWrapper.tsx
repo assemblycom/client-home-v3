@@ -10,6 +10,7 @@ import { useSegmentSettings } from '@settings/hooks/useSegmentSettings'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import { Activity } from 'react'
 import { ActionsCard } from '@/features/action-items/components/actions-card'
+import { useAppDisplayNames } from '@/features/action-items/hooks/useAppDisplayNames'
 import { Banner } from '@/features/banner'
 import { getImageUrl } from '@/features/banner/lib/utils'
 import { useSidebarStore } from '@/features/editor/stores/sidebarStore'
@@ -43,6 +44,7 @@ export function EditorWrapper({ className }: EditorWrapperProps) {
 
   useSegmentSettings()
   useAppControls()
+  useAppDisplayNames()
 
   return (
     <div
