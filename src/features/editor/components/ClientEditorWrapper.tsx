@@ -5,6 +5,7 @@ import { useViewStore } from '@editor/stores/viewStore'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import { useQuery } from '@tanstack/react-query'
 import { ActionsCard } from '@/features/action-items/components/actions-card'
+import { useAppDisplayNames } from '@/features/action-items/hooks/useAppDisplayNames'
 import { Banner } from '@/features/banner'
 import { getImageUrl } from '@/features/banner/lib/utils'
 import { api } from '@/lib/core/axios.instance'
@@ -35,6 +36,8 @@ export const ClientEditorWrapper = () => {
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
   })
+
+  useAppDisplayNames()
 
   const isDark = isDarkColor(backgroundColor)
 

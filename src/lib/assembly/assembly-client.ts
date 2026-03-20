@@ -82,6 +82,28 @@ export default class AssemblyClient {
     return installedApps.find((app) => app.appId === appDeploymentId)?.id || null
   }
 
+  async _getAppDisplayNames(): Promise<Record<string, string>> {
+    const assembly = await this.assemblyPromise
+    const installedApps = AppInstallsResponseSchema.parse(await assembly.listAppInstalls())
+
+    const appDeploymentIds = {
+      forms: env.FORMS_APP_ID,
+      contracts: env.CONTRACTS_APP_ID,
+      invoices: env.INVOICES_APP_ID,
+      tasks: env.TASKS_APP_ID,
+    }
+
+    const displayNames: Record<string, string> = {}
+    for (const [key, deploymentId] of Object.entries(appDeploymentIds)) {
+      const app = installedApps.find((a) => a.appId === deploymentId)
+      if (app?.displayName) {
+        displayNames[key] = app.displayName
+      }
+    }
+
+    return displayNames
+  }
+
   async _createClient(requestBody: ClientCreateRequest, sendInvite: boolean = false): Promise<ClientResponse> {
     logger.info('AssemblyClient#_createClient', requestBody, sendInvite)
     const assembly = await this.assemblyPromise
@@ -240,4 +262,5 @@ export default class AssemblyClient {
   listCustomFields = this.wrapWithRetry(this._listCustomFields)
   listCustomFieldOptions = this.wrapWithRetry(this._listCustomFieldOptions)
   getAppId = this.wrapWithRetry(this._getAppId)
+  getAppDisplayNames = this.wrapWithRetry(this._getAppDisplayNames)
 }

@@ -17,6 +17,10 @@ interface ActionItemProps {
 export const ActionItem = ({ action, isLoading, mode, className, count }: ActionItemProps) => {
   const clientId = useAuthStore((s) => s.clientId)
   const tasksAppId = useViewStore((s) => s.tasksAppId)
+  const appDisplayNames = useViewStore((s) => s.appDisplayNames)
+
+  const displayLabel = appDisplayNames[action.key] ?? action.label
+  const displaySingularLabel = appDisplayNames[action.key] ?? action.singularLabel
 
   const handleClick = () => {
     if (!clientId) return
@@ -60,7 +64,7 @@ export const ActionItem = ({ action, isLoading, mode, className, count }: Action
             icon={action.icon}
             className="size-4 transition-transform duration-300 group-hover:scale-110 dark-bg:text-white"
           />
-          <h3 className="text-heading-md dark-bg:text-white">{action.label}</h3>
+          <h3 className="text-heading-md dark-bg:text-white">{displayLabel}</h3>
         </div>
         <Icon
           icon="ArrowRight"
@@ -78,7 +82,7 @@ export const ActionItem = ({ action, isLoading, mode, className, count }: Action
           fallbackValue={count ?? 0}
         />
         {mode === ViewMode.PREVIEW
-          ? ` ${count === 1 ? action.singularLabel?.toLocaleLowerCase() : action.label.toLocaleLowerCase()}`
+          ? ` ${count === 1 ? displaySingularLabel?.toLocaleLowerCase() : displayLabel.toLocaleLowerCase()}`
           : null}
       </div>
     </button>
