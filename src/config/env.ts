@@ -7,9 +7,9 @@ const EnvSchema = z.object({
 
   TASKS_ASSEMBLY_API_KEY: z.string().min(1),
   TASKS_APP_ID: z.uuid(),
-  FORMS_APP_ID: z.uuid(),
-  CONTRACTS_APP_ID: z.uuid(),
-  INVOICES_APP_ID: z.uuid(),
+  FORMS_APP_ID: z.string().min(1),
+  CONTRACTS_APP_ID: z.string().min(1),
+  INVOICES_APP_ID: z.string().min(1),
 
   VERCEL_ENV: z.enum(['production', 'preview', 'development']).optional(), // NOTE: We can add other custom environments here
   VERCEL_URL: z.url(),
