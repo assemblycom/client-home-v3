@@ -2,6 +2,7 @@ import { useViewStore, ViewMode } from '@editor/stores/viewStore'
 import { useNotificationCounts } from '@notification-counts/hooks/useNotificationCounts'
 import type { NotificationCountsDto } from '@notification-counts/notification-counts.dto'
 import { useEnabledActions } from '@settings/hooks/useEnabledActions'
+import { useAppDisplayNames } from '@/features/action-items/hooks/useAppDisplayNames'
 import { HandleBarTemplate } from '@/features/handlebar-template/components/handle-bar-template'
 import { cn } from '@/utils/tailwind'
 import { ActionItem } from './action-item'
@@ -14,7 +15,10 @@ export const ActionsCard = ({ readonly }: ActionCardProps) => {
   const { enabledActions } = useEnabledActions()
   const viewMode = useViewStore((store) => store.viewMode)
   const workspace = useViewStore((store) => store.workspace)
-  const { counts, isLoading } = useNotificationCounts()
+  const { counts, isLoading: isCountsLoading } = useNotificationCounts()
+  const { isLoading: isDisplayNamesLoading } = useAppDisplayNames()
+
+  const isLoading = isCountsLoading || isDisplayNamesLoading
 
   const isPreviewMode = readonly || viewMode === ViewMode.PREVIEW
 
