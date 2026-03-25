@@ -1,6 +1,6 @@
 import type { WorkspaceResponse } from '@assembly/types'
 import type { ClientsDto, CompaniesDto } from '@users/users.dto'
-import type { CustomFieldOptionsMap } from '@/features/custom-fields/hooks/useCustomFieldOptionsMap'
+import type { CustomFieldOptionsMap } from '@/features/custom-fields/hooks/useCustomFields'
 
 /**
  * Maps raw custom field values (option keys) to their display labels.

@@ -3,7 +3,7 @@
 import { useViewStore, ViewMode } from '@editor/stores/viewStore'
 import { useUsersStore } from '@users/stores/usersStore'
 import type { ReactNode } from 'react'
-import { useCustomFieldOptionsMap } from '@/features/custom-fields/hooks/useCustomFieldOptionsMap'
+import { useCustomFields } from '@/features/custom-fields/hooks/useCustomFields'
 import type { TemplateString } from '@/features/handlebar-template/types/hande-bar-template.type'
 import { resolveTemplate } from '@/features/handlebar-template/utils/resolve-template'
 import { cn } from '@/utils/tailwind'
@@ -34,7 +34,7 @@ export function HandleBarTemplate({
   const workspace = useViewStore((s) => s.workspace)
   const previewClient = useUsersStore((s) => s.previewClient)
   const previewCompany = useUsersStore((s) => s.previewCompany)
-  const { optionsMap } = useCustomFieldOptionsMap()
+  const { optionsMap } = useCustomFields()
 
   if (mode === ViewMode.EDITOR) {
     const label = displayContent ?? template

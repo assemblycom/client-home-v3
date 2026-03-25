@@ -1,11 +1,17 @@
 'use client'
 
-import { CustomFieldEntityType, CustomFieldType, ListCustomFieldResponseSchema } from '@assembly/types'
+import {
+  CustomFieldEntityType,
+  CustomFieldType,
+  ListCustomFieldOptionsResponseSchema,
+  ListCustomFieldResponseSchema,
+} from '@assembly/types'
 import type { IconType } from '@assembly-js/design-system'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/core/axios.instance'
 
 const CUSTOM_FIELDS_QUERY_KEY = 'custom-fields'
+const CUSTOM_FIELD_OPTIONS_MAP_QUERY_KEY = 'custom-field-options-map'
 
 const CUSTOM_FIELD_TYPE_ICON: Record<CustomFieldType, IconType> = {
   [CustomFieldType.ADDRESS]: 'Location',
@@ -24,6 +30,9 @@ export type CustomFieldItem = {
   type: CustomFieldType
   icon: IconType
 }
+
+/** Flat map from option key → option label across all custom fields */
+export type CustomFieldOptionsMap = Record<string, string>
 
 export function useCustomFields() {
   const { data: clientCustomFields, isLoading: clientIsLoading } = useQuery({
@@ -48,9 +57,36 @@ export function useCustomFields() {
     },
   })
 
+  const allFields = [...(clientCustomFields ?? []), ...(companyCustomFields ?? [])]
+
+  const { data: optionsMap, isLoading: optionsMapIsLoading } = useQuery({
+    queryKey: [CUSTOM_FIELD_OPTIONS_MAP_QUERY_KEY, allFields.map((f) => f.id)],
+    queryFn: async (): Promise<CustomFieldOptionsMap> => {
+      const optionsResults = await Promise.all(
+        allFields.map((field) =>
+          api
+            .get(`/api/custom-fields/values/${field.id}`)
+            .then((res) => ListCustomFieldOptionsResponseSchema.parse(res.data))
+            .then((parsed) => parsed.data)
+            .catch(() => []),
+        ),
+      )
+
+      const map: CustomFieldOptionsMap = {}
+      for (const options of optionsResults) {
+        for (const option of options) {
+          map[option.key] = option.label
+        }
+      }
+      return map
+    },
+    enabled: allFields.length > 0,
+  })
+
   return {
     clientCustomFields: clientCustomFields ?? [],
     companyCustomFields: companyCustomFields ?? [],
-    isLoading: clientIsLoading || companyIsLoading,
+    optionsMap: optionsMap ?? {},
+    isLoading: clientIsLoading || companyIsLoading || optionsMapIsLoading,
   }
 }
