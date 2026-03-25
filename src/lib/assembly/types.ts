@@ -174,21 +174,6 @@ export enum CustomFieldEntityType {
   COMPANY = 'company',
 }
 
-const CustomFieldSchema = z.object({
-  id: z.string(),
-  key: z.string(),
-  name: z.string(),
-  type: z.enum(CustomFieldType),
-  order: z.number(),
-  object: z.literal('customField'),
-  entityType: z.enum(CustomFieldEntityType),
-})
-
-export const ListCustomFieldResponseSchema = z.object({
-  data: z.array(CustomFieldSchema),
-})
-
-// Response schema for `/custom-fields/{id}/options` endpoint
 export const CustomFieldOptionSchema = z.object({
   id: z.string(),
   key: z.string(),
@@ -200,4 +185,19 @@ export type CustomFieldOption = z.infer<typeof CustomFieldOptionSchema>
 
 export const ListCustomFieldOptionsResponseSchema = z.object({
   data: z.array(CustomFieldOptionSchema),
+})
+
+const CustomFieldSchema = z.object({
+  id: z.string(),
+  key: z.string(),
+  name: z.string(),
+  type: z.enum(CustomFieldType),
+  order: z.number(),
+  object: z.literal('customField'),
+  entityType: z.enum(CustomFieldEntityType),
+  options: z.array(CustomFieldOptionSchema).optional(),
+})
+
+export const ListCustomFieldResponseSchema = z.object({
+  data: z.array(CustomFieldSchema),
 })
