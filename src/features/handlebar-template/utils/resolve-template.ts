@@ -4,15 +4,18 @@ import type { CustomFieldOptionsMap } from '@/features/custom-fields/hooks/useCu
 
 /**
  * Maps raw custom field values (option keys) to their display labels.
+ * Uses the nested optionsMap keyed by field key to avoid collisions
+ * when different fields share option keys.
  * Falls back to the raw value when no label is found.
  */
-const resolveCustomFieldValue = (raw: unknown, optionsMap: CustomFieldOptionsMap): string => {
+const resolveCustomFieldValue = (fieldKey: string, raw: unknown, optionsMap: CustomFieldOptionsMap): string => {
   if (raw == null) return ''
+  const fieldOptions = optionsMap[fieldKey]
   if (Array.isArray(raw)) {
-    return raw.map((v) => optionsMap[String(v)] ?? String(v)).join(', ')
+    return raw.map((v) => fieldOptions?.[String(v)] ?? String(v)).join(', ')
   }
   const str = String(raw)
-  return optionsMap[str] ?? str
+  return fieldOptions?.[str] ?? str
 }
 
 /**
@@ -41,7 +44,7 @@ export function resolveTemplate(
         company: company?.name,
       }
       if (field in builtIn) return builtIn[field] ?? ''
-      return resolveCustomFieldValue(client.customFields?.[field], optionsMap)
+      return resolveCustomFieldValue(field, client.customFields?.[field], optionsMap)
     }
     case 'company': {
       if (!company) return ''
@@ -49,7 +52,7 @@ export function resolveTemplate(
         name: company.name,
       }
       if (field in builtIn) return builtIn[field] ?? ''
-      return resolveCustomFieldValue(company.customFields?.[field], optionsMap)
+      return resolveCustomFieldValue(field, company.customFields?.[field], optionsMap)
     }
     case 'workspace': {
       if (!workspace) return ''
