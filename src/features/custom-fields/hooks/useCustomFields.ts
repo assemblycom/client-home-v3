@@ -26,8 +26,8 @@ export type CustomFieldItem = {
   icon: IconType
 }
 
-/** Nested map: { [fieldKey]: { [optionKey]: optionLabel } } */
-export type CustomFieldOptionsMap = Record<string, Record<string, string>>
+/** Nested map: { [entityType]: { [fieldKey]: { [optionKey]: optionLabel } } } */
+export type CustomFieldOptionsMap = Record<string, Record<string, Record<string, string>>>
 
 export function useCustomFields() {
   const { data: clientCustomFields, isLoading: clientIsLoading } = useQuery({
@@ -56,8 +56,7 @@ export function useCustomFields() {
     queryKey: [CUSTOM_FIELD_OPTIONS_MAP_QUERY_KEY],
     queryFn: async (): Promise<CustomFieldOptionsMap> => {
       const res = await api.get('/api/custom-fields/options-map')
-      console.info('dataaaa', res.data)
-      return res.data
+      return res.data.data
     },
   })
 
