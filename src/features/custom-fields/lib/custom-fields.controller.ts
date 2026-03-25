@@ -47,27 +47,17 @@ export const listAllCustomFieldOptionsMap = async (req: NextRequest): Promise<Ne
   const user = authenticateHeaders(req.headers)
   const assembly = new AssemblyClient(user.token)
 
-  const [clientFields, companyFields] = await Promise.all([
-    assembly.listCustomFields({ entityType: CustomFieldEntityType.CLIENT }),
-    assembly.listCustomFields({ entityType: CustomFieldEntityType.COMPANY }),
-  ])
+  const allFields = await assembly.listCustomFields()
 
-  const buildEntityMap = (fields: { key: string; options?: { key: string; label: string }[] }[]) => {
-    const entityMap: Record<string, Record<string, string>> = {}
-    for (const field of fields) {
-      const fieldMap: Record<string, string> = {}
-      for (const option of field.options ?? []) {
-        fieldMap[option.key] = option.label
-      }
-      entityMap[field.key] = fieldMap
+  const map: Record<string, Record<string, Record<string, string>>> = {}
+  for (const field of allFields.data ?? []) {
+    if (!map[field.entityType]) map[field.entityType] = {}
+    const fieldMap: Record<string, string> = {}
+    for (const option of field.options ?? []) {
+      fieldMap[option.key] = option.label
     }
-    return entityMap
+    map[field.entityType][field.key] = fieldMap
   }
 
-  return NextResponse.json({
-    data: {
-      client: buildEntityMap(clientFields.data ?? []),
-      company: buildEntityMap(companyFields.data ?? []),
-    },
-  })
+  return NextResponse.json({ data: map })
 }
