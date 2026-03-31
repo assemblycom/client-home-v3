@@ -27,27 +27,9 @@ export default class UsersService extends BaseService {
     return new UsersService(user, assembly)
   }
 
-  private async getAllClientsForWorkspace(): Promise<ClientResponse[]> {
-    const clients: ClientResponse[] = []
-    let nextToken: string | undefined
-
-    while (true) {
-      const response = await this.assembly.getClients({ limit: 5000, nextToken })
-      clients.push(...(response.data ?? []))
-
-      if (response.nextToken) {
-        nextToken = response.nextToken
-      } else {
-        break
-      }
-    }
-
-    return clients
-  }
-
   async getClients(): Promise<UsersDto> {
     const [clients, companies] = await Promise.all([
-      this.getAllClientsForWorkspace(),
+      this.assembly.getAllClients(),
       this.assembly.getCompanies({ limit: MAX_FETCH_ASSEMBLY_RESOURCES }),
     ])
     if (!clients || clients.length === 0)
