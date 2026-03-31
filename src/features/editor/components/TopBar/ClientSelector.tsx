@@ -22,6 +22,19 @@ export const ClientSelector = () => {
     }
   }, [isOpen])
 
+  if (!previewClient) {
+    return (
+      <div className="box-content flex min-h-7 max-w-48 items-center gap-2.5 rounded-sm border border-border-gray px-2 py-0.5">
+        <div className="flex items-center gap-1.5">
+          <span className="hidden min-[860px]:inline">
+            <div className="h-3.5 w-16 animate-pulse rounded bg-gray-200" />
+          </span>
+          <div className="h-3.5 w-24 animate-pulse rounded bg-gray-200" />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div>
       <button
