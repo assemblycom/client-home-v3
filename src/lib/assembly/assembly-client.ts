@@ -34,7 +34,7 @@ import env from '@/config/env'
 import logger from '@/lib/logger'
 import { withRetry } from '@/lib/with-retry'
 import { encodePayload } from '@/utils/crypto'
-import { MAX_FETCH_ASSEMBLY_RESOURCES } from './constants'
+import { ASSEMBLY_CLIENTS_PAGE_SIZE, MAX_FETCH_ASSEMBLY_RESOURCES } from './constants'
 import { AssemblyInvalidTokenError } from './errors'
 
 export default class AssemblyClient {
@@ -163,9 +163,32 @@ export default class AssemblyClient {
     return CompaniesResponseSchema.parse(await assembly.listCompanies(args))
   }
 
+  async getAllClients(args: Omit<AssemblyListArgs & { companyId?: string }, 'limit' | 'nextToken'> = {}): Promise<ClientResponse[]> {
+    logger.info('AssemblyClient#getAllClients', args)
+
+    const clients: ClientResponse[] = []
+    let nextToken: string | undefined
+
+    while (true) {
+      const response = await this.getClients({
+        ...args,
+        limit: ASSEMBLY_CLIENTS_PAGE_SIZE,
+        nextToken,
+      })
+
+      clients.push(...(response.data ?? []))
+
+      if (!response.nextToken) {
+        return clients
+      }
+
+      nextToken = response.nextToken
+    }
+  }
+
   async _getCompanyClients(companyId: string): Promise<ClientResponse[]> {
     logger.info('AssemblyClient#_getCompanyClients', companyId)
-    return (await this.getClients({ limit: 10000, companyId })).data || []
+    return await this.getAllClients({ companyId })
   }
 
   async _getInternalUsers(args: AssemblyListArgs = {}): Promise<InternalUsersResponse> {

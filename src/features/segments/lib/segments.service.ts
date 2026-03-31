@@ -263,12 +263,10 @@ export default class SegmentsService extends BaseService {
     const isCompanySegment = segmentConfig?.entityType === CustomFieldEntityType.COMPANY
     const customField = segmentConfig?.customField
 
-    const [clientsResponse, companiesResponse] = await Promise.all([
-      this.assembly.getClients({ limit: MAX_FETCH_ASSEMBLY_RESOURCES }),
+    const [clients, companiesResponse] = await Promise.all([
+      this.assembly.getAllClients(),
       isCompanySegment ? this.assembly.getCompanies({ limit: MAX_FETCH_ASSEMBLY_RESOURCES }) : null,
     ])
-
-    const clients = clientsResponse.data ?? []
     const companies = companiesResponse?.data ?? []
 
     // Build a map from companyId → matched settingId for company segments
