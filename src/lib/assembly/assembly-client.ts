@@ -163,7 +163,9 @@ export default class AssemblyClient {
     return CompaniesResponseSchema.parse(await assembly.listCompanies(args))
   }
 
-  async getAllClients(args: Omit<AssemblyListArgs & { companyId?: string }, 'limit' | 'nextToken'> = {}): Promise<ClientResponse[]> {
+  async getAllClients(
+    args: Omit<AssemblyListArgs & { companyId?: string }, 'limit' | 'nextToken'> = {},
+  ): Promise<ClientResponse[]> {
     logger.info('AssemblyClient#getAllClients', args)
 
     const clients: ClientResponse[] = []
