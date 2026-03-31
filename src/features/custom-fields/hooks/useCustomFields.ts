@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/core/axios.instance'
 
 const CUSTOM_FIELDS_QUERY_KEY = 'custom-fields'
+const CUSTOM_FIELD_OPTIONS_MAP_QUERY_KEY = 'custom-field-options-map'
 
 const CUSTOM_FIELD_TYPE_ICON: Record<CustomFieldType, IconType> = {
   [CustomFieldType.ADDRESS]: 'Location',
@@ -24,6 +25,9 @@ export type CustomFieldItem = {
   type: CustomFieldType
   icon: IconType
 }
+
+/** Nested map: { [entityType]: { [fieldKey]: { [optionKey]: optionLabel } } } */
+export type CustomFieldOptionsMap = Record<string, Record<string, Record<string, string>>>
 
 export function useCustomFields() {
   const { data: clientCustomFields, isLoading: clientIsLoading } = useQuery({
@@ -48,9 +52,18 @@ export function useCustomFields() {
     },
   })
 
+  const { data: optionsMap, isLoading: optionsMapIsLoading } = useQuery({
+    queryKey: [CUSTOM_FIELD_OPTIONS_MAP_QUERY_KEY],
+    queryFn: async (): Promise<CustomFieldOptionsMap> => {
+      const res = await api.get('/api/custom-fields/options-map')
+      return res.data.data
+    },
+  })
+
   return {
     clientCustomFields: clientCustomFields ?? [],
     companyCustomFields: companyCustomFields ?? [],
-    isLoading: clientIsLoading || companyIsLoading,
+    optionsMap: optionsMap ?? {},
+    isLoading: clientIsLoading || companyIsLoading || optionsMapIsLoading,
   }
 }

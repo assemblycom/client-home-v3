@@ -3,6 +3,7 @@
 import { useViewStore, ViewMode } from '@editor/stores/viewStore'
 import { useUsersStore } from '@users/stores/usersStore'
 import type { ReactNode } from 'react'
+import { useCustomFields } from '@/features/custom-fields/hooks/useCustomFields'
 import type { TemplateString } from '@/features/handlebar-template/types/hande-bar-template.type'
 import { resolveTemplate } from '@/features/handlebar-template/utils/resolve-template'
 import { cn } from '@/utils/tailwind'
@@ -33,6 +34,7 @@ export function HandleBarTemplate({
   const workspace = useViewStore((s) => s.workspace)
   const previewClient = useUsersStore((s) => s.previewClient)
   const previewCompany = useUsersStore((s) => s.previewCompany)
+  const { optionsMap } = useCustomFields()
 
   if (mode === ViewMode.EDITOR) {
     const label = displayContent ?? template
@@ -58,6 +60,6 @@ export function HandleBarTemplate({
     return <span className={cn('inline-block h-[1em] w-16 animate-pulse rounded bg-gray-200', className)} />
   }
 
-  const resolved = resolveTemplate(template, previewClient, previewCompany, workspace)
+  const resolved = resolveTemplate(template, previewClient, previewCompany, workspace, optionsMap)
   return <span className={className}>{resolved || fallbackValue}</span>
 }

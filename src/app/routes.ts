@@ -16,6 +16,7 @@ export const ROUTES = Object.freeze({
     notificationCounts: '/api/users/:id/notification-counts',
     listCustomFields: '/api/custom-fields/:entityType',
     customFieldOptions: '/api/custom-fields/values/:id',
+    customFieldOptionsMap: '/api/custom-fields/options-map',
     segments: '/api/segments',
     segment: '/api/segments/:segmentId',
     segmentConfig: '/api/segments/config',
@@ -49,6 +50,7 @@ export const authorizedRoutes: Record<string, RouteRule[]> = {
     ROUTES.api.notificationCounts,
     ROUTES.api.listCustomFields,
     ROUTES.api.customFieldOptions,
+    ROUTES.api.customFieldOptionsMap,
     ROUTES.api.upload,
     ROUTES.api.segments,
     ROUTES.api.segment,
@@ -61,6 +63,7 @@ export const authorizedRoutes: Record<string, RouteRule[]> = {
     ROUTES.api.clientContext,
     ROUTES.client,
     ROUTES.api.listCustomFields,
+    ROUTES.api.customFieldOptionsMap,
     ROUTES.api.tasksAppId,
     ROUTES.api.appDisplayNames,
     {

@@ -210,7 +210,7 @@ export default class AssemblyClient {
     }
   }
 
-  private async _listCustomFields({ entityType }: { entityType: CustomFieldEntityType }) {
+  private async _listCustomFields({ entityType }: { entityType?: CustomFieldEntityType } = {}) {
     logger.info('AssemblyClient#_listCustomFields')
     const assembly = await this.assemblyPromise
     return ListCustomFieldResponseSchema.parse(

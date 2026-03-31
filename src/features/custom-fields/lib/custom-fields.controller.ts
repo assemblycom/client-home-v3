@@ -37,3 +37,27 @@ export const listCustomFieldOptions = async (
 
   return NextResponse.json(response)
 }
+
+/**
+ * Returns a nested map of { [entityType]: { [fieldKey]: { [optionKey]: optionLabel } } }
+ * for all custom field options. Namespaced by entity type first because
+ * field keys are only unique within an entity type (client vs company).
+ */
+export const listAllCustomFieldOptionsMap = async (req: NextRequest): Promise<NextResponse<APIResponse>> => {
+  const user = authenticateHeaders(req.headers)
+  const assembly = new AssemblyClient(user.token)
+
+  const allFields = await assembly.listCustomFields()
+
+  const map: Record<string, Record<string, Record<string, string>>> = {}
+  for (const field of allFields.data ?? []) {
+    if (!map[field.entityType]) map[field.entityType] = {}
+    const fieldMap: Record<string, string> = {}
+    for (const option of field.options ?? []) {
+      fieldMap[option.key] = option.label
+    }
+    map[field.entityType][field.key] = fieldMap
+  }
+
+  return NextResponse.json({ data: map })
+}
