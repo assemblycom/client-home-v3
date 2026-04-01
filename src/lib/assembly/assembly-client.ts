@@ -273,6 +273,7 @@ export default class AssemblyClient {
   getWorkspace = this.wrapWithRetry(this._getWorkspace)
   createClient = this.wrapWithRetry(this._createClient)
   getClient = this.wrapWithRetry(this._getClient)
+  getClients = this.wrapWithRetry(this._getClients)
   getAllClients = this.wrapWithRetry(this._getAllClients)
   updateClient = this.wrapWithRetry(this._updateClient)
   deleteClient = this.wrapWithRetry(this._deleteClient)
