@@ -163,7 +163,7 @@ export default class AssemblyClient {
     return CompaniesResponseSchema.parse(await assembly.listCompanies(args))
   }
 
-  async getAllClients(
+  async _getAllClients(
     args: Omit<AssemblyListArgs & { companyId?: string }, 'limit' | 'nextToken'> = {},
   ): Promise<ClientResponse[]> {
     logger.info('AssemblyClient#getAllClients', args)
@@ -172,7 +172,7 @@ export default class AssemblyClient {
     let nextToken: string | undefined
 
     while (true) {
-      const response = await this.getClients({
+      const response = await this._getClients({
         ...args,
         limit: ASSEMBLY_CLIENTS_PAGE_SIZE,
         nextToken,
@@ -273,7 +273,7 @@ export default class AssemblyClient {
   getWorkspace = this.wrapWithRetry(this._getWorkspace)
   createClient = this.wrapWithRetry(this._createClient)
   getClient = this.wrapWithRetry(this._getClient)
-  getClients = this.wrapWithRetry(this._getClients)
+  getAllClients = this.wrapWithRetry(this._getAllClients)
   updateClient = this.wrapWithRetry(this._updateClient)
   deleteClient = this.wrapWithRetry(this._deleteClient)
   createCompany = this.wrapWithRetry(this._createCompany)
