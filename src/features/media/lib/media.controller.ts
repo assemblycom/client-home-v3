@@ -48,7 +48,7 @@ export const getUploadUrl = async (req: NextRequest): Promise<NextResponse<APIRe
 }
 
 export const getImage = async (req: NextRequest): Promise<NextResponse<APIResponse>> => {
-  const user = authenticateHeaders(req.headers)
+  const user = await authenticateHeaders(req.headers)
   const searchParams = req.nextUrl.searchParams
   const filePath = searchParams.get('filePath')
 
@@ -75,12 +75,14 @@ export const getImage = async (req: NextRequest): Promise<NextResponse<APIRespon
     throw new APIError('Image not found', httpStatus.NOT_FOUND)
   }
 
+  const imageBuffer = await imageResponse.arrayBuffer()
+
   const headers: ResponseInit['headers'] = {
-    'Content-Type': imageResponse.headers.get('Content-Type') || 'image/jpeg', // Set appropriate content type
-    'Cache-Control': 'public, max-age=1864000, immutable', // Optional: Cache headers for performance
+    'Content-Type': imageResponse.headers.get('Content-Type') || 'image/jpeg',
+    'Cache-Control': 'public, max-age=1864000, immutable',
   }
 
-  return new NextResponse(imageResponse.body, {
+  return new NextResponse(imageBuffer, {
     headers,
   })
 }
