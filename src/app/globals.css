@@ -188,6 +188,10 @@ body {
     }
   }
 
+  a {
+    color: #1164a3;
+  }
+
   .callout {
     @apply bg-background-primary p-3 rounded;
     .callout__content {
