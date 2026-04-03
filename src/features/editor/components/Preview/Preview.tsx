@@ -33,14 +33,14 @@ export function Preview({ content, backgroundColor, bannerUrl, bannerPositionX, 
     >
       <PreviewTopBar url={workspace?.portalUrl} />
 
-      <div className="preview-scrollable min-h-0 flex-1 overflow-auto border-gray-200 border-t">
+      <div className="preview-scrollable min-h-0 flex-1 overflow-y-auto overflow-x-hidden border-gray-200 border-t">
         {!workspace ? (
           <div className="flex min-h-32 items-center justify-center">
             <Loader />
           </div>
         ) : (
           <div
-            className={cn('@container flex w-full flex-col gap-5 overflow-auto px-6 py-5', isDark && 'dark')}
+            className={cn('@container flex w-full flex-col gap-5 px-6 py-5', isDark && 'dark')}
             style={{ backgroundColor, '--bg-color': backgroundColor } as React.CSSProperties}
           >
             <div className="flex flex-col gap-1.5">
