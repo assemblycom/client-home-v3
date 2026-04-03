@@ -16,19 +16,52 @@ const createButton = (className: string, ariaLabel: string): HTMLButtonElement =
   return btn
 }
 
+const updateButtonPositions = (wrapper: HTMLElement) => {
+  const table = wrapper.querySelector('table')
+  const colBtn = wrapper.querySelector<HTMLElement>(`.${BUTTON_CLASS_COL}`)
+  const rowBtn = wrapper.querySelector<HTMLElement>(`.${BUTTON_CLASS_ROW}`)
+  if (!table) return
+  const tableWidth = table.offsetWidth
+  if (colBtn) colBtn.style.left = `${tableWidth + 4}px`
+  if (rowBtn) rowBtn.style.width = `${tableWidth}px`
+}
+
+const SCROLLING_CLASS = 'is-scrolling'
+
 export const TableAddButtons = ({ editor }: { editor: Editor }) => {
   useEffect(() => {
     const editorDOM = editor.view.dom
+    const scrollTimers = new Map<HTMLElement, ReturnType<typeof setTimeout>>()
+
+    const handleScroll = (wrapper: HTMLElement) => {
+      wrapper.classList.add(SCROLLING_CLASS)
+      const existing = scrollTimers.get(wrapper)
+      if (existing) clearTimeout(existing)
+      scrollTimers.set(
+        wrapper,
+        setTimeout(() => {
+          wrapper.classList.remove(SCROLLING_CLASS)
+          scrollTimers.delete(wrapper)
+        }, 150),
+      )
+    }
+
+    const scrollListeners = new Map<HTMLElement, () => void>()
 
     const ensureButtons = () => {
       const wrappers = editorDOM.querySelectorAll<HTMLElement>('.tableWrapper')
       for (const wrapper of wrappers) {
+        if (!scrollListeners.has(wrapper)) {
+          const listener = () => handleScroll(wrapper)
+          wrapper.addEventListener('scroll', listener)
+          scrollListeners.set(wrapper, listener)
+        }
+
         if (!wrapper.querySelector(`.${BUTTON_CLASS_ROW}`)) {
           const rowBtn = createButton(BUTTON_CLASS_ROW, 'Add row')
           rowBtn.addEventListener('mousedown', (e) => {
             e.preventDefault()
             e.stopPropagation()
-            // Place cursor in the last cell of this table before adding row
             const table = wrapper.querySelector('table')
             if (table) {
               const lastCell = table.querySelector('tr:last-child td:last-child, tr:last-child th:last-child')
@@ -56,13 +89,32 @@ export const TableAddButtons = ({ editor }: { editor: Editor }) => {
           })
           wrapper.appendChild(colBtn)
         }
+        updateButtonPositions(wrapper)
       }
     }
 
     ensureButtons()
     editor.on('transaction', ensureButtons)
+
+    const resizeObserver = new ResizeObserver(() => {
+      const wrappers = editorDOM.querySelectorAll<HTMLElement>('.tableWrapper')
+      for (const wrapper of wrappers) {
+        updateButtonPositions(wrapper)
+      }
+    })
+    resizeObserver.observe(editorDOM)
+
     return () => {
       editor.off('transaction', ensureButtons)
+      resizeObserver.disconnect()
+      for (const [wrapper, listener] of scrollListeners) {
+        wrapper.removeEventListener('scroll', listener)
+      }
+      scrollListeners.clear()
+      for (const timer of scrollTimers.values()) {
+        clearTimeout(timer)
+      }
+      scrollTimers.clear()
     }
   }, [editor])
 

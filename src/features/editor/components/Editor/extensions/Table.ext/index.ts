@@ -11,7 +11,7 @@ const NoNestedTableHeader = TableHeader.extend({ content: tableCellContent })
 
 export const TableExt = [
   TableKit.configure({
-    table: { resizable: true },
+    table: { resizable: true, cellMinWidth: 240 },
     tableCell: false,
     tableHeader: false,
   }),
