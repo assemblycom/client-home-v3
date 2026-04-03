@@ -63,11 +63,13 @@ export const authenticateProxy = async (req: NextRequest): Promise<NextResponse>
     null
 
   if (!token) {
-    console.warn('AssemblyNoTokenError :: No token query param found', {
-      url: req.nextUrl.pathname,
-      hasSearchParams: req.nextUrl.searchParams.toString().length > 0,
-      searchParamKeys: [...req.nextUrl.searchParams.keys()],
-    })
+    if (req.nextUrl.pathname !== ROUTES.api.image) {
+      console.warn('AssemblyNoTokenError :: No token query param found', {
+        url: req.nextUrl.pathname,
+        hasSearchParams: req.nextUrl.searchParams.toString().length > 0,
+        searchParamKeys: [...req.nextUrl.searchParams.keys()],
+      })
+    }
     return NextResponse.json(
       {
         message: 'Unauthorized',
@@ -101,7 +103,7 @@ export const authenticateProxy = async (req: NextRequest): Promise<NextResponse>
   // This keeps image URLs stable and cacheable by CDN/browser.
   response.cookies.set(MEDIA_TOKEN_COOKIE, token, {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
     path: ROUTES.api.image,
   })
