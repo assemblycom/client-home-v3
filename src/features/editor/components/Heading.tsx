@@ -15,7 +15,7 @@ interface HeadingProps extends PropsWithClassname {
 }
 
 export const Heading = ({ readonly, className }: HeadingProps) => {
-  const [greeting, setGreeting] = useState(() => getTimeOfDay())
+  const [greeting, setGreeting] = useState('')
 
   useEffect(() => {
     setGreeting(getTimeOfDay())
@@ -28,7 +28,7 @@ export const Heading = ({ readonly, className }: HeadingProps) => {
 
   return (
     <div className={cn('flex flex-wrap items-baseline font-medium text-custom-xl leading-7', className)}>
-      <div className="capitalize" suppressHydrationWarning>
+      <div className={cn('capitalize', greeting ? '' : 'opacity-0')} suppressHydrationWarning>
         Good {greeting},&nbsp;
       </div>
       <span>
