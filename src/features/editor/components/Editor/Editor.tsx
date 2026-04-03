@@ -8,7 +8,6 @@ import extensions from '@extensions/extensions'
 import { FileHandlerExt } from '@extensions/FileHandler.ext'
 import { ImageExt } from '@extensions/Image.ext'
 import { TableAddButtons } from '@extensions/Table.ext/TableAddButtons'
-import { TableCellMenu } from '@extensions/Table.ext/TableCellMenu'
 import { SettingsContext } from '@settings/providers/settings.provider'
 import { EditorContent, useEditor } from '@tiptap/react'
 import { useContext, useEffect } from 'react'
@@ -54,7 +53,6 @@ export const Editor = ({ content }: EditorProps) => {
       <BubbleMenu id="embed-bubble-menu" editor={editor} open={showEmbedInput}>
         <EmbedBubbleInput editor={editor} showEmbedInput={showEmbedInput} setShowEmbedInput={setShowEmbedInput} />
       </BubbleMenu>
-      <TableCellMenu editor={editor} />
       <TableAddButtons editor={editor} />
       <EditorContent editor={editor} />
     </div>
