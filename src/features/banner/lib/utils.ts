@@ -1,3 +1,4 @@
+import { AssemblyBridge } from '@assembly-js/app-bridge'
 import { uploadFileToSupabase } from '@editor/client.utils'
 import { MediaFolders } from '@media/constants'
 
@@ -6,7 +7,16 @@ export const getImageUrl = (path: string | undefined) => {
     console.warn('[getImageUrl] called with undefined path')
     return undefined
   }
-  return `/api/media/image?filePath=${encodeURIComponent(path)}`
+  const current = AssemblyBridge.sessionToken.getCurrent()
+  const token = current?.token
+  if (!token) {
+    console.warn('[getImageUrl] no token available from AssemblyBridge', {
+      hasCurrent: !!current,
+      tokenLength: current?.token?.length ?? 0,
+    })
+    return undefined
+  }
+  return `/api/media/image?token=${token}&filePath=${path}`
 }
 
 export const handleBannerFileUpload = async (file: File) => {

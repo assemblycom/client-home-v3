@@ -1,3 +1,4 @@
+import { AssemblyBridge } from '@assembly-js/app-bridge'
 import { uploadFileToSupabase } from '@editor/client.utils'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import type { Editor } from '@tiptap/core'
@@ -31,8 +32,14 @@ export const useFileHandlers = () => {
           .focus()
           .run()
         setContent(currentEditor.getHTML())
+        const token = AssemblyBridge.sessionToken.getCurrent()?.token
+        if (!token) {
+          console.error('Could not upload to supabase due to missing token')
+          return // Keep the blob image for now
+        }
+
         const { path } = await uploadFileToSupabase(file)
-        const proxyUrl = `/api/media/image?filePath=${encodeURIComponent(path)}`
+        const proxyUrl = `/api/media/image?token=${token}&filePath=${path}`
         const { doc } = currentEditor.state
         let imagePos: number | null = null
         doc.descendants((node, pos) => {

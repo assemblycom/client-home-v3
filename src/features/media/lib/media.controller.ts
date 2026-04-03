@@ -75,14 +75,12 @@ export const getImage = async (req: NextRequest): Promise<NextResponse<APIRespon
     throw new APIError('Image not found', httpStatus.NOT_FOUND)
   }
 
-  const imageBuffer = await imageResponse.arrayBuffer()
-
   const headers: ResponseInit['headers'] = {
-    'Content-Type': imageResponse.headers.get('Content-Type') || 'image/jpeg',
-    'Cache-Control': 'public, max-age=1864000, immutable',
+    'Content-Type': imageResponse.headers.get('Content-Type') || 'image/jpeg', // Set appropriate content type
+    'Cache-Control': 'public, max-age=1864000, immutable', // Optional: Cache headers for performance
   }
 
-  return new NextResponse(imageBuffer, {
+  return new NextResponse(imageResponse.body, {
     headers,
   })
 }

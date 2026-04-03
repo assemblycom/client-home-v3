@@ -5,13 +5,11 @@ import { getSanitizedHeaders, isAuthorized } from '@auth/lib/utils'
 import { HttpStatusCode } from 'axios'
 import { type NextRequest, NextResponse } from 'next/server'
 import z from 'zod'
-import { authorizedRoutes, ROUTES } from '@/app/routes'
+import { authorizedRoutes } from '@/app/routes'
 import { AuthenticatedAPIHeaders } from '@/app/types'
 import { NotFoundError } from '@/errors/not-found.error'
 import { UnauthorizedError } from '@/errors/unauthorized.error'
 import type { Token } from '@/lib/assembly/types'
-
-const MEDIA_TOKEN_COOKIE = '__assembly_media_token'
 
 /**
  * Authenticates a Assembly user by token
@@ -56,20 +54,13 @@ export const authenticateProxy = async (req: NextRequest): Promise<NextResponse>
     throw new NotFoundError()
   }
 
-  // Read token from query param, falling back to cookie for image requests
-  const token =
-    req.nextUrl.searchParams.get('token') ??
-    (req.nextUrl.pathname === ROUTES.api.image ? req.cookies.get(MEDIA_TOKEN_COOKIE)?.value : null) ??
-    null
-
+  const token = req.nextUrl.searchParams.get('token')
   if (!token) {
-    if (req.nextUrl.pathname !== ROUTES.api.image) {
-      console.warn('AssemblyNoTokenError :: No token query param found', {
-        url: req.nextUrl.pathname,
-        hasSearchParams: req.nextUrl.searchParams.toString().length > 0,
-        searchParamKeys: [...req.nextUrl.searchParams.keys()],
-      })
-    }
+    console.warn('AssemblyNoTokenError :: No token query param found', {
+      url: req.nextUrl.pathname,
+      hasSearchParams: req.nextUrl.searchParams.toString().length > 0,
+      searchParamKeys: [...req.nextUrl.searchParams.keys()],
+    })
     return NextResponse.json(
       {
         message: 'Unauthorized',
@@ -84,7 +75,7 @@ export const authenticateProxy = async (req: NextRequest): Promise<NextResponse>
     throw new UnauthorizedError()
   }
 
-  const response = NextResponse.next({
+  return NextResponse.next({
     headers: {
       ...headers,
       ...Object.fromEntries(
@@ -98,17 +89,6 @@ export const authenticateProxy = async (req: NextRequest): Promise<NextResponse>
       ),
     },
   })
-
-  // Set media auth cookie so image requests don't need the token in the URL.
-  // This keeps image URLs stable and cacheable by CDN/browser.
-  response.cookies.set(MEDIA_TOKEN_COOKIE, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    path: ROUTES.api.image,
-  })
-
-  return response
 }
 
 /**

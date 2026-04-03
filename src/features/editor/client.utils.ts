@@ -1,5 +1,6 @@
 import 'client-only'
 
+import { AssemblyBridge } from '@assembly-js/app-bridge'
 import { MediaFolders } from '@media/constants'
 import type { MediaSignedUrlResponseDto } from '@media/media.dto'
 import type { Editor } from '@tiptap/core'
@@ -62,9 +63,15 @@ export const triggerImageUpload = (editor: Editor) => {
         .focus()
         .run()
 
+      const token = AssemblyBridge.sessionToken.getCurrent()?.token
+      if (!token) {
+        console.error('Could not upload to supabase due to missing token')
+        return
+      }
+
       const { path: rawPath } = await uploadFileToSupabase(file)
       const path = rawPath.startsWith('media/') ? rawPath.substring(6) : rawPath
-      const proxyUrl = `/api/media/image?filePath=${encodeURIComponent(path)}`
+      const proxyUrl = `/api/media/image?token=${token}&filePath=${path}`
 
       replaceEditorImageSrcByUploadId(editor, randId, proxyUrl)
 
