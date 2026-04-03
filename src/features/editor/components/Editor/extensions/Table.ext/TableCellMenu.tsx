@@ -4,6 +4,7 @@ import { Icon } from '@assembly-js/design-system'
 import type { Editor } from '@tiptap/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { getActiveCellDOM, getCellKey } from './table-utils'
 
 type TableAction = {
   label: string
@@ -52,34 +53,6 @@ const TABLE_ACTIONS: TableAction[] = [
     isDanger: true,
   },
 ]
-
-const getActiveCellDOM = (editor: Editor): HTMLElement | null => {
-  const { selection } = editor.state
-  const resolved = selection.$from
-
-  for (let depth = resolved.depth; depth > 0; depth--) {
-    const node = resolved.node(depth)
-    if (node.type.name === 'tableCell' || node.type.name === 'tableHeader') {
-      const pos = resolved.before(depth)
-      const dom = editor.view.nodeDOM(pos)
-      if (dom instanceof HTMLElement) return dom
-      break
-    }
-  }
-  return null
-}
-
-// Unique key per cell DOM element so React unmounts/remounts instead of animating
-let cellKeyCounter = 0
-const cellKeyMap = new WeakMap<HTMLElement, number>()
-const getCellKey = (cell: HTMLElement): number => {
-  let key = cellKeyMap.get(cell)
-  if (key === undefined) {
-    key = cellKeyCounter++
-    cellKeyMap.set(cell, key)
-  }
-  return key
-}
 
 export const TableCellMenu = ({ editor }: { editor: Editor }) => {
   const [cellDOM, setCellDOM] = useState<HTMLElement | null>(null)
