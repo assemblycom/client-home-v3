@@ -48,7 +48,7 @@ export const getUploadUrl = async (req: NextRequest): Promise<NextResponse<APIRe
 }
 
 export const getImage = async (req: NextRequest): Promise<NextResponse<APIResponse>> => {
-  const user = await authenticateHeaders(req.headers)
+  const user = authenticateHeaders(req.headers)
   const searchParams = req.nextUrl.searchParams
   const filePath = searchParams.get('filePath')
 

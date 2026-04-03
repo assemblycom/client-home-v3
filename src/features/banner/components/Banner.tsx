@@ -166,7 +166,6 @@ export const Banner = ({
         style={{ objectPosition: `${currentX}% ${currentY}%` }}
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
         priority
-        unoptimized
         draggable={false}
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
