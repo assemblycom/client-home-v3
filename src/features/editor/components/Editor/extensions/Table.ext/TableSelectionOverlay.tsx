@@ -1,11 +1,20 @@
 'use client'
 
 import { Icon } from '@assembly-js/design-system'
+import type { TableAction } from '@editor/components/Editor/extensions/Table.ext/TableCellMenu'
+import { TableActionDropdown } from '@editor/components/Editor/extensions/Table.ext/TableCellMenu'
+import {
+  InsertAfterColumnIcon,
+  InsertAfterRowIcon,
+  InsertBeforeColumnIcon,
+  InsertBeforeRowIcon,
+  RemoveColumnIcon,
+  RemoveRowIcon,
+  RemoveTableIcon,
+} from '@editor/components/Editor/extensions/Table.ext/table-icons'
 import { CellSelection } from '@tiptap/pm/tables'
 import type { Editor } from '@tiptap/react'
 import { useCallback, useEffect, useState } from 'react'
-import type { TableAction } from './TableCellMenu'
-import { TableActionDropdown } from './TableCellMenu'
 
 const OVERLAY_CLASS = 'table-selection-overlay'
 const TRIGGER_CLASS = 'table-selection-trigger'
@@ -19,12 +28,12 @@ type SelectionType = 'row' | 'column' | 'table' | 'cells'
 const ROW_ACTIONS: TableAction[] = [
   {
     label: 'Insert above',
-    icon: <Icon icon="ArrowUpSolid" width={13} height={13} />,
+    icon: <InsertBeforeRowIcon size={13} />,
     command: (editor) => editor.chain().focus().addRowBefore().run(),
   },
   {
     label: 'Insert below',
-    icon: <Icon icon="ArrowDownSolid" width={13} height={13} />,
+    icon: <InsertAfterRowIcon size={13} />,
     command: (editor) => editor.chain().focus().addRowAfter().run(),
   },
   {
@@ -40,7 +49,7 @@ const ROW_ACTIONS: TableAction[] = [
   },
   {
     label: 'Delete row',
-    icon: <Icon icon="Trash" width={13} height={13} />,
+    icon: <RemoveRowIcon size={13} />,
     command: (editor) => editor.chain().focus().deleteRow().run(),
   },
 ]
@@ -48,12 +57,12 @@ const ROW_ACTIONS: TableAction[] = [
 const COLUMN_ACTIONS: TableAction[] = [
   {
     label: 'Insert left',
-    icon: <Icon icon="ArrowLeft" width={13} height={13} />,
+    icon: <InsertBeforeColumnIcon size={13} />,
     command: (editor) => editor.chain().focus().addColumnBefore().run(),
   },
   {
     label: 'Insert right',
-    icon: <Icon icon="ArrowRight" width={13} height={13} />,
+    icon: <InsertAfterColumnIcon size={13} />,
     command: (editor) => editor.chain().focus().addColumnAfter().run(),
   },
   {
@@ -69,7 +78,7 @@ const COLUMN_ACTIONS: TableAction[] = [
   },
   {
     label: 'Delete column',
-    icon: <Icon icon="Trash" width={13} height={13} />,
+    icon: <RemoveColumnIcon size={13} />,
     command: (editor) => editor.chain().focus().deleteColumn().run(),
   },
 ]
@@ -88,9 +97,8 @@ const FULL_TABLE_ACTIONS: TableAction[] = [
   },
   {
     label: 'Delete table',
-    icon: <Icon icon="Trash" width={13} height={13} />,
+    icon: <RemoveTableIcon size={13} />,
     command: (editor) => editor.chain().focus().deleteTable().run(),
-    isDanger: true,
   },
 ]
 
