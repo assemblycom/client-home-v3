@@ -174,6 +174,8 @@ body {
   .tableWrapper {
     @apply relative my-2 pb-[30px] max-w-full;
     overflow-x: auto;
+    padding-top: 6px;
+    padding-left: 6px;
 
     .table-add-row-btn,
     .table-add-col-btn {
@@ -203,13 +205,15 @@ body {
     }
 
     .table-add-row-btn {
-      @apply absolute left-0 justify-center;
+      @apply absolute justify-center;
+      left: 6px;
       bottom: 0;
       height: 26px;
     }
 
     .table-add-col-btn {
-      @apply absolute top-0 justify-center;
+      @apply absolute justify-center;
+      top: 6px;
       bottom: 30px;
       width: 26px;
     }
@@ -255,6 +259,32 @@ body {
     color: #1164a3;
   }
 
+  .table-selection-overlay {
+    position: absolute;
+    pointer-events: none;
+    border: 1px solid #0c41bb;
+    background: rgba(230, 240, 255, 0.2);
+    z-index: 2;
+  }
+
+  .table-selection-trigger {
+    position: absolute;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0c41bb;
+    border: none;
+    border-radius: 9999px;
+    cursor: pointer;
+    padding: 0;
+    overflow: hidden;
+
+    &:hover {
+      background: #0a3599;
+    }
+  }
+
   .callout {
     @apply bg-background-primary p-3 rounded;
     .callout__content {
@@ -285,6 +315,19 @@ body {
 
     th {
       @apply bg-white/10;
+    }
+  }
+
+  .table-selection-overlay {
+    border-color: #5b9aff;
+    background: rgba(59, 130, 246, 0.1);
+  }
+
+  .table-selection-trigger {
+    background: #5b9aff;
+
+    &:hover {
+      background: #4a89ee;
     }
   }
 
