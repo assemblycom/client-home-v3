@@ -1,10 +1,19 @@
 'use client'
 
 import { Icon } from '@assembly-js/design-system'
+import {
+  InsertAfterColumnIcon,
+  InsertAfterRowIcon,
+  InsertBeforeColumnIcon,
+  InsertBeforeRowIcon,
+  RemoveColumnIcon,
+  RemoveRowIcon,
+  RemoveTableIcon,
+} from '@editor/components/Editor/extensions/Table.ext/table-icons'
+import { getActiveCellDOM, getCellKey } from '@editor/components/Editor/extensions/Table.ext/table-utils'
 import type { Editor } from '@tiptap/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { getActiveCellDOM, getCellKey } from './table-utils'
 
 export type TableAction = {
   label: string
@@ -16,39 +25,39 @@ export type TableAction = {
 const TABLE_ACTIONS: TableAction[] = [
   {
     label: 'Add row above',
-    icon: <Icon icon="ArrowUpSolid" width={16} height={16} />,
+    icon: <InsertBeforeRowIcon size={16} />,
     command: (editor) => editor.chain().focus().addRowBefore().run(),
   },
   {
     label: 'Add row below',
-    icon: <Icon icon="ArrowDownSolid" width={16} height={16} />,
+    icon: <InsertAfterRowIcon size={16} />,
     command: (editor) => editor.chain().focus().addRowAfter().run(),
   },
   {
     label: 'Add column before',
-    icon: <Icon icon="ArrowLeft" width={16} height={16} />,
+    icon: <InsertBeforeColumnIcon size={16} />,
     command: (editor) => editor.chain().focus().addColumnBefore().run(),
   },
   {
     label: 'Add column after',
-    icon: <Icon icon="ArrowRight" width={16} height={16} />,
+    icon: <InsertAfterColumnIcon size={16} />,
     command: (editor) => editor.chain().focus().addColumnAfter().run(),
   },
   {
     label: 'Remove row',
-    icon: <Icon icon="Minus" width={16} height={16} />,
+    icon: <RemoveRowIcon size={16} />,
     command: (editor) => editor.chain().focus().deleteRow().run(),
     isDanger: true,
   },
   {
     label: 'Remove column',
-    icon: <Icon icon="Minus" width={16} height={16} />,
+    icon: <RemoveColumnIcon size={16} />,
     command: (editor) => editor.chain().focus().deleteColumn().run(),
     isDanger: true,
   },
   {
     label: 'Remove table',
-    icon: <Icon icon="Trash" width={16} height={16} />,
+    icon: <RemoveTableIcon size={16} />,
     command: (editor) => editor.chain().focus().deleteTable().run(),
     isDanger: true,
   },
