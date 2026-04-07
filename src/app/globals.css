@@ -174,8 +174,6 @@ body {
   .tableWrapper {
     @apply relative my-2 pb-[30px] max-w-full;
     overflow-x: auto;
-    padding-top: 6px;
-    padding-left: 6px;
 
     .table-add-row-btn,
     .table-add-col-btn {
@@ -206,14 +204,14 @@ body {
 
     .table-add-row-btn {
       @apply absolute justify-center;
-      left: 6px;
+      left: 0;
       bottom: 0;
       height: 26px;
     }
 
     .table-add-col-btn {
       @apply absolute justify-center;
-      top: 6px;
+      top: 0;
       bottom: 30px;
       width: 26px;
     }
@@ -267,24 +265,6 @@ body {
     z-index: 2;
   }
 
-  .table-selection-trigger {
-    position: absolute;
-    z-index: 3;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #0c41bb;
-    border: none;
-    border-radius: 9999px;
-    cursor: pointer;
-    padding: 0;
-    overflow: hidden;
-
-    &:hover {
-      background: #0a3599;
-    }
-  }
-
   .callout {
     @apply bg-background-primary p-3 rounded;
     .callout__content {
@@ -323,16 +303,107 @@ body {
     background: rgba(59, 130, 246, 0.1);
   }
 
-  .table-selection-trigger {
-    background: #5b9aff;
-
-    &:hover {
-      background: #4a89ee;
-    }
-  }
-
   .callout {
     @apply bg-white/10;
+  }
+}
+
+/* Trigger pill rendered via portal to document.body — must be global */
+.table-selection-trigger {
+  position: fixed;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0c41bb;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  padding: 0;
+  overflow: hidden;
+
+  &:hover {
+    background: #0a3599;
+  }
+}
+
+.dark .table-selection-trigger {
+  background: #5b9aff;
+
+  &:hover {
+    background: #4a89ee;
+  }
+}
+
+/* Hover trigger pill for row/column — gray, shown on mouse hover.
+   The button itself is oversized (padded) for a larger click target;
+   the visible pill is drawn via a ::before pseudo-element. */
+.table-hover-trigger {
+  position: fixed;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  cursor: pointer !important;
+  padding: 8px;
+  box-sizing: content-box;
+  /* shift back so the visual pill stays centered at the intended position */
+  margin: -8px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    background: #dfe1e4;
+    border-radius: 9999px;
+    pointer-events: none;
+  }
+
+  svg {
+    position: relative;
+    z-index: 1;
+  }
+
+  &:hover::before {
+    background: #c9cdd1;
+  }
+}
+
+.dark .table-hover-trigger {
+  &::before {
+    background: #454b52;
+  }
+
+  &:hover::before {
+    background: #565d65;
+  }
+}
+
+/* Contextual menu button for full-table selection — gray rectangle at top-left */
+.table-contextual-menu {
+  position: fixed;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  padding: 0;
+  overflow: hidden;
+
+  &:hover {
+    background: #eff1f4;
+  }
+}
+
+.dark .table-contextual-menu {
+  &:hover {
+    background: #2e3338;
   }
 }
 
