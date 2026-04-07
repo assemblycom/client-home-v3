@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { getActiveCellDOM, getCellKey } from './table-utils'
 
-type TableAction = {
+export type TableAction = {
   label: string
   icon: React.ReactNode
   command: (editor: Editor) => void
@@ -54,12 +54,77 @@ const TABLE_ACTIONS: TableAction[] = [
   },
 ]
 
+// --- Reusable dropdown menu ---
+
+export const TableActionDropdown = ({
+  actions,
+  editor,
+  top,
+  left,
+  transform,
+  onClose,
+}: {
+  actions: TableAction[]
+  editor: Editor
+  top: number
+  left: number
+  transform?: string
+  onClose: () => void
+}) => {
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleMouseDown = (e: MouseEvent) => {
+      if (dropdownRef.current?.contains(e.target as Node)) return
+      onClose()
+    }
+    document.addEventListener('mousedown', handleMouseDown)
+    return () => document.removeEventListener('mousedown', handleMouseDown)
+  }, [onClose])
+
+  return createPortal(
+    <div
+      ref={dropdownRef}
+      role="menu"
+      onMouseDown={(e) => e.preventDefault()}
+      style={{
+        position: 'fixed',
+        top,
+        left,
+        transform,
+        zIndex: 50,
+      }}
+      className="min-w-[180px] rounded-md border border-gray-200 bg-white py-1 shadow-lg"
+    >
+      {actions.map((action) => (
+        <button
+          key={action.label}
+          type="button"
+          onMouseDown={(e) => {
+            e.preventDefault()
+            onClose()
+            action.command(editor)
+          }}
+          className={`flex w-full items-center gap-2 px-3 py-1.5 text-left text-sm transition-colors hover:bg-gray-100 ${
+            action.isDanger ? 'text-red-600 hover:bg-red-50' : 'text-gray-700'
+          }`}
+        >
+          {action.icon}
+          {action.label}
+        </button>
+      ))}
+    </div>,
+    document.body,
+  )
+}
+
+// --- Cell menu (original) ---
+
 export const TableCellMenu = ({ editor }: { editor: Editor }) => {
   const [cellDOM, setCellDOM] = useState<HTMLElement | null>(null)
   const [cellRect, setCellRect] = useState<DOMRect | null>(null)
   const [isOpen, setIsOpen] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
-  const dropdownRef = useRef<HTMLDivElement>(null)
   const prevCellRef = useRef<HTMLElement | null>(null)
 
   const updatePosition = useCallback(() => {
@@ -91,32 +156,21 @@ export const TableCellMenu = ({ editor }: { editor: Editor }) => {
     }
   }, [editor, updatePosition])
 
-  // Close on click outside (check both trigger and dropdown)
+  // Close on click outside trigger
   useEffect(() => {
     if (!isOpen) return
-
     const handleMouseDown = (e: MouseEvent) => {
-      const target = e.target as Node
-      if (triggerRef.current?.contains(target)) return
-      if (dropdownRef.current?.contains(target)) return
-      setIsOpen(false)
+      if (triggerRef.current?.contains(e.target as Node)) return
+      // Let the dropdown's own click-outside handle closing
     }
-
     document.addEventListener('mousedown', handleMouseDown)
     return () => document.removeEventListener('mousedown', handleMouseDown)
   }, [isOpen])
-
-  const handleAction = (action: TableAction) => {
-    setIsOpen(false)
-    action.command(editor)
-  }
 
   if (!cellDOM || !cellRect) return null
 
   const triggerTop = cellRect.top + 4
   const triggerLeft = cellRect.right - 24
-  const dropdownTop = triggerTop + 24
-  const dropdownLeft = triggerLeft
 
   return createPortal(
     <div key={getCellKey(cellDOM)}>
@@ -140,39 +194,14 @@ export const TableCellMenu = ({ editor }: { editor: Editor }) => {
         <Icon icon="ChevronDown" width={12} height={12} />
       </button>
 
-      {/* Dropdown menu */}
       {isOpen && (
-        <div
-          ref={dropdownRef}
-          role="menu"
-          onMouseDown={(e) => {
-            e.preventDefault()
-          }}
-          style={{
-            position: 'fixed',
-            top: dropdownTop,
-            left: dropdownLeft,
-            zIndex: 50,
-          }}
-          className="min-w-[180px] rounded-md border border-gray-200 bg-white py-1 shadow-lg"
-        >
-          {TABLE_ACTIONS.map((action) => (
-            <button
-              key={action.label}
-              type="button"
-              onMouseDown={(e) => {
-                e.preventDefault()
-                handleAction(action)
-              }}
-              className={`flex w-full items-center gap-2 px-3 py-1.5 text-left text-sm transition-colors hover:bg-gray-100 ${
-                action.isDanger ? 'text-red-600 hover:bg-red-50' : 'text-gray-700'
-              }`}
-            >
-              {action.icon}
-              {action.label}
-            </button>
-          ))}
-        </div>
+        <TableActionDropdown
+          actions={TABLE_ACTIONS}
+          editor={editor}
+          top={triggerTop + 24}
+          left={triggerLeft}
+          onClose={() => setIsOpen(false)}
+        />
       )}
     </div>,
     document.body,
