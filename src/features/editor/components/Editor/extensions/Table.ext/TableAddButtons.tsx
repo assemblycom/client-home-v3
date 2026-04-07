@@ -22,8 +22,7 @@ const updateButtonPositions = (wrapper: HTMLElement) => {
   const rowBtn = wrapper.querySelector<HTMLElement>(`.${BUTTON_CLASS_ROW}`)
   if (!table) return
   const tableWidth = table.offsetWidth
-  const paddingLeft = 6
-  if (colBtn) colBtn.style.left = `${paddingLeft + tableWidth + 4}px`
+  if (colBtn) colBtn.style.left = `${tableWidth + 4}px`
   if (rowBtn) rowBtn.style.width = `${tableWidth}px`
 }
 

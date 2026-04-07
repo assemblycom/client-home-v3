@@ -16,10 +16,13 @@ import type { Slice } from '@tiptap/pm/model'
 import { CellSelection } from '@tiptap/pm/tables'
 import type { EditorView } from '@tiptap/pm/view'
 import type { Editor } from '@tiptap/react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 const OVERLAY_CLASS = 'table-selection-overlay'
 const TRIGGER_CLASS = 'table-selection-trigger'
+const HOVER_TRIGGER_CLASS = 'table-hover-trigger'
+const CONTEXTUAL_MENU_CLASS = 'table-contextual-menu'
 const TABLE_RADIUS = 8
 const EDGE_TOLERANCE = 2
 
@@ -138,7 +141,7 @@ const getActionsForType = (type: SelectionType): TableAction[] => {
 // --- Overlay DOM helpers ---
 
 const removeOverlays = (editorDOM: HTMLElement) => {
-  for (const el of editorDOM.querySelectorAll(`.${OVERLAY_CLASS}, .${TRIGGER_CLASS}`)) {
+  for (const el of editorDOM.querySelectorAll(`.${OVERLAY_CLASS}`)) {
     el.remove()
   }
 }
@@ -206,65 +209,259 @@ const computeOverlayBounds = (wrapper: HTMLElement): OverlayBounds | null => {
   return { top, left, width, height }
 }
 
-const ELLIPSIS_SVG_H =
-  '<svg width="14" height="4" viewBox="0 0 14 4" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1.5" fill="white"/><circle cx="7" cy="2" r="1.5" fill="white"/><circle cx="12" cy="2" r="1.5" fill="white"/></svg>'
+// --- Pill viewport position (for portal rendering) ---
 
-const ELLIPSIS_SVG_V =
-  '<svg width="4" height="14" viewBox="0 0 4 14" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1.5" fill="white"/><circle cx="2" cy="7" r="1.5" fill="white"/><circle cx="2" cy="12" r="1.5" fill="white"/></svg>'
+type PillPosition = { top: number; left: number; width: number; height: number }
 
-const createTriggerPill = (
-  wrapper: HTMLElement,
-  bounds: OverlayBounds,
-  selectionType: SelectionType,
-  onTriggerClick: (rect: DOMRect) => void,
-): HTMLButtonElement | null => {
+const computePillViewportPosition = (wrapper: HTMLElement, selectionType: SelectionType): PillPosition | null => {
   if (selectionType === 'cells') return null
 
-  const trigger = document.createElement('button')
-  trigger.type = 'button'
-  trigger.className = TRIGGER_CLASS
-  trigger.setAttribute('aria-label', `${selectionType} actions`)
+  const table = wrapper.querySelector('table')
+  if (!table) return null
+  const selectedCells = table.querySelectorAll<HTMLElement>('.selectedCell')
+  if (selectedCells.length === 0) return null
 
-  // Position absolute inside the wrapper (scrolls naturally, no lag)
-  if (selectionType === 'row') {
-    trigger.style.top = `${bounds.top + bounds.height / 2 - 12}px`
-    trigger.style.left = `${bounds.left - 5}px`
-    trigger.style.width = '10px'
-    trigger.style.height = '24px'
-    trigger.innerHTML = ELLIPSIS_SVG_V
-  } else if (selectionType === 'column') {
-    trigger.style.top = `${bounds.top - 5}px`
-    trigger.style.left = `${bounds.left + bounds.width / 2 - 12}px`
-    trigger.style.width = '24px'
-    trigger.style.height = '10px'
-    trigger.innerHTML = ELLIPSIS_SVG_H
-  } else {
-    trigger.style.top = `${bounds.top + 4}px`
-    trigger.style.left = `${bounds.left - 5}px`
-    trigger.style.width = '10px'
-    trigger.style.height = '24px'
-    trigger.innerHTML = ELLIPSIS_SVG_V
+  const tableRect = table.getBoundingClientRect()
+
+  let minTop = Number.POSITIVE_INFINITY
+  let minLeft = Number.POSITIVE_INFINITY
+  let maxBottom = Number.NEGATIVE_INFINITY
+  let maxRight = Number.NEGATIVE_INFINITY
+
+  for (const cell of selectedCells) {
+    const r = cell.getBoundingClientRect()
+    minTop = Math.min(minTop, r.top)
+    minLeft = Math.min(minLeft, r.left)
+    maxBottom = Math.max(maxBottom, r.bottom)
+    maxRight = Math.max(maxRight, r.right)
   }
 
-  trigger.addEventListener('mousedown', (e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    onTriggerClick(trigger.getBoundingClientRect())
-  })
+  const touchesTop = Math.abs(minTop - tableRect.top) < EDGE_TOLERANCE
+  const touchesLeft = Math.abs(minLeft - tableRect.left) < EDGE_TOLERANCE
+  const touchesRight = Math.abs(maxRight - tableRect.right) < EDGE_TOLERANCE
+  const touchesBottom = Math.abs(maxBottom - tableRect.bottom) < EDGE_TOLERANCE
 
-  wrapper.appendChild(trigger)
-  return trigger
+  const selTop = touchesTop ? tableRect.top : minTop
+  const selLeft = touchesLeft ? tableRect.left : minLeft
+  const selRight = touchesRight ? tableRect.right : maxRight
+  const selBottom = touchesBottom ? tableRect.bottom : maxBottom
+  const selWidth = selRight - selLeft
+  const selHeight = selBottom - selTop
+
+  let pillTop: number
+  let pillLeft: number
+  let pillWidth: number
+  let pillHeight: number
+
+  if (selectionType === 'row') {
+    pillWidth = 10
+    pillHeight = 24
+    pillTop = selTop + selHeight / 2 - 12
+    pillLeft = selLeft - 5
+  } else if (selectionType === 'column') {
+    pillWidth = 24
+    pillHeight = 10
+    pillTop = selTop - 5
+    pillLeft = selLeft + selWidth / 2 - 12
+  } else {
+    // table – contextual menu button (different from row/column pill)
+    pillWidth = 16
+    pillHeight = 18
+    pillTop = selTop
+    pillLeft = selLeft - 21
+  }
+
+  // Hide pill when selection is scrolled out of the wrapper's overflow area
+  // (e.g. column scrolled off-screen horizontally), but NOT for page-level scroll.
+  const wrapperRect = wrapper.getBoundingClientRect()
+  if (selectionType === 'table') {
+    // Table contextual menu is outside the wrapper to the left, so check
+    // whether the table's left edge has scrolled past the wrapper's left edge
+    if (selLeft < wrapperRect.left) {
+      return null
+    }
+  } else {
+    const pillCenterX = pillLeft + pillWidth / 2
+    const pillCenterY = pillTop + pillHeight / 2
+    if (
+      pillCenterX < wrapperRect.left ||
+      pillCenterX > wrapperRect.right ||
+      pillCenterY < wrapperRect.top ||
+      pillCenterY > wrapperRect.bottom
+    ) {
+      return null
+    }
+  }
+
+  return { top: pillTop, left: pillLeft, width: pillWidth, height: pillHeight }
 }
 
+// --- Hover pill position from a hovered cell ---
+
+type HoverPillInfo = {
+  type: 'row' | 'column'
+  pos: PillPosition
+  wrapper: HTMLElement
+  cell: HTMLElement
+}
+
+const computeHoverPill = (cell: HTMLElement, wrapper: HTMLElement): HoverPillInfo | null => {
+  const table = wrapper.querySelector('table')
+  if (!table) return null
+  const tableRect = table.getBoundingClientRect()
+  const wrapperRect = wrapper.getBoundingClientRect()
+
+  const row = cell.closest('tr')
+  if (!row) return null
+
+  const rowRect = row.getBoundingClientRect()
+  const cellRect = cell.getBoundingClientRect()
+
+  // Row pill: centered vertically on the row, at the table's left edge
+  const rowPill: PillPosition = {
+    width: 10,
+    height: 24,
+    top: rowRect.top + rowRect.height / 2 - 12,
+    left: tableRect.left - 5,
+  }
+
+  // Column pill: centered horizontally on the column, at the table's top edge
+  const colPill: PillPosition = {
+    width: 24,
+    height: 10,
+    top: tableRect.top - 5,
+    left: cellRect.left + cellRect.width / 2 - 12,
+  }
+
+  // Determine which axis the cursor is closest to
+  // Use the row pill if cursor is near the left edge, column pill if near the top
+  // We pick row by default since the detection happens on cell hover
+  // Check if cell is in the header row → prefer column, otherwise prefer row
+  const isHeaderRow = row.querySelector('th') !== null
+  const type = isHeaderRow ? 'column' : 'row'
+  const pos = type === 'row' ? rowPill : colPill
+
+  // Clip check
+  const pillCenterX = pos.left + pos.width / 2
+  const pillCenterY = pos.top + pos.height / 2
+  if (
+    pillCenterX < wrapperRect.left ||
+    pillCenterX > wrapperRect.right ||
+    pillCenterY < wrapperRect.top ||
+    pillCenterY > wrapperRect.bottom
+  ) {
+    return null
+  }
+
+  return { type, pos, wrapper, cell }
+}
+
+// --- SVG icons for pills ---
+
+const EllipsisH = ({ fill = 'white' }: { fill?: string }) => (
+  <svg
+    role="img"
+    aria-label="Actions"
+    width="14"
+    height="4"
+    viewBox="0 0 14 4"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle cx="2" cy="2" r="1.5" fill={fill} />
+    <circle cx="7" cy="2" r="1.5" fill={fill} />
+    <circle cx="12" cy="2" r="1.5" fill={fill} />
+  </svg>
+)
+
+const EllipsisV = ({ fill = 'white' }: { fill?: string }) => (
+  <svg
+    role="img"
+    aria-label="Actions"
+    width="4"
+    height="14"
+    viewBox="0 0 4 14"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle cx="2" cy="2" r="1.5" fill={fill} />
+    <circle cx="2" cy="7" r="1.5" fill={fill} />
+    <circle cx="2" cy="12" r="1.5" fill={fill} />
+  </svg>
+)
+
 // --- Main component ---
+
+type PillState = {
+  type: SelectionType
+  wrapper: HTMLElement
+  pos: PillPosition | null
+}
 
 export const TableSelectionOverlay = ({ editor }: { editor: Editor }) => {
   const [menuState, setMenuState] = useState<{
     type: SelectionType
     triggerRect: DOMRect
   } | null>(null)
+  const [pillState, setPillState] = useState<PillState | null>(null)
+  const [hoverPill, setHoverPill] = useState<HoverPillInfo | null>(null)
+  const hoverCellRef = useRef<HTMLElement | null>(null)
+  const hoverPillHoveredRef = useRef(false)
 
   const closeMenu = useCallback(() => setMenuState(null), [])
+
+  const updatePillPosition = useCallback(() => {
+    setPillState((prev) => {
+      if (!prev) return null
+      const pos = computePillViewportPosition(prev.wrapper, prev.type)
+      return { ...prev, pos }
+    })
+  }, [])
+
+  // --- Hover tracking on table cells ---
+  useEffect(() => {
+    const editorDOM = editor.view.dom
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (hoverPillHoveredRef.current) return
+
+      const target = e.target as HTMLElement
+      const cell = target.closest('td, th') as HTMLElement | null
+      if (!cell) {
+        if (hoverCellRef.current) {
+          hoverCellRef.current = null
+          setHoverPill(null)
+        }
+        return
+      }
+
+      if (cell === hoverCellRef.current) return
+      hoverCellRef.current = cell
+
+      const wrapper = cell.closest('.tableWrapper') as HTMLElement | null
+      if (!wrapper) {
+        setHoverPill(null)
+        return
+      }
+
+      const pill = computeHoverPill(cell, wrapper)
+      setHoverPill(pill)
+    }
+
+    const handleMouseLeave = () => {
+      if (hoverPillHoveredRef.current) return
+      hoverCellRef.current = null
+      setHoverPill(null)
+    }
+
+    editorDOM.addEventListener('mousemove', handleMouseMove)
+    editorDOM.addEventListener('mouseleave', handleMouseLeave)
+
+    return () => {
+      editorDOM.removeEventListener('mousemove', handleMouseMove)
+      editorDOM.removeEventListener('mouseleave', handleMouseLeave)
+    }
+  }, [editor])
 
   useEffect(() => {
     const editorDOM = editor.view.dom
@@ -272,6 +469,7 @@ export const TableSelectionOverlay = ({ editor }: { editor: Editor }) => {
     const updateOverlay = () => {
       removeOverlays(editorDOM)
       setMenuState(null)
+      setPillState(null)
 
       const { selection } = editor.state
       if (!(selection instanceof CellSelection)) return
@@ -291,9 +489,8 @@ export const TableSelectionOverlay = ({ editor }: { editor: Editor }) => {
                 removeOverlays(editorDOM)
                 const bounds = computeOverlayBounds(wrapper)
                 if (bounds) {
-                  createTriggerPill(wrapper, bounds, selectionType, (rect) => {
-                    setMenuState({ type: selectionType, triggerRect: rect })
-                  })
+                  const pillPos = computePillViewportPosition(wrapper, selectionType)
+                  setPillState({ type: selectionType, wrapper, pos: pillPos })
                 }
               })
             }
@@ -313,41 +510,149 @@ export const TableSelectionOverlay = ({ editor }: { editor: Editor }) => {
     }
   }, [editor])
 
-  if (!menuState) return null
+  // Update pill position on scroll/resize so it tracks the table
+  const pillWrapper = pillState?.wrapper ?? null
+  useEffect(() => {
+    if (!pillWrapper) return
+    pillWrapper.addEventListener('scroll', updatePillPosition)
+    window.addEventListener('scroll', updatePillPosition, true)
+    window.addEventListener('resize', updatePillPosition)
+    return () => {
+      pillWrapper.removeEventListener('scroll', updatePillPosition)
+      window.removeEventListener('scroll', updatePillPosition, true)
+      window.removeEventListener('resize', updatePillPosition)
+    }
+  }, [pillWrapper, updatePillPosition])
 
-  const actions = getActionsForType(menuState.type)
-  if (actions.length === 0) return null
+  // Update hover pill position on scroll/resize so it tracks the table
+  const hoverWrapper = hoverPill?.wrapper ?? null
+  const updateHoverPillPosition = useCallback(() => {
+    setHoverPill((prev) => {
+      if (!prev) return null
+      const updated = computeHoverPill(prev.cell, prev.wrapper)
+      return updated
+    })
+  }, [])
 
-  const { triggerRect, type } = menuState
-  let menuTop: number
-  let menuLeft: number
+  useEffect(() => {
+    if (!hoverWrapper) return
+    hoverWrapper.addEventListener('scroll', updateHoverPillPosition)
+    window.addEventListener('scroll', updateHoverPillPosition, true)
+    window.addEventListener('resize', updateHoverPillPosition)
+    return () => {
+      hoverWrapper.removeEventListener('scroll', updateHoverPillPosition)
+      window.removeEventListener('scroll', updateHoverPillPosition, true)
+      window.removeEventListener('resize', updateHoverPillPosition)
+    }
+  }, [hoverWrapper, updateHoverPillPosition])
+
+  // Don't show hover pill when there's already a selection pill
+  const showHoverPill = hoverPill && !pillState
+
+  if (!pillState && !menuState && !showHoverPill) return null
+
+  const actions = menuState ? getActionsForType(menuState.type) : []
+
+  let menuTop = 0
+  let menuLeft = 0
   let transform: string | undefined
 
-  const MENU_WIDTH = 180
-  if (type === 'row' || type === 'table') {
-    menuTop = triggerRect.top
-    const hasSpaceLeft = triggerRect.left - MENU_WIDTH - 4 > 0
-    if (hasSpaceLeft) {
-      menuLeft = triggerRect.left - 4
-      transform = 'translateX(-100%)'
+  if (menuState && actions.length > 0) {
+    const { triggerRect, type } = menuState
+    const MENU_WIDTH = 180
+    if (type === 'row' || type === 'table') {
+      menuTop = triggerRect.top
+      const hasSpaceLeft = triggerRect.left - MENU_WIDTH - 4 > 0
+      if (hasSpaceLeft) {
+        menuLeft = triggerRect.left - 4
+        transform = 'translateX(-100%)'
+      } else {
+        menuLeft = triggerRect.right + 4
+        transform = undefined
+      }
     } else {
-      menuLeft = triggerRect.right + 4
-      transform = undefined
+      menuTop = triggerRect.bottom + 4
+      menuLeft = triggerRect.left + triggerRect.width / 2
+      transform = 'translateX(-50%)'
     }
-  } else {
-    menuTop = triggerRect.bottom + 4
-    menuLeft = triggerRect.left + triggerRect.width / 2
-    transform = 'translateX(-50%)'
   }
 
   return (
-    <TableActionDropdown
-      actions={actions}
-      editor={editor}
-      top={menuTop}
-      left={menuLeft}
-      transform={transform}
-      onClose={closeMenu}
-    />
+    <>
+      {showHoverPill &&
+        createPortal(
+          <button
+            type="button"
+            className={HOVER_TRIGGER_CLASS}
+            aria-label={`${hoverPill.type} actions`}
+            style={{
+              position: 'fixed',
+              top: hoverPill.pos.top,
+              left: hoverPill.pos.left,
+              width: hoverPill.pos.width,
+              height: hoverPill.pos.height,
+            }}
+            onMouseEnter={() => {
+              hoverPillHoveredRef.current = true
+            }}
+            onMouseLeave={() => {
+              hoverPillHoveredRef.current = false
+              hoverCellRef.current = null
+              setHoverPill(null)
+            }}
+            onMouseDown={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              setMenuState({
+                type: hoverPill.type,
+                triggerRect: e.currentTarget.getBoundingClientRect(),
+              })
+            }}
+          >
+            {hoverPill.type === 'column' ? <EllipsisH fill="#637381" /> : <EllipsisV fill="#637381" />}
+          </button>,
+          document.body,
+        )}
+      {pillState?.pos &&
+        createPortal(
+          <button
+            type="button"
+            className={pillState.type === 'table' ? CONTEXTUAL_MENU_CLASS : TRIGGER_CLASS}
+            aria-label={`${pillState.type} actions`}
+            style={{
+              position: 'fixed',
+              top: pillState.pos.top,
+              left: pillState.pos.left,
+              width: pillState.pos.width,
+              height: pillState.pos.height,
+            }}
+            onMouseDown={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              setMenuState({
+                type: pillState.type,
+                triggerRect: e.currentTarget.getBoundingClientRect(),
+              })
+            }}
+          >
+            {pillState.type === 'column' ? (
+              <EllipsisH />
+            ) : (
+              <EllipsisV fill={pillState.type === 'table' ? '#637381' : 'white'} />
+            )}
+          </button>,
+          document.body,
+        )}
+      {menuState && actions.length > 0 && (
+        <TableActionDropdown
+          actions={actions}
+          editor={editor}
+          top={menuTop}
+          left={menuLeft}
+          transform={transform}
+          onClose={closeMenu}
+        />
+      )}
+    </>
   )
 }
