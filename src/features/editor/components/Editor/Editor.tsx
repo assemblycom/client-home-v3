@@ -8,6 +8,7 @@ import extensions from '@extensions/extensions'
 import { FileHandlerExt } from '@extensions/FileHandler.ext'
 import { ImageExt } from '@extensions/Image.ext'
 import { TableAddButtons } from '@extensions/Table.ext/TableAddButtons'
+import { TableSelectionOverlay } from '@extensions/Table.ext/TableSelectionOverlay'
 import { SettingsContext } from '@settings/providers/settings.provider'
 import { EditorContent, useEditor } from '@tiptap/react'
 import { useContext, useEffect } from 'react'
@@ -54,6 +55,7 @@ export const Editor = ({ content }: EditorProps) => {
         <EmbedBubbleInput editor={editor} showEmbedInput={showEmbedInput} setShowEmbedInput={setShowEmbedInput} />
       </BubbleMenu>
       <TableAddButtons editor={editor} />
+      <TableSelectionOverlay editor={editor} />
       <EditorContent editor={editor} />
     </div>
   ) : null
