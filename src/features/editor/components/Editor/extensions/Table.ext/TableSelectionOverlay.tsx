@@ -12,7 +12,9 @@ import {
   RemoveRowIcon,
   RemoveTableIcon,
 } from '@editor/components/Editor/extensions/Table.ext/table-icons'
+import type { Slice } from '@tiptap/pm/model'
 import { CellSelection } from '@tiptap/pm/tables'
+import type { EditorView } from '@tiptap/pm/view'
 import type { Editor } from '@tiptap/react'
 import { useCallback, useEffect, useState } from 'react'
 
@@ -22,6 +24,18 @@ const TABLE_RADIUS = 8
 const EDGE_TOLERANCE = 2
 
 type SelectionType = 'row' | 'column' | 'table' | 'cells'
+
+const copySliceToClipboard = (view: EditorView, slice: Slice) => {
+  const { dom, text } = (
+    view as unknown as { serializeForClipboard: (slice: Slice) => { dom: HTMLElement; text: string } }
+  ).serializeForClipboard(slice)
+  navigator.clipboard.write([
+    new ClipboardItem({
+      'text/html': new Blob([dom.innerHTML], { type: 'text/html' }),
+      'text/plain': new Blob([text], { type: 'text/plain' }),
+    }),
+  ])
+}
 
 // --- Selection-specific actions ---
 
@@ -42,8 +56,7 @@ const ROW_ACTIONS: TableAction[] = [
     command: (editor) => {
       const { selection } = editor.state
       if (selection instanceof CellSelection) {
-        const content = selection.content()
-        navigator.clipboard.writeText(content.content.textBetween(0, content.content.size, '\t'))
+        copySliceToClipboard(editor.view, selection.content())
       }
     },
   },
@@ -71,8 +84,7 @@ const COLUMN_ACTIONS: TableAction[] = [
     command: (editor) => {
       const { selection } = editor.state
       if (selection instanceof CellSelection) {
-        const content = selection.content()
-        navigator.clipboard.writeText(content.content.textBetween(0, content.content.size, '\t'))
+        copySliceToClipboard(editor.view, selection.content())
       }
     },
   },
@@ -90,8 +102,7 @@ const FULL_TABLE_ACTIONS: TableAction[] = [
     command: (editor) => {
       const { selection } = editor.state
       if (selection instanceof CellSelection) {
-        const content = selection.content()
-        navigator.clipboard.writeText(content.content.textBetween(0, content.content.size, '\t'))
+        copySliceToClipboard(editor.view, selection.content())
       }
     },
   },
