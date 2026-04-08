@@ -2,6 +2,7 @@ import { TableKit } from '@tiptap/extension-table'
 import { TableCell } from '@tiptap/extension-table/cell'
 import { TableHeader } from '@tiptap/extension-table/header'
 import { TableKeyboard } from './table-keyboard'
+import { TableTouchSelection } from './table-touch-selection'
 
 // Allow all block nodes except `table` inside table cells to prevent nested tables
 const tableCellContent =
@@ -19,4 +20,5 @@ export const TableExt = [
   NoNestedTableCell,
   NoNestedTableHeader,
   TableKeyboard,
+  TableTouchSelection,
 ]
