@@ -203,14 +203,14 @@ body {
     }
 
     .table-add-row-btn {
-      @apply absolute justify-center;
+      position: absolute;
       left: 0;
       bottom: 0;
       height: 26px;
     }
 
     .table-add-col-btn {
-      @apply absolute justify-center;
+      position: absolute;
       top: 0;
       bottom: 30px;
       width: 26px;

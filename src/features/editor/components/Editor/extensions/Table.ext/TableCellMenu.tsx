@@ -96,14 +96,8 @@ export const TableActionDropdown = ({
       ref={dropdownRef}
       role="menu"
       onMouseDown={(e) => e.preventDefault()}
-      style={{
-        position: 'fixed',
-        top,
-        left,
-        transform,
-        zIndex: 50,
-      }}
-      className="min-w-[180px] rounded-md border border-gray-200 bg-white py-1 shadow-lg"
+      style={{ top, left, transform }}
+      className="fixed z-50 min-w-[180px] rounded-md border border-gray-200 bg-white py-1 shadow-lg"
     >
       {actions.map((action) => (
         <button
@@ -191,13 +185,8 @@ export const TableCellMenu = ({ editor }: { editor: Editor }) => {
           e.stopPropagation()
           setIsOpen((prev) => !prev)
         }}
-        style={{
-          position: 'fixed',
-          top: triggerTop,
-          left: triggerLeft,
-          zIndex: 20,
-        }}
-        className="flex h-5 w-5 items-center justify-center rounded border border-gray-200 bg-white shadow-sm hover:bg-gray-100"
+        style={{ top: triggerTop, left: triggerLeft }}
+        className="fixed z-20 flex h-5 w-5 items-center justify-center rounded border border-gray-200 bg-white shadow-sm hover:bg-gray-100"
         aria-label="Table cell options"
       >
         <Icon icon="ChevronDown" width={12} height={12} />
