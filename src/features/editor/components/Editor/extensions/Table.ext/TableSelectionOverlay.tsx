@@ -323,11 +323,22 @@ const computePillViewportPosition = (wrapper: HTMLElement, selectionType: Select
 
 // --- Hover pill position from a hovered cell ---
 
-type HoverPillInfo = {
+type SinglePillInfo = {
   type: 'row' | 'column'
   pos: PillPosition
+}
+
+type HoverPillInfo = {
+  row: SinglePillInfo | null
+  col: SinglePillInfo | null
   wrapper: HTMLElement
   cell: HTMLElement
+}
+
+const clipCheck = (pos: PillPosition, wrapperRect: DOMRect): boolean => {
+  const cx = pos.left + pos.width / 2
+  const cy = pos.top + pos.height / 2
+  return cx >= wrapperRect.left && cx <= wrapperRect.right && cy >= wrapperRect.top && cy <= wrapperRect.bottom
 }
 
 const computeHoverPill = (cell: HTMLElement, wrapper: HTMLElement): HoverPillInfo | null => {
@@ -344,41 +355,26 @@ const computeHoverPill = (cell: HTMLElement, wrapper: HTMLElement): HoverPillInf
 
   // Row pill: centered vertically on the row, at the table's left edge
   const rowPill: PillPosition = {
-    width: 10,
+    width: 4,
     height: 24,
     top: rowRect.top + rowRect.height / 2 - 12,
-    left: tableRect.left - 5,
+    left: tableRect.left - 2,
   }
 
   // Column pill: centered horizontally on the column, at the table's top edge
   const colPill: PillPosition = {
     width: 24,
-    height: 10,
-    top: tableRect.top - 5,
+    height: 4,
+    top: tableRect.top - 2,
     left: cellRect.left + cellRect.width / 2 - 12,
   }
 
-  // Determine which axis the cursor is closest to
-  // Use the row pill if cursor is near the left edge, column pill if near the top
-  // We pick row by default since the detection happens on cell hover
-  // Check if cell is in the header row → prefer column, otherwise prefer row
-  const isHeaderRow = row.querySelector('th') !== null
-  const type = isHeaderRow ? 'column' : 'row'
-  const pos = type === 'row' ? rowPill : colPill
+  const rowInfo: SinglePillInfo | null = clipCheck(rowPill, wrapperRect) ? { type: 'row', pos: rowPill } : null
+  const colInfo: SinglePillInfo | null = clipCheck(colPill, wrapperRect) ? { type: 'column', pos: colPill } : null
 
-  // Clip check
-  const pillCenterX = pos.left + pos.width / 2
-  const pillCenterY = pos.top + pos.height / 2
-  if (
-    pillCenterX < wrapperRect.left ||
-    pillCenterX > wrapperRect.right ||
-    pillCenterY < wrapperRect.top ||
-    pillCenterY > wrapperRect.bottom
-  ) {
-    return null
-  }
+  if (!rowInfo && !colInfo) return null
 
-  return { type, pos, wrapper, cell }
+  return { row: rowInfo, col: colInfo, wrapper, cell }
 }
 
 // --- SVG icons for pills ---
@@ -415,6 +411,110 @@ const EllipsisV = ({ fill = 'white' }: { fill?: string }) => (
   </svg>
 )
 
+// --- Hover pill button (resting → expanded on hover) ---
+
+const RESTING_ROW = { width: 4, height: 24 }
+const EXPANDED_ROW = { width: 10, height: 24 }
+const RESTING_COL = { width: 24, height: 4 }
+const EXPANDED_COL = { width: 24, height: 10 }
+
+type MenuState = {
+  type: SelectionType
+  triggerRect: DOMRect
+  actions?: TableAction[]
+}
+
+const HoverPillButton = ({
+  pill,
+  hoverPill,
+  editor,
+  hoverPillHoveredRef,
+  hoverCellRef,
+  setHoverPill,
+  setMenuState,
+}: {
+  pill: SinglePillInfo
+  hoverPill: HoverPillInfo
+  editor: Editor
+  hoverPillHoveredRef: React.MutableRefObject<boolean>
+  hoverCellRef: React.MutableRefObject<HTMLElement | null>
+  setHoverPill: React.Dispatch<React.SetStateAction<HoverPillInfo | null>>
+  setMenuState: React.Dispatch<React.SetStateAction<MenuState | null>>
+}) => {
+  const [expanded, setExpanded] = useState(false)
+  const resting = pill.type === 'row' ? RESTING_ROW : RESTING_COL
+  const active = pill.type === 'row' ? EXPANDED_ROW : EXPANDED_COL
+  const size = expanded ? active : resting
+
+  // Center the pill at the same midpoint regardless of state
+  const midX = pill.pos.left + pill.pos.width / 2
+  const midY = pill.pos.top + pill.pos.height / 2
+  const top = midY - size.height / 2
+  const left = midX - size.width / 2
+
+  return (
+    <button
+      type="button"
+      className={HOVER_TRIGGER_CLASS}
+      aria-label={`${pill.type} actions`}
+      style={{
+        position: 'fixed',
+        top,
+        left,
+        width: size.width,
+        height: size.height,
+      }}
+      onMouseEnter={() => {
+        hoverPillHoveredRef.current = true
+        setExpanded(true)
+      }}
+      onMouseLeave={() => {
+        setExpanded(false)
+        hoverPillHoveredRef.current = false
+        hoverCellRef.current = null
+        setHoverPill(null)
+      }}
+      onMouseDown={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        // Build a transient CellSelection to pre-compute the copy slice
+        // without changing the editor's actual selection
+        const innerPos = editor.view.posAtDOM(hoverPill.cell, 0)
+        const $resolved = editor.state.doc.resolve(innerPos)
+        let cellDepth = $resolved.depth
+        while (cellDepth > 0 && !$resolved.node(cellDepth).type.spec.tableRole?.includes('cell')) {
+          cellDepth--
+        }
+        const $cell = editor.state.doc.resolve($resolved.before(cellDepth))
+        const cellSelection =
+          pill.type === 'row' ? CellSelection.rowSelection($cell) : CellSelection.colSelection($cell)
+        const slice = cellSelection.content()
+        // Move cursor into the hovered cell so all commands know the target row/column
+        const focusCell = () => editor.chain().focus().setTextSelection(innerPos).run()
+        const baseActions = getActionsForType(pill.type)
+        const hoverActions = baseActions.map((action) =>
+          action.label.startsWith('Copy')
+            ? { ...action, command: () => copySliceToClipboard(editor.view, slice) }
+            : {
+                ...action,
+                command: (ed: Editor) => {
+                  focusCell()
+                  action.command(ed)
+                },
+              },
+        )
+        setMenuState({
+          type: pill.type,
+          triggerRect: e.currentTarget.getBoundingClientRect(),
+          actions: hoverActions,
+        })
+      }}
+    >
+      {expanded && (pill.type === 'column' ? <EllipsisH fill="#637381" /> : <EllipsisV fill="#637381" />)}
+    </button>
+  )
+}
+
 // --- Main component ---
 
 type PillState = {
@@ -424,11 +524,7 @@ type PillState = {
 }
 
 export const TableSelectionOverlay = ({ editor }: { editor: Editor }) => {
-  const [menuState, setMenuState] = useState<{
-    type: SelectionType
-    triggerRect: DOMRect
-    actions?: TableAction[]
-  } | null>(null)
+  const [menuState, setMenuState] = useState<MenuState | null>(null)
   const [pillState, setPillState] = useState<PillState | null>(null)
   const [hoverPill, setHoverPill] = useState<HoverPillInfo | null>(null)
   const hoverCellRef = useRef<HTMLElement | null>(null)
@@ -606,59 +702,23 @@ export const TableSelectionOverlay = ({ editor }: { editor: Editor }) => {
   return (
     <>
       {showHoverPill &&
-        createPortal(
-          <button
-            type="button"
-            className={HOVER_TRIGGER_CLASS}
-            aria-label={`${hoverPill.type} actions`}
-            style={{
-              position: 'fixed',
-              top: hoverPill.pos.top,
-              left: hoverPill.pos.left,
-              width: hoverPill.pos.width,
-              height: hoverPill.pos.height,
-            }}
-            onMouseEnter={() => {
-              hoverPillHoveredRef.current = true
-            }}
-            onMouseLeave={() => {
-              hoverPillHoveredRef.current = false
-              hoverCellRef.current = null
-              setHoverPill(null)
-            }}
-            onMouseDown={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              // Build a transient CellSelection to pre-compute the copy slice
-              // without changing the editor's actual selection
-              const innerPos = editor.view.posAtDOM(hoverPill.cell, 0)
-              const $resolved = editor.state.doc.resolve(innerPos)
-              // Walk up to find the tableCell/tableHeader node depth
-              let cellDepth = $resolved.depth
-              while (cellDepth > 0 && !$resolved.node(cellDepth).type.spec.tableRole?.includes('cell')) {
-                cellDepth--
-              }
-              const $cell = editor.state.doc.resolve($resolved.before(cellDepth))
-              const cellSelection =
-                hoverPill.type === 'row' ? CellSelection.rowSelection($cell) : CellSelection.colSelection($cell)
-              const slice = cellSelection.content()
-              const baseActions = getActionsForType(hoverPill.type)
-              const actions = baseActions.map((action) =>
-                action.label.startsWith('Copy')
-                  ? { ...action, command: () => copySliceToClipboard(editor.view, slice) }
-                  : action,
-              )
-              setMenuState({
-                type: hoverPill.type,
-                triggerRect: e.currentTarget.getBoundingClientRect(),
-                actions,
-              })
-            }}
-          >
-            {hoverPill.type === 'column' ? <EllipsisH fill="#637381" /> : <EllipsisV fill="#637381" />}
-          </button>,
-          document.body,
-        )}
+        [hoverPill.row, hoverPill.col]
+          .filter((p): p is SinglePillInfo => p !== null)
+          .map((pill) =>
+            createPortal(
+              <HoverPillButton
+                key={pill.type}
+                pill={pill}
+                hoverPill={hoverPill}
+                editor={editor}
+                hoverPillHoveredRef={hoverPillHoveredRef}
+                hoverCellRef={hoverCellRef}
+                setHoverPill={setHoverPill}
+                setMenuState={setMenuState}
+              />,
+              document.body,
+            ),
+          )}
       {pillState?.pos &&
         createPortal(
           <button
