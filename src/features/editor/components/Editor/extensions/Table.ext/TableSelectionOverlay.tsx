@@ -427,6 +427,7 @@ export const TableSelectionOverlay = ({ editor }: { editor: Editor }) => {
   const [menuState, setMenuState] = useState<{
     type: SelectionType
     triggerRect: DOMRect
+    actions?: TableAction[]
   } | null>(null)
   const [pillState, setPillState] = useState<PillState | null>(null)
   const [hoverPill, setHoverPill] = useState<HoverPillInfo | null>(null)
@@ -576,7 +577,7 @@ export const TableSelectionOverlay = ({ editor }: { editor: Editor }) => {
 
   if (!pillState && !menuState && !showHoverPill) return null
 
-  const actions = menuState ? getActionsForType(menuState.type) : []
+  const actions = menuState ? (menuState.actions ?? getActionsForType(menuState.type)) : []
 
   let menuTop = 0
   let menuLeft = 0
@@ -628,9 +629,29 @@ export const TableSelectionOverlay = ({ editor }: { editor: Editor }) => {
             onMouseDown={(e) => {
               e.preventDefault()
               e.stopPropagation()
+              // Build a transient CellSelection to pre-compute the copy slice
+              // without changing the editor's actual selection
+              const innerPos = editor.view.posAtDOM(hoverPill.cell, 0)
+              const $resolved = editor.state.doc.resolve(innerPos)
+              // Walk up to find the tableCell/tableHeader node depth
+              let cellDepth = $resolved.depth
+              while (cellDepth > 0 && !$resolved.node(cellDepth).type.spec.tableRole?.includes('cell')) {
+                cellDepth--
+              }
+              const $cell = editor.state.doc.resolve($resolved.before(cellDepth))
+              const cellSelection =
+                hoverPill.type === 'row' ? CellSelection.rowSelection($cell) : CellSelection.colSelection($cell)
+              const slice = cellSelection.content()
+              const baseActions = getActionsForType(hoverPill.type)
+              const actions = baseActions.map((action) =>
+                action.label.startsWith('Copy')
+                  ? { ...action, command: () => copySliceToClipboard(editor.view, slice) }
+                  : action,
+              )
               setMenuState({
                 type: hoverPill.type,
                 triggerRect: e.currentTarget.getBoundingClientRect(),
+                actions,
               })
             }}
           >
