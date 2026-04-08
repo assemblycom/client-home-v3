@@ -379,7 +379,7 @@ const computeHoverPill = (cell: HTMLElement, wrapper: HTMLElement): HoverPillInf
 
 // --- SVG icons for pills ---
 
-const EllipsisH = ({ fill = 'white' }: { fill?: string }) => (
+const EllipsisH = () => (
   <svg
     role="img"
     aria-label="Actions"
@@ -389,13 +389,13 @@ const EllipsisH = ({ fill = 'white' }: { fill?: string }) => (
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <circle cx="2" cy="2" r="1.5" fill={fill} />
-    <circle cx="7" cy="2" r="1.5" fill={fill} />
-    <circle cx="12" cy="2" r="1.5" fill={fill} />
+    <circle cx="2" cy="2" r="1.5" fill="currentColor" />
+    <circle cx="7" cy="2" r="1.5" fill="currentColor" />
+    <circle cx="12" cy="2" r="1.5" fill="currentColor" />
   </svg>
 )
 
-const EllipsisV = ({ fill = 'white' }: { fill?: string }) => (
+const EllipsisV = () => (
   <svg
     role="img"
     aria-label="Actions"
@@ -405,9 +405,9 @@ const EllipsisV = ({ fill = 'white' }: { fill?: string }) => (
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <circle cx="2" cy="2" r="1.5" fill={fill} />
-    <circle cx="2" cy="7" r="1.5" fill={fill} />
-    <circle cx="2" cy="12" r="1.5" fill={fill} />
+    <circle cx="2" cy="2" r="1.5" fill="currentColor" />
+    <circle cx="2" cy="7" r="1.5" fill="currentColor" />
+    <circle cx="2" cy="12" r="1.5" fill="currentColor" />
   </svg>
 )
 
@@ -510,7 +510,7 @@ const HoverPillButton = ({
         })
       }}
     >
-      {expanded && (pill.type === 'column' ? <EllipsisH fill="#637381" /> : <EllipsisV fill="#637381" />)}
+      {expanded && (pill.type === 'column' ? <EllipsisH /> : <EllipsisV />)}
     </button>
   )
 }
@@ -741,11 +741,7 @@ export const TableSelectionOverlay = ({ editor }: { editor: Editor }) => {
               })
             }}
           >
-            {pillState.type === 'column' ? (
-              <EllipsisH />
-            ) : (
-              <EllipsisV fill={pillState.type === 'table' ? '#637381' : 'white'} />
-            )}
+            {pillState.type === 'column' ? <EllipsisH /> : <EllipsisV />}
           </button>,
           document.body,
         )}
