@@ -32,12 +32,9 @@ export default class UsersService extends BaseService {
       this.assembly.getAllClients(),
       this.assembly.getCompanies({ limit: MAX_FETCH_ASSEMBLY_RESOURCES }),
     ])
-    if (!clients || clients.length === 0)
-      throw new APIError('Could not fetch clients list from assembly', HttpStatusCode.InternalServerError)
-
     // NOTE: Do not check for !companies || !companies.data since companies can be disabled in workspace
 
-    const flattenedClients = clients.flatMap((client) => {
+    const flattenedClients = (clients ?? []).flatMap((client) => {
       const companyIds = client.companyIds ?? [undefined]
 
       return companyIds.map((companyId) => this.getParsedClientData(client, companyId))
