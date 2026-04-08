@@ -32,12 +32,37 @@ const copySliceToClipboard = (view: EditorView, slice: Slice) => {
   const { dom, text } = (
     view as unknown as { serializeForClipboard: (slice: Slice) => { dom: HTMLElement; text: string } }
   ).serializeForClipboard(slice)
-  navigator.clipboard.write([
-    new ClipboardItem({
-      'text/html': new Blob([dom.innerHTML], { type: 'text/html' }),
-      'text/plain': new Blob([text], { type: 'text/plain' }),
-    }),
-  ])
+
+  const htmlContent = dom.innerHTML
+  const textContent = text
+
+  // Try the modern Clipboard API first, fall back to execCommand for iframe contexts
+  // where the clipboard-write permission is not granted
+  if (navigator.clipboard?.write) {
+    navigator.clipboard
+      .write([
+        new ClipboardItem({
+          'text/html': new Blob([htmlContent], { type: 'text/html' }),
+          'text/plain': new Blob([textContent], { type: 'text/plain' }),
+        }),
+      ])
+      .catch(() => {
+        copyViaExecCommand(htmlContent, textContent)
+      })
+  } else {
+    copyViaExecCommand(htmlContent, textContent)
+  }
+}
+
+const copyViaExecCommand = (html: string, text: string) => {
+  const listener = (e: ClipboardEvent) => {
+    e.preventDefault()
+    e.clipboardData?.setData('text/html', html)
+    e.clipboardData?.setData('text/plain', text)
+  }
+  document.addEventListener('copy', listener)
+  document.execCommand('copy')
+  document.removeEventListener('copy', listener)
 }
 
 // --- Selection-specific actions ---
