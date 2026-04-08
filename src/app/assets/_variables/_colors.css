@@ -23,4 +23,17 @@
   --color-error: #991a00;
 
   --color-gray-400: #6a7282;
+  --color-gray-500: #637381;
+
+  --color-info-primary: #0c41bb;
+  --color-info-primary-hover: #0a3599;
+  --color-info-bg: rgba(230, 240, 255, 0.2);
+
+  --color-info-primary-dark: #5b9aff;
+  --color-info-primary-dark-hover: #4a89ee;
+  --color-info-bg-dark: rgba(59, 130, 246, 0.1);
+
+  --color-gray-dark-200: #2e3338;
+  --color-gray-dark-300: #454b52;
+  --color-gray-dark-400: #565d65;
 }
