@@ -602,11 +602,13 @@ export const TableSelectionOverlay = ({ editor }: { editor: Editor }) => {
                 if (bounds) {
                   const pillPos = computePillViewportPosition(wrapper, selectionType)
                   setPillState({ type: selectionType, wrapper, pos: pillPos })
-                  if (pendingMenuRef.current && pillPos) {
-                    setMenuState({
-                      type: pendingMenuRef.current,
-                      triggerRect: new DOMRect(pillPos.left, pillPos.top, pillPos.width, pillPos.height),
-                    })
+                  if (pendingMenuRef.current) {
+                    if (pillPos) {
+                      setMenuState({
+                        type: pendingMenuRef.current,
+                        triggerRect: new DOMRect(pillPos.left, pillPos.top, pillPos.width, pillPos.height),
+                      })
+                    }
                     pendingMenuRef.current = null
                   }
                 }
