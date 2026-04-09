@@ -1,6 +1,7 @@
 import { TableKit } from '@tiptap/extension-table'
 import { TableCell } from '@tiptap/extension-table/cell'
 import { TableHeader } from '@tiptap/extension-table/header'
+import { TableCellTypeEnforcer } from './table-cell-type-enforcer'
 import { TableKeyboard } from './table-keyboard'
 import { TableTouchSelection } from './table-touch-selection'
 
@@ -19,6 +20,7 @@ export const TableExt = [
   }),
   NoNestedTableCell,
   NoNestedTableHeader,
+  TableCellTypeEnforcer,
   TableKeyboard,
   TableTouchSelection,
 ]
