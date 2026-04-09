@@ -431,6 +431,16 @@ body {
   pointer-events: none;
 }
 
+.ProseMirror td.column-resize-dragging,
+.ProseMirror th.column-resize-dragging {
+  border-right: 1px solid var(--color-info-primary);
+}
+
+.dark .ProseMirror td.column-resize-dragging,
+.dark .ProseMirror th.column-resize-dragging {
+  border-right-color: var(--color-info-primary-dark);
+}
+
 .ProseMirror.resize-cursor {
   cursor: col-resize;
 }
