@@ -87,8 +87,13 @@ export const TableActionDropdown = ({
       if (dropdownRef.current?.contains(e.target as Node)) return
       onClose()
     }
+    const handleScroll = () => onClose()
     document.addEventListener('mousedown', handleMouseDown)
-    return () => document.removeEventListener('mousedown', handleMouseDown)
+    window.addEventListener('scroll', handleScroll, true)
+    return () => {
+      document.removeEventListener('mousedown', handleMouseDown)
+      window.removeEventListener('scroll', handleScroll, true)
+    }
   }, [onClose])
 
   return createPortal(
