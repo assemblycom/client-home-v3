@@ -432,6 +432,7 @@ const HoverPillButton = ({
   hoverCellRef,
   setHoverPill,
   pendingMenuRef,
+  selectionIntentRef,
 }: {
   pill: SinglePillInfo
   hoverPill: HoverPillInfo
@@ -440,6 +441,7 @@ const HoverPillButton = ({
   hoverCellRef: React.MutableRefObject<HTMLElement | null>
   setHoverPill: React.Dispatch<React.SetStateAction<HoverPillInfo | null>>
   pendingMenuRef: React.MutableRefObject<SelectionType | null>
+  selectionIntentRef: React.MutableRefObject<SelectionType | null>
 }) => {
   const [expanded, setExpanded] = useState(false)
   const resting = pill.type === 'row' ? RESTING_ROW : RESTING_COL
@@ -487,6 +489,7 @@ const HoverPillButton = ({
         const cellSelection =
           pill.type === 'row' ? CellSelection.rowSelection($cell) : CellSelection.colSelection($cell)
         // Apply the selection and immediately open the menu
+        selectionIntentRef.current = pill.type
         pendingMenuRef.current = pill.type
         editor.view.dispatch(editor.state.tr.setSelection(cellSelection))
         editor.view.focus()
@@ -516,6 +519,7 @@ export const TableSelectionOverlay = ({ editor }: { editor: Editor }) => {
   const hoverCellRef = useRef<HTMLElement | null>(null)
   const hoverPillHoveredRef = useRef(false)
   const pendingMenuRef = useRef<SelectionType | null>(null)
+  const selectionIntentRef = useRef<SelectionType | null>(null)
 
   const closeMenu = useCallback(() => setMenuState(null), [])
 
@@ -582,10 +586,18 @@ export const TableSelectionOverlay = ({ editor }: { editor: Editor }) => {
       const { selection } = editor.state
       if (!(selection instanceof CellSelection)) {
         setMenuState(null)
+        selectionIntentRef.current = null
         return
       }
 
-      const selectionType = getSelectionType(selection)
+      let selectionType = getSelectionType(selection)
+
+      // When a single-column (or single-row) table is selected, both isRowSelection
+      // and isColSelection return true, causing getSelectionType to return 'table'.
+      // Use the stored intent from the hover-pill click to preserve the correct type.
+      if (selectionType === 'table' && selectionIntentRef.current && selectionIntentRef.current !== 'table') {
+        selectionType = selectionIntentRef.current
+      }
 
       const $from = selection.$anchorCell
       for (let depth = $from.depth; depth > 0; depth--) {
@@ -729,6 +741,7 @@ export const TableSelectionOverlay = ({ editor }: { editor: Editor }) => {
                 hoverCellRef={hoverCellRef}
                 setHoverPill={setHoverPill}
                 pendingMenuRef={pendingMenuRef}
+                selectionIntentRef={selectionIntentRef}
               />,
               document.body,
             ),
