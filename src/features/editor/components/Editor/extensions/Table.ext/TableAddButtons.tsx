@@ -96,17 +96,31 @@ export const TableAddButtons = ({ editor }: { editor: Editor }) => {
     ensureButtons()
     editor.on('transaction', ensureButtons)
 
-    const resizeObserver = new ResizeObserver(() => {
-      const wrappers = editorDOM.querySelectorAll<HTMLElement>('.tableWrapper')
-      for (const wrapper of wrappers) {
-        updateButtonPositions(wrapper)
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const el = entry.target as HTMLElement
+        const wrapper = el.closest('.tableWrapper') as HTMLElement | null
+        if (wrapper) updateButtonPositions(wrapper)
       }
     })
-    resizeObserver.observe(editorDOM)
+    const observedTables = new Set<Element>()
+    const observeTables = () => {
+      const tables = editorDOM.querySelectorAll('.tableWrapper table')
+      for (const table of tables) {
+        if (!observedTables.has(table)) {
+          resizeObserver.observe(table)
+          observedTables.add(table)
+        }
+      }
+    }
+    observeTables()
+    editor.on('transaction', observeTables)
 
     return () => {
       editor.off('transaction', ensureButtons)
+      editor.off('transaction', observeTables)
       resizeObserver.disconnect()
+      observedTables.clear()
       for (const [wrapper, listener] of scrollListeners) {
         wrapper.removeEventListener('scroll', listener)
       }
