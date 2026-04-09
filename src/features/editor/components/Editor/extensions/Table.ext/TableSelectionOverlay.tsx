@@ -431,7 +431,7 @@ const HoverPillButton = ({
   hoverPillHoveredRef,
   hoverCellRef,
   setHoverPill,
-  setMenuState,
+  pendingMenuRef,
 }: {
   pill: SinglePillInfo
   hoverPill: HoverPillInfo
@@ -439,7 +439,7 @@ const HoverPillButton = ({
   hoverPillHoveredRef: React.MutableRefObject<boolean>
   hoverCellRef: React.MutableRefObject<HTMLElement | null>
   setHoverPill: React.Dispatch<React.SetStateAction<HoverPillInfo | null>>
-  setMenuState: React.Dispatch<React.SetStateAction<MenuState | null>>
+  pendingMenuRef: React.MutableRefObject<SelectionType | null>
 }) => {
   const [expanded, setExpanded] = useState(false)
   const resting = pill.type === 'row' ? RESTING_ROW : RESTING_COL
@@ -477,8 +477,6 @@ const HoverPillButton = ({
       onMouseDown={(e) => {
         e.preventDefault()
         e.stopPropagation()
-        // Build a transient CellSelection to pre-compute the copy slice
-        // without changing the editor's actual selection
         const innerPos = editor.view.posAtDOM(hoverPill.cell, 0)
         const $resolved = editor.state.doc.resolve(innerPos)
         let cellDepth = $resolved.depth
@@ -488,26 +486,14 @@ const HoverPillButton = ({
         const $cell = editor.state.doc.resolve($resolved.before(cellDepth))
         const cellSelection =
           pill.type === 'row' ? CellSelection.rowSelection($cell) : CellSelection.colSelection($cell)
-        const slice = cellSelection.content()
-        // Move cursor into the hovered cell so all commands know the target row/column
-        const focusCell = () => editor.chain().focus().setTextSelection(innerPos).run()
-        const baseActions = getActionsForType(pill.type)
-        const hoverActions = baseActions.map((action) =>
-          action.label.startsWith('Copy')
-            ? { ...action, command: () => copySliceToClipboard(editor.view, slice) }
-            : {
-                ...action,
-                command: (ed: Editor) => {
-                  focusCell()
-                  action.command(ed)
-                },
-              },
-        )
-        setMenuState({
-          type: pill.type,
-          triggerRect: e.currentTarget.getBoundingClientRect(),
-          actions: hoverActions,
-        })
+        // Apply the selection and immediately open the menu
+        pendingMenuRef.current = pill.type
+        editor.view.dispatch(editor.state.tr.setSelection(cellSelection))
+        editor.view.focus()
+        // Clear hover state so pills don't get stuck after selection
+        hoverPillHoveredRef.current = false
+        hoverCellRef.current = null
+        setHoverPill(null)
       }}
     >
       {expanded && (pill.type === 'column' ? <EllipsisH /> : <EllipsisV />)}
@@ -529,6 +515,7 @@ export const TableSelectionOverlay = ({ editor }: { editor: Editor }) => {
   const [hoverPill, setHoverPill] = useState<HoverPillInfo | null>(null)
   const hoverCellRef = useRef<HTMLElement | null>(null)
   const hoverPillHoveredRef = useRef(false)
+  const pendingMenuRef = useRef<SelectionType | null>(null)
 
   const closeMenu = useCallback(() => setMenuState(null), [])
 
@@ -590,11 +577,13 @@ export const TableSelectionOverlay = ({ editor }: { editor: Editor }) => {
 
     const updateOverlay = () => {
       removeOverlays(editorDOM)
-      setMenuState(null)
       setPillState(null)
 
       const { selection } = editor.state
-      if (!(selection instanceof CellSelection)) return
+      if (!(selection instanceof CellSelection)) {
+        setMenuState(null)
+        return
+      }
 
       const selectionType = getSelectionType(selection)
 
@@ -613,6 +602,13 @@ export const TableSelectionOverlay = ({ editor }: { editor: Editor }) => {
                 if (bounds) {
                   const pillPos = computePillViewportPosition(wrapper, selectionType)
                   setPillState({ type: selectionType, wrapper, pos: pillPos })
+                  if (pendingMenuRef.current && pillPos) {
+                    setMenuState({
+                      type: pendingMenuRef.current,
+                      triggerRect: new DOMRect(pillPos.left, pillPos.top, pillPos.width, pillPos.height),
+                    })
+                    pendingMenuRef.current = null
+                  }
                 }
               })
             }
@@ -714,7 +710,7 @@ export const TableSelectionOverlay = ({ editor }: { editor: Editor }) => {
                 hoverPillHoveredRef={hoverPillHoveredRef}
                 hoverCellRef={hoverCellRef}
                 setHoverPill={setHoverPill}
-                setMenuState={setMenuState}
+                pendingMenuRef={pendingMenuRef}
               />,
               document.body,
             ),
