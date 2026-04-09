@@ -105,8 +105,16 @@ export const TableAddButtons = ({ editor }: { editor: Editor }) => {
     })
     const observedTables = new Set<Element>()
     const observeTables = () => {
-      const tables = editorDOM.querySelectorAll('.tableWrapper table')
-      for (const table of tables) {
+      const currentTables = new Set(editorDOM.querySelectorAll<Element>('.tableWrapper table'))
+
+      for (const table of observedTables) {
+        if (!currentTables.has(table)) {
+          resizeObserver.unobserve(table)
+          observedTables.delete(table)
+        }
+      }
+
+      for (const table of currentTables) {
         if (!observedTables.has(table)) {
           resizeObserver.observe(table)
           observedTables.add(table)
