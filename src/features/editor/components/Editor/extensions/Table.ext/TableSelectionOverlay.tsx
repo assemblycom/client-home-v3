@@ -632,17 +632,33 @@ export const TableSelectionOverlay = ({ editor }: { editor: Editor }) => {
 
   // Update pill position on scroll/resize so it tracks the table
   const pillWrapper = pillState?.wrapper ?? null
+  const refreshOverlay = useCallback(() => {
+    if (!pillWrapper) return
+    removeOverlays(editor.view.dom)
+    computeOverlayBounds(pillWrapper)
+    updatePillPosition()
+  }, [pillWrapper, editor, updatePillPosition])
+
   useEffect(() => {
     if (!pillWrapper) return
     pillWrapper.addEventListener('scroll', updatePillPosition)
     window.addEventListener('scroll', updatePillPosition, true)
     window.addEventListener('resize', updatePillPosition)
+
+    const table = pillWrapper.querySelector('table')
+    let resizeObserver: ResizeObserver | undefined
+    if (table) {
+      resizeObserver = new ResizeObserver(refreshOverlay)
+      resizeObserver.observe(table)
+    }
+
     return () => {
       pillWrapper.removeEventListener('scroll', updatePillPosition)
       window.removeEventListener('scroll', updatePillPosition, true)
       window.removeEventListener('resize', updatePillPosition)
+      resizeObserver?.disconnect()
     }
-  }, [pillWrapper, updatePillPosition])
+  }, [pillWrapper, updatePillPosition, refreshOverlay])
 
   // Update hover pill position on scroll/resize so it tracks the table
   const hoverWrapper = hoverPill?.wrapper ?? null

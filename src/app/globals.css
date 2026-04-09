@@ -431,13 +431,13 @@ body {
   pointer-events: none;
 }
 
-.ProseMirror td.column-resize-dragging,
-.ProseMirror th.column-resize-dragging {
+.ProseMirror td.column-resize-dragging:not(:has(+ .selectedCell)):not(.selectedCell:last-child),
+.ProseMirror th.column-resize-dragging:not(:has(+ .selectedCell)):not(.selectedCell:last-child) {
   border-right: 1px solid var(--color-info-primary);
 }
 
-.dark .ProseMirror td.column-resize-dragging,
-.dark .ProseMirror th.column-resize-dragging {
+.dark .ProseMirror td.column-resize-dragging:not(:has(+ .selectedCell)):not(.selectedCell:last-child),
+.dark .ProseMirror th.column-resize-dragging:not(:has(+ .selectedCell)):not(.selectedCell:last-child) {
   border-right-color: var(--color-info-primary-dark);
 }
 
