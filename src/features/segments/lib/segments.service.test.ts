@@ -208,7 +208,7 @@ describe('SegmentsService', () => {
         allSettings,
         customField: 'status',
       })
-      expect(result?.id).toBe('set-premier')
+      expect(result?.id).toBe('set-test')
     })
 
     it('matches object custom field values', () => {
