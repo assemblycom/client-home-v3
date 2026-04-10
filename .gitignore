@@ -49,6 +49,9 @@ ngrok.yml
 
 /.vscode/
 
+# Claude Code
+.claude/skills/
+
 # Migration playwright tests report
 migration_report*
 validation-script-*
