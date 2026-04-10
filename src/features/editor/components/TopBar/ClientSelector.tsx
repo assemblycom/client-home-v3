@@ -52,7 +52,7 @@ export const ClientSelector = () => {
         <Icon icon="ChevronDown" name="arrow-down" height={10} width={10} className="text-text-primary" />
       </button>
       <Popper isOpen={isOpen} setIsOpen={setIsOpen} triggerRef={triggerRef} className="bg-white!">
-        <div ref={selectorRef} className="w-76">
+        <div ref={selectorRef} className="w-52 sm:w-76">
           <UserCompanySelector
             menuIsOpen={true}
             name="active-user"
