@@ -21,6 +21,27 @@ export const LinkPreviewBubble = ({ editor, href }: LinkPreviewBubbleProps) => {
   const displayHref = isSmallScreen && href.length > 15 ? href.slice(0, 15) : href
 
   const handleChange = () => {
+    // Select the full link text so setLink applies to it
+    const { $from } = editor.state.selection
+    const linkMark = $from.marks().find((m) => m.type.name === 'link')
+    if (linkMark) {
+      let from = $from.pos
+      let to = $from.pos
+      // Walk backwards to find link start
+      editor.state.doc.nodesBetween($from.start(), $from.pos, (node, pos) => {
+        if (node.isText && linkMark.isInSet(node.marks)) {
+          from = pos
+        }
+      })
+      // Walk forwards to find link end
+      editor.state.doc.nodesBetween($from.pos, $from.end(), (node, pos) => {
+        if (node.isText && linkMark.isInSet(node.marks)) {
+          to = pos + node.nodeSize
+        }
+      })
+      editor.chain().focus().setTextSelection({ from, to }).run()
+    }
+
     setLinkHasTextSelection(true)
     setLinkEditHref(href)
     setShowLinkInput(true)
