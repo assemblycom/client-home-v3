@@ -13,7 +13,7 @@ import { TableAddButtons } from '@extensions/Table.ext/TableAddButtons'
 import { TableSelectionOverlay } from '@extensions/Table.ext/TableSelectionOverlay'
 import { SettingsContext } from '@settings/providers/settings.provider'
 import { EditorContent, useEditor } from '@tiptap/react'
-import { useCallback, useContext, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useShallow } from 'zustand/shallow'
 
 interface EditorProps {
@@ -91,20 +91,40 @@ export const Editor = ({ content }: EditorProps) => {
     return destroyEditor
   }, [editor, destroyEditor, setEditor])
 
-  // Close link popups on scroll
+  // Close link popups on scroll (with threshold to avoid touch tap false positives)
+  const scrollStartRef = useRef<number | null>(null)
   useEffect(() => {
     const scrollParent = editor?.view.dom.closest<HTMLElement>('[class*="overflow-y"]')
     if (!scrollParent) return
 
+    const SCROLL_THRESHOLD = 20
+
     const handleScroll = () => {
+      if (scrollStartRef.current === null) {
+        scrollStartRef.current = scrollParent.scrollTop
+        return
+      }
+
+      const scrolled = Math.abs(scrollParent.scrollTop - scrollStartRef.current)
+      if (scrolled < SCROLL_THRESHOLD) return
+
+      scrollStartRef.current = null
       if (useEditorStore.getState().showLinkInput) {
         setShowLinkInput(false)
       }
       setActiveLinkHref(null)
     }
 
+    const resetScrollStart = () => {
+      scrollStartRef.current = null
+    }
+
     scrollParent.addEventListener('scroll', handleScroll)
-    return () => scrollParent.removeEventListener('scroll', handleScroll)
+    scrollParent.addEventListener('touchend', resetScrollStart)
+    return () => {
+      scrollParent.removeEventListener('scroll', handleScroll)
+      scrollParent.removeEventListener('touchend', resetScrollStart)
+    }
   }, [editor, setShowLinkInput])
 
   const showLinkPreview = !!activeLinkHref && !showLinkInput
