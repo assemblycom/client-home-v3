@@ -43,27 +43,26 @@ export const ClientEditorWrapper = () => {
 
   return (
     <div
-      className={cn(
-        '@container mx-auto flex min-h-full w-full max-w-xl flex-col gap-5 overflow-auto px-4 py-5 min-[860px]:px-12 min-[860px]:py-11',
-        isDark && 'dark',
-      )}
+      className={cn('min-h-full w-full overflow-auto', isDark && 'dark')}
       style={{ backgroundColor, '--bg-color': backgroundColor } as React.CSSProperties}
     >
-      <div className="flex flex-col gap-1.5">
-        <Heading readonly />
-        <Subheading readonly />
-      </div>
-      {bannerUrl && getImageUrl(bannerUrl.path) && (
-        <Banner
-          src={getImageUrl(bannerUrl.path) ?? ''}
-          alt="Workspace Banner"
-          positionX={bannerPositionX}
-          positionY={bannerPositionY}
-        />
-      )}
+      <div className="@container mx-auto flex w-full max-w-xl flex-col gap-5 px-4 py-5 min-[860px]:px-12 min-[860px]:py-11">
+        <div className="flex flex-col gap-1.5">
+          <Heading readonly />
+          <Subheading readonly />
+        </div>
+        {bannerUrl && getImageUrl(bannerUrl.path) && (
+          <Banner
+            src={getImageUrl(bannerUrl.path) ?? ''}
+            alt="Workspace Banner"
+            positionX={bannerPositionX}
+            positionY={bannerPositionY}
+          />
+        )}
 
-      <ActionsCard readonly />
-      <ReadonlyEditor content={content} />
+        <ActionsCard readonly />
+        <ReadonlyEditor content={content} />
+      </div>
     </div>
   )
 }
