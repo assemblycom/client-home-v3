@@ -71,7 +71,18 @@ export function BubbleMenu({
       getReferenceClientRect,
       // IMPORTANT: unique DOM node per instance
       content: contentRootRef.current,
-      popperOptions: { strategy: 'fixed' },
+      maxWidth: 'calc(100vw - 50px)',
+      popperOptions: {
+        strategy: 'fixed',
+        modifiers: [
+          { name: 'flip', enabled: true },
+          {
+            name: 'preventOverflow',
+            enabled: true,
+            options: { padding: 8, altAxis: true, tether: false },
+          },
+        ],
+      },
       duration: 0,
       hideOnClick: false,
     })

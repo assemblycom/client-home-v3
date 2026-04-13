@@ -25,6 +25,7 @@ export enum EditorActions {
   DIVIDER = 'divider',
   EMBED = 'embed',
   ATTACHMENT = 'attachment',
+  LINK = 'link',
 }
 
 export enum MenuMode {
@@ -231,6 +232,7 @@ export const editorActionConfig = (mode: MenuMode): ActionConfig[] => {
               options: [
                 { value: EditorActions.ATTACHMENT, label: 'Upload', icon: 'Attachment' },
                 { value: EditorActions.EMBED, label: 'Embed', icon: 'Code' },
+                { value: EditorActions.LINK, label: 'Link', icon: 'Link' },
               ],
             },
           ]
@@ -251,6 +253,15 @@ export const editorActionConfig = (mode: MenuMode): ActionConfig[] => {
               icon: 'Attachment',
               label: 'Upload',
               tooltip: 'Upload',
+              tooltipPosition: 'bottom',
+            },
+            {
+              type: 'action',
+              id: EditorActions.LINK,
+              action: EditorActions.LINK,
+              icon: 'Link',
+              label: 'Link',
+              tooltip: 'Link',
               tooltipPosition: 'bottom',
             },
           ],
@@ -322,6 +333,8 @@ const getIsActive = (editor: Editor, actionId: string): boolean => {
       return editor.isActive('embed')
     case EditorActions.CALLOUT:
       return editor.isActive('callout')
+    case EditorActions.LINK:
+      return editor.isActive('link')
     default:
       return false
   }
@@ -426,6 +439,16 @@ export const executeSlashCommand = (action: string, editor: Editor, range?: { fr
     case EditorActions.ATTACHMENT:
       triggerImageUpload(editor)
       break
+    case EditorActions.LINK: {
+      const hasSelection = !editor.state.selection.empty
+      useEditorStore.getState().setLinkHasTextSelection(hasSelection)
+      if (hasSelection && editor.isActive('link')) {
+        const existingHref = editor.getAttributes('link').href as string | undefined
+        useEditorStore.getState().setLinkEditHref(existingHref ?? null)
+      }
+      useEditorStore.getState().setShowLinkInput(true)
+      break
+    }
     default:
       console.info('Unknown action:', action)
   }
