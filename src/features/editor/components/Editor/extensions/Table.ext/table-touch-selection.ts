@@ -33,8 +33,14 @@ export const TableTouchSelection = Extension.create({
               const startCell = domInCell(view.dom, target)
               if (!startCell) return false
 
-              const $anchor = cellAtCoords(view, touch.clientX, touch.clientY)
-              if (!$anchor) return false
+              const $anchorInit = cellAtCoords(view, touch.clientX, touch.clientY)
+              if (!$anchorInit) return false
+
+              // Store the numeric position so we can re-resolve against the
+              // current document on every move. Holding onto a ResolvedPos from
+              // an earlier doc causes "Selection … must point at the current
+              // document" when the state has changed between events.
+              const anchorPos = $anchorInit.pos
 
               const wrapper = startCell.closest('.tableWrapper') as HTMLElement | null
               const startX = touch.clientX
@@ -47,9 +53,9 @@ export const TableTouchSelection = Extension.create({
                 activated = true
 
                 // Select the anchor cell to give visual feedback
-                const selection = CellSelection.create(view.state.doc, $anchor.pos)
+                const selection = CellSelection.create(view.state.doc, anchorPos)
                 const tr = view.state.tr.setSelection(selection)
-                tr.setMeta(tableEditingKey, $anchor.pos)
+                tr.setMeta(tableEditingKey, anchorPos)
                 view.dispatch(tr)
               }, LONG_PRESS_MS)
 
@@ -73,11 +79,15 @@ export const TableTouchSelection = Extension.create({
 
                 const $head = cellAtCoords(view, t.clientX, t.clientY)
                 if ($head) {
+                  // Re-resolve anchor from the current document so both
+                  // positions belong to the same doc instance
+                  const $anchor = cellAround(view.state.doc.resolve(anchorPos))
+                  if (!$anchor) return
                   const selection = new CellSelection($anchor, $head)
                   if (!view.state.selection.eq(selection)) {
                     const tr = view.state.tr.setSelection(selection)
                     if (tableEditingKey.getState(view.state) == null) {
-                      tr.setMeta(tableEditingKey, $anchor.pos)
+                      tr.setMeta(tableEditingKey, anchorPos)
                     }
                     view.dispatch(tr)
                   }
@@ -94,6 +104,8 @@ export const TableTouchSelection = Extension.create({
                     // After scrolling, re-evaluate cell under finger
                     const $newHead = cellAtCoords(view, t.clientX, t.clientY)
                     if ($newHead) {
+                      const $anchor = cellAround(view.state.doc.resolve(anchorPos))
+                      if (!$anchor) return
                       const sel = new CellSelection($anchor, $newHead)
                       if (!view.state.selection.eq(sel)) {
                         view.dispatch(view.state.tr.setSelection(sel))
