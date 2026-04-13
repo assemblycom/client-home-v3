@@ -10,7 +10,7 @@ import ConditionsDrizzleRepository from '@segments/lib/conditions/conditions.rep
 import SegmentConfigsDrizzleRepository from '@segments/lib/segment-config/segment-config.repository'
 import SegmentsDrizzleRepository from '@segments/lib/segments/segments.repository'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
-import { createTestDb, seedSegmentConfig, seedSegments, type TestDB } from '@/test/setup-test-db'
+import { createTestDb, seedSegmentConfig, seedSegments, TEST_WORKSPACE_ID, type TestDB } from '@/test/setup-test-db'
 
 vi.mock('server-only', () => ({}))
 vi.mock('@/db', () => ({ default: {} }))
@@ -21,7 +21,7 @@ let segmentsRepo: SegmentsDrizzleRepository
 let conditionsRepo: ConditionsDrizzleRepository
 let configsRepo: SegmentConfigsDrizzleRepository
 
-const WORKSPACE_ID = 'ws-test-001'
+const WORKSPACE_ID = TEST_WORKSPACE_ID
 
 beforeAll(async () => {
   const testDb = await createTestDb()
@@ -144,6 +144,7 @@ describe('relational queries', () => {
     const [segment] = await segmentsRepo.getAll(WORKSPACE_ID)
     const fetched = await segmentsRepo.getOne(segment.id)
 
+    expect(fetched).toBeDefined()
     expect(fetched?.conditions).toHaveLength(4)
     // Each condition should have a realistic compareValue (last names from drizzle-seed)
     for (const condition of fetched?.conditions ?? []) {
