@@ -7,6 +7,9 @@
  *
  * Also provides `seedTestDb` to populate the database with realistic data via drizzle-seed.
  */
+
+// drizzle-kit/api is CJS-only — use createRequire for proper ESM compatibility
+import { createRequire } from 'node:module'
 import { PGlite } from '@electric-sql/pglite'
 import { media, mediaTypeEnum } from '@media/lib/media.schema'
 import { conditions } from '@segments/lib/conditions/conditions.schema'
@@ -17,9 +20,11 @@ import { drizzle } from 'drizzle-orm/pglite'
 import { seed } from 'drizzle-seed'
 import { schema } from '@/db/schema'
 
-// drizzle-kit/api is CJS-only — use require in Vitest's ESM context
+const _require = createRequire(import.meta.url)
 // biome-ignore lint/suspicious/noExplicitAny: drizzle-kit/api has no ESM export
-const { generateDrizzleJson, generateMigration } = require('drizzle-kit/api') as any
+const { generateDrizzleJson, generateMigration } = _require('drizzle-kit/api') as any
+
+export const TEST_WORKSPACE_ID = 'ws-test-001'
 
 export type TestDB = ReturnType<typeof drizzle<typeof schema>>
 
@@ -57,7 +62,7 @@ export const seedSegments = async (db: TestDB, options: { segments?: number; con
     segments: {
       count: segmentCount,
       columns: {
-        workspaceId: f.default({ defaultValue: 'ws-test-001' }),
+        workspaceId: f.default({ defaultValue: TEST_WORKSPACE_ID }),
         createdById: f.default({ defaultValue: 'a0000000-0000-0000-0000-000000000001' }),
         name: f.firstName(),
       },
@@ -79,7 +84,7 @@ export const seedSegmentConfig = async (db: TestDB) => {
     segmentConfigs: {
       count: 1,
       columns: {
-        workspaceId: f.default({ defaultValue: 'ws-test-001' }),
+        workspaceId: f.default({ defaultValue: TEST_WORKSPACE_ID }),
         customField: f.default({ defaultValue: 'status' }),
         customFieldId: f.default({ defaultValue: 'cf-status-1' }),
       },
