@@ -1,4 +1,5 @@
 import { Icon } from '@assembly-js/design-system'
+import { selectionHighlightKey } from '@extensions/Link.ext'
 import type { Editor } from '@tiptap/core'
 import { type KeyboardEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { ensureHttps } from '@/utils/urls'
@@ -26,11 +27,12 @@ export const LinkBubbleInput = ({
   const urlInputRef = useRef<HTMLInputElement>(null)
 
   const handleClose = useCallback(() => {
+    editor.view.dispatch(editor.state.tr.setMeta(selectionHighlightKey, null))
     setDisplayText('')
     setUrl('')
     setEditHref(null)
     setShowLinkInput(false)
-  }, [setShowLinkInput, setEditHref])
+  }, [editor, setShowLinkInput, setEditHref])
 
   // Pre-fill URL when editing an existing link
   useEffect(() => {
@@ -80,6 +82,15 @@ export const LinkBubbleInput = ({
   useEffect(() => {
     if (!showLinkInput) return
 
+    // Add a highlight decoration over the selected text before the input
+    // steals focus, so the user can see which text will receive the link.
+    if (hasTextSelection) {
+      const { from, to } = editor.state.selection
+      if (from !== to) {
+        editor.view.dispatch(editor.state.tr.setMeta(selectionHighlightKey, { from, to }))
+      }
+    }
+
     const timer = setTimeout(() => {
       if (hasTextSelection) {
         urlInputRef.current?.focus()
@@ -89,7 +100,7 @@ export const LinkBubbleInput = ({
     }, 50)
 
     return () => clearTimeout(timer)
-  }, [showLinkInput, hasTextSelection])
+  }, [showLinkInput, hasTextSelection, editor])
 
   // Close when user clicks outside the popup (including into the editor)
   useEffect(() => {

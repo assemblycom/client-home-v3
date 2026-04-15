@@ -1,5 +1,8 @@
 import Link from '@tiptap/extension-link'
 import { Plugin, PluginKey } from '@tiptap/pm/state'
+import { Decoration, DecorationSet } from '@tiptap/pm/view'
+
+export const selectionHighlightKey = new PluginKey('selectionHighlight')
 
 export const LinkExt = Link.extend({
   inclusive: false,
@@ -23,7 +26,32 @@ export const LinkExt = Link.extend({
       },
     })
 
-    return [...parentPlugins, preventClickPlugin]
+    // Show a highlight decoration over the selection when the editor loses
+    // focus to the link input, so the user can still see which text will
+    // receive the link.
+    const selectionHighlightPlugin = new Plugin({
+      key: selectionHighlightKey,
+      state: {
+        init: () => DecorationSet.empty,
+        apply: (tr, decorationSet, _oldState, newState) => {
+          const meta = tr.getMeta(selectionHighlightKey) as { from: number; to: number } | null | undefined
+          if (meta === null) return DecorationSet.empty
+          if (meta) {
+            return DecorationSet.create(newState.doc, [
+              Decoration.inline(meta.from, meta.to, { class: 'selection-highlight' }),
+            ])
+          }
+          return decorationSet.map(tr.mapping, tr.doc)
+        },
+      },
+      props: {
+        decorations(state) {
+          return selectionHighlightKey.getState(state)
+        },
+      },
+    })
+
+    return [...parentPlugins, preventClickPlugin, selectionHighlightPlugin]
   },
 }).configure({
   openOnClick: false,
