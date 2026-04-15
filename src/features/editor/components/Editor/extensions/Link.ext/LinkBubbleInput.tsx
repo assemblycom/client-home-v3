@@ -82,17 +82,14 @@ export const LinkBubbleInput = ({
   useEffect(() => {
     if (!showLinkInput) return
 
-    // Add a highlight decoration over the selected text before the input
-    // steals focus, so the user can see which text will receive the link.
-    if (hasTextSelection) {
-      const { from, to } = editor.state.selection
-      if (from !== to) {
-        editor.view.dispatch(editor.state.tr.setMeta(selectionHighlightKey, { from, to }))
-      }
-    }
-
     const timer = setTimeout(() => {
       if (hasTextSelection) {
+        // Add a highlight decoration in the same tick as focus so the
+        // native selection and decoration don't overlap visually.
+        const { from, to } = editor.state.selection
+        if (from !== to) {
+          editor.view.dispatch(editor.state.tr.setMeta(selectionHighlightKey, { from, to }))
+        }
         urlInputRef.current?.focus()
       } else {
         textInputRef.current?.focus()
