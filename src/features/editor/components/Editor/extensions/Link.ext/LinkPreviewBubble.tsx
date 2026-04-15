@@ -51,7 +51,8 @@ export const LinkPreviewBubble = ({ editor, href }: LinkPreviewBubbleProps) => {
     editor.chain().focus().unsetLink().run()
   }
 
-  // After mount, nudge the popup left if it overflows the viewport
+  // After mount (or when href changes), nudge the popup left if it overflows the viewport.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: href isn't read in the effect but changing it alters the bubble width, requiring repositioning
   useEffect(() => {
     const el = containerRef.current
     if (!el) return
@@ -73,7 +74,7 @@ export const LinkPreviewBubble = ({ editor, href }: LinkPreviewBubbleProps) => {
       clearTimeout(timer)
       window.removeEventListener('resize', reposition)
     }
-  })
+  }, [href])
 
   return (
     <div
