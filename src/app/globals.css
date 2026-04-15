@@ -448,3 +448,10 @@ body {
 .ProseMirror-focused {
   outline: none;
 }
+
+/* Synthetic highlight shown over the editor selection while the link input has focus */
+.selection-highlight {
+  background-color: Highlight;
+  color: HighlightText;
+  padding: 3px 0;
+}
