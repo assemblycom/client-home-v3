@@ -6,6 +6,28 @@ import { Popper } from '@/features/editor/components/Popper'
 import { useBackgroundColorPopup } from '@/features/editor/components/Sidebar/BackgroundColor/useBackgroundColor'
 import { hexToRgb } from '@/utils/color'
 
+type HsvaColor = { h: number; s: number; v: number; a: number }
+
+const hexToHsva = (hex: string): HsvaColor => {
+  const rgb = hexToRgb(hex)
+  if (!rgb) return { h: 0, s: 0, v: 0, a: 1 }
+  const r = rgb.r / 255
+  const g = rgb.g / 255
+  const b = rgb.b / 255
+  const max = Math.max(r, g, b)
+  const min = Math.min(r, g, b)
+  const d = max - min
+  const s = max === 0 ? 0 : (d / max) * 100
+  const v = max * 100
+  let h = 0
+  if (d !== 0) {
+    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) * 60
+    else if (max === g) h = ((b - r) / d + 2) * 60
+    else h = ((r - g) / d + 4) * 60
+  }
+  return { h, s, v, a: 1 }
+}
+
 const normalizeHex = (value: string): string | null => {
   const stripped = value.replace(/^#/, '').trim()
   if (/^[a-f\d]{3}$/i.test(stripped)) {
@@ -25,6 +47,8 @@ export const BackgroundColor = () => {
   const backgroundColor = useSettingsStore((s) => s.backgroundColor)
   const setSettings = useSettingsStore((s) => s.setSettings)
   const [hexInput, setHexInput] = useState(backgroundColor.replace('#', '').toUpperCase())
+  const [hsva, setHsva] = useState<HsvaColor>(() => hexToHsva(backgroundColor))
+  const lastPickerHexRef = useRef(backgroundColor)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const isFocusedRef = useRef(false)
@@ -33,9 +57,15 @@ export const BackgroundColor = () => {
     if (!isFocusedRef.current) {
       setHexInput(backgroundColor.replace('#', '').toUpperCase())
     }
+    if (backgroundColor !== lastPickerHexRef.current) {
+      setHsva(hexToHsva(backgroundColor))
+      lastPickerHexRef.current = backgroundColor
+    }
   }, [backgroundColor])
 
-  const handleColorfulChange = (color: { hex: string }) => {
+  const handleColorfulChange = (color: { hex: string; hsva: HsvaColor }) => {
+    lastPickerHexRef.current = color.hex
+    setHsva(color.hsva)
     setSettings({ backgroundColor: color.hex })
   }
 
@@ -91,7 +121,7 @@ export const BackgroundColor = () => {
           triggerRef={triggerRef}
           className="rounded-sm border border-border-gray bg-white p-4 shadow-lg"
         >
-          <Colorful color={backgroundColor} disableAlpha={true} onChange={handleColorfulChange} />
+          <Colorful color={hsva} disableAlpha={true} onChange={handleColorfulChange} />
         </Popper>
         <span className="ml-3 text-sm text-text-primary leading-5 tracking-[-0.15px]">#</span>
         <input
