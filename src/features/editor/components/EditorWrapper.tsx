@@ -53,7 +53,7 @@ export function EditorWrapper({ className }: EditorWrapperProps) {
     >
       <Activity mode={getActivityMode(viewMode === ViewMode.EDITOR)}>
         <div
-          className="@container mx-auto flex min-h-full w-full max-w-xl flex-col gap-5 rounded-xl @max-md:rounded-t-none border border-border-gray px-6 py-5"
+          className="@container mx-auto flex min-h-full w-full max-w-xl flex-col gap-5 rounded-xl border border-border-gray px-6 py-5"
           style={{ backgroundColor }}
         >
           <div className="flex flex-col gap-1.5">
