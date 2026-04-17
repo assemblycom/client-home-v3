@@ -74,6 +74,9 @@ importers:
       '@tiptap/suggestion':
         specifier: ^3.19.0
         version: 3.20.0(@tiptap/core@3.20.0(@tiptap/pm@3.20.0))(@tiptap/pm@3.20.0)
+      '@uiw/color-convert':
+        specifier: ^2.9.5
+        version: 2.9.5(@babel/runtime@7.28.6)
       '@uiw/react-color-colorful':
         specifier: ^2.9.4
         version: 2.9.5(@babel/runtime@7.28.6)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
