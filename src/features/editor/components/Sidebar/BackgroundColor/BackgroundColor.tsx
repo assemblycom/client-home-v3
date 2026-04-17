@@ -1,32 +1,11 @@
 'use client'
 import { useSettingsStore } from '@settings/providers/settings.provider'
+import { type HsvaColor, hexToHsva } from '@uiw/color-convert'
 import Colorful from '@uiw/react-color-colorful'
 import { useEffect, useRef, useState } from 'react'
 import { Popper } from '@/features/editor/components/Popper'
 import { useBackgroundColorPopup } from '@/features/editor/components/Sidebar/BackgroundColor/useBackgroundColor'
 import { hexToRgb } from '@/utils/color'
-
-type HsvaColor = { h: number; s: number; v: number; a: number }
-
-const hexToHsva = (hex: string): HsvaColor => {
-  const rgb = hexToRgb(hex)
-  if (!rgb) return { h: 0, s: 0, v: 0, a: 1 }
-  const r = rgb.r / 255
-  const g = rgb.g / 255
-  const b = rgb.b / 255
-  const max = Math.max(r, g, b)
-  const min = Math.min(r, g, b)
-  const d = max - min
-  const s = max === 0 ? 0 : (d / max) * 100
-  const v = max * 100
-  let h = 0
-  if (d !== 0) {
-    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) * 60
-    else if (max === g) h = ((b - r) / d + 2) * 60
-    else h = ((r - g) / d + 4) * 60
-  }
-  return { h, s, v, a: 1 }
-}
 
 const normalizeHex = (value: string): string | null => {
   const stripped = value.replace(/^#/, '').trim()
