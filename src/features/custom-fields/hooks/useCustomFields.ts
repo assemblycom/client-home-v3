@@ -1,6 +1,11 @@
 'use client'
 
-import { CustomFieldEntityType, CustomFieldType, ListCustomFieldResponseSchema } from '@assembly/types'
+import {
+  CustomFieldEntityType,
+  type CustomFieldOption,
+  CustomFieldType,
+  ListCustomFieldResponseSchema,
+} from '@assembly/types'
 import type { IconType } from '@assembly-js/design-system'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/core/axios.instance'
@@ -24,6 +29,7 @@ export type CustomFieldItem = {
   name: string
   type: CustomFieldType
   icon: IconType
+  options: CustomFieldOption[]
 }
 
 /** Nested map: { [entityType]: { [fieldKey]: { [optionKey]: optionLabel } } } */
@@ -37,7 +43,14 @@ export function useCustomFields() {
       const parsed = ListCustomFieldResponseSchema.parse(res.data)
       return parsed.data
         .sort((a, b) => a.order - b.order)
-        .map(({ id, key, name, type }) => ({ id, key, name, type, icon: CUSTOM_FIELD_TYPE_ICON[type] }))
+        .map(({ id, key, name, type, options }) => ({
+          id,
+          key,
+          name,
+          type,
+          options,
+          icon: CUSTOM_FIELD_TYPE_ICON[type],
+        }))
     },
   })
 
@@ -48,7 +61,14 @@ export function useCustomFields() {
       const parsed = ListCustomFieldResponseSchema.parse(res.data)
       return parsed.data
         .sort((a, b) => a.order - b.order)
-        .map(({ id, key, name, type }) => ({ id, key, name, type, icon: CUSTOM_FIELD_TYPE_ICON[type] }))
+        .map(({ id, key, name, type, options }) => ({
+          id,
+          key,
+          name,
+          type,
+          options,
+          icon: CUSTOM_FIELD_TYPE_ICON[type],
+        }))
     },
   })
 
