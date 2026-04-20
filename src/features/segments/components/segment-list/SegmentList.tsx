@@ -1,5 +1,6 @@
 import { useConfirmationDialog } from '@common/hooks/useConfirmationDialog'
 import { useSidebarStore } from '@editor/stores/sidebarStore'
+import { useViewStore } from '@editor/stores/viewStore'
 import { SegmentCardItem } from '@segments/components/segment-list/SegmentCardItem'
 import { useSegmentMutations } from '@segments/hooks/useSegmentMutations'
 import type { SegmentStatsSettings } from '@segments/lib/segments.dto'
@@ -11,6 +12,8 @@ type SegmentListProps = {
 export const SegmentList = ({ segments }: SegmentListProps) => {
   const { deleteSegment } = useSegmentMutations()
   const setCurrentSegment = useSidebarStore((s) => s.setCurrentSegment)
+  const activeSegmentId = useViewStore((s) => s.activeSegmentId)
+  const setActiveSegmentId = useViewStore((s) => s.setActiveSegmentId)
   const { confirm, dialogComponent } = useConfirmationDialog({
     title: 'Delete segment?',
     description: 'Clients in this segment will return to the default segment.',
@@ -35,7 +38,13 @@ export const SegmentList = ({ segments }: SegmentListProps) => {
     }
     const confirmed = await confirm()
     if (confirmed) {
-      deleteSegment.mutate(segmentId)
+      deleteSegment.mutate(segmentId, {
+        onSuccess: () => {
+          if (activeSegmentId === segmentId) {
+            setActiveSegmentId(null)
+          }
+        },
+      })
     }
   }
 
