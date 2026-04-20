@@ -183,10 +183,6 @@ export const CustomFieldOptionSchema = z.object({
 })
 export type CustomFieldOption = z.infer<typeof CustomFieldOptionSchema>
 
-export const ListCustomFieldOptionsResponseSchema = z.object({
-  data: z.array(CustomFieldOptionSchema),
-})
-
 const CustomFieldSchema = z.object({
   id: z.string(),
   key: z.string(),
@@ -195,7 +191,7 @@ const CustomFieldSchema = z.object({
   order: z.number(),
   object: z.literal('customField'),
   entityType: z.enum(CustomFieldEntityType),
-  options: z.array(CustomFieldOptionSchema).optional(),
+  options: z.array(CustomFieldOptionSchema).default([]),
 })
 
 export const ListCustomFieldResponseSchema = z.object({

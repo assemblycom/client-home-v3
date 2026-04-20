@@ -8,7 +8,6 @@ import { Select } from '@segments/components/Select'
 import { useSegmentMutations } from '@segments/hooks/useSegmentMutations'
 import { useSegmentStats } from '@segments/hooks/useSegments'
 import { useCallback, useRef, useState } from 'react'
-import { useCustomFieldOptions } from '@/features/custom-fields/hooks/useCustomFieldOptions'
 import { useCustomFields } from '@/features/custom-fields/hooks/useCustomFields'
 
 type ConditionRow = { id: number; compareValue: string }
@@ -31,7 +30,7 @@ export const SegmentFormPanel = () => {
       ? companyCustomFields.find((f) => f.key === customFieldKey)
       : clientCustomFields.find((f) => f.key === customFieldKey)
   const isMultiSelect = customField?.type === CustomFieldType.TAGS
-  const { options } = useCustomFieldOptions(isMultiSelect ? (customField?.id ?? null) : null)
+  const options = isMultiSelect ? (customField?.options ?? []) : []
 
   const nextId = useRef(currentSegment?.conditions?.length ?? 1)
   const [name, setName] = useState(currentSegment?.name ?? '')
