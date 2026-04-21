@@ -80,9 +80,9 @@ export const TableTouchSelection = Extension.create({
                 const $head = cellAtCoords(view, t.clientX, t.clientY)
                 if ($head) {
                   // Re-resolve anchor from the current document so both
-                  // positions belong to the same doc instance
-                  const $anchor = cellAround(view.state.doc.resolve(anchorPos))
-                  if (!$anchor) return
+                  // positions belong to the same doc instance. anchorPos
+                  // already points before the cell, so no cellAround wrap.
+                  const $anchor = view.state.doc.resolve(anchorPos)
                   const selection = new CellSelection($anchor, $head)
                   if (!view.state.selection.eq(selection)) {
                     const tr = view.state.tr.setSelection(selection)
@@ -104,8 +104,7 @@ export const TableTouchSelection = Extension.create({
                     // After scrolling, re-evaluate cell under finger
                     const $newHead = cellAtCoords(view, t.clientX, t.clientY)
                     if ($newHead) {
-                      const $anchor = cellAround(view.state.doc.resolve(anchorPos))
-                      if (!$anchor) return
+                      const $anchor = view.state.doc.resolve(anchorPos)
                       const sel = new CellSelection($anchor, $newHead)
                       if (!view.state.selection.eq(sel)) {
                         view.dispatch(view.state.tr.setSelection(sel))
