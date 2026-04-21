@@ -28,9 +28,19 @@ export const uploadFileToSupabase = async (
   })
 
   if (!res.ok) {
-    const text = await res.text().catch(() => '')
-    console.error('Upload failed:', res.status, text)
-    throw new Error('Upload failed')
+    const body = (await res.text().catch(() => '')).slice(0, 500)
+    const details = {
+      status: res.status,
+      statusText: res.statusText,
+      body,
+      fileName: file.name,
+      fileType: file.type,
+      fileSize: file.size,
+    }
+    console.error('Upload failed:', details)
+    throw new Error(
+      `Upload failed: ${res.status} ${res.statusText} | file=${file.name} type=${file.type} size=${file.size} | body=${body}`,
+    )
   }
 
   return { path }
