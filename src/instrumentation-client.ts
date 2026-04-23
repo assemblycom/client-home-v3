@@ -13,7 +13,6 @@ const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN
 const EXTENSION_NOISE_MARKERS = [
   'multichainWallet',
   'contentscriptFunctionCall',
-  'postMessageToContentScript',
   'chrome-extension://',
   'moz-extension://',
   'safari-web-extension://',
