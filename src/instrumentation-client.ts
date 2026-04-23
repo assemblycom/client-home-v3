@@ -6,17 +6,10 @@ import * as Sentry from '@sentry/nextjs'
 
 const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN
 
-// Markers injected by browser-extension content scripts (crypto wallets, etc.)
-// that leak console errors into Sentry because they run in our page context.
-// See OUT-3553 — the "Origin not allowed" issue was traced to a multichainWallet
-// extension's internal allowlist check, not our code.
-const EXTENSION_NOISE_MARKERS = [
-  'multichainWallet',
-  'contentscriptFunctionCall',
-  'chrome-extension://',
-  'moz-extension://',
-  'safari-web-extension://',
-]
+// Marker left behind by multichainWallet-family browser extension content
+// scripts that log errors via console in our page context (no stack frame
+// for `denyUrls` to filter on). See OUT-3553.
+const EXTENSION_NOISE_MARKER = 'multichainWallet'
 
 const isBrowserExtensionNoise = (event: Sentry.ErrorEvent): boolean => {
   try {
@@ -24,9 +17,8 @@ const isBrowserExtensionNoise = (event: Sentry.ErrorEvent): boolean => {
       message: event.message,
       exception: event.exception,
       extra: event.extra,
-      breadcrumbs: event.breadcrumbs?.slice(-10),
     })
-    return EXTENSION_NOISE_MARKERS.some((marker) => probe.includes(marker))
+    return probe.includes(EXTENSION_NOISE_MARKER)
   } catch {
     return false
   }
