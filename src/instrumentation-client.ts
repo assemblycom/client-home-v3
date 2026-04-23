@@ -6,6 +6,33 @@ import * as Sentry from '@sentry/nextjs'
 
 const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN
 
+// Markers injected by browser-extension content scripts (crypto wallets, etc.)
+// that leak console errors into Sentry because they run in our page context.
+// See OUT-3553 — the "Origin not allowed" issue was traced to a multichainWallet
+// extension's internal allowlist check, not our code.
+const EXTENSION_NOISE_MARKERS = [
+  'multichainWallet',
+  'contentscriptFunctionCall',
+  'postMessageToContentScript',
+  'chrome-extension://',
+  'moz-extension://',
+  'safari-web-extension://',
+]
+
+const isBrowserExtensionNoise = (event: Sentry.ErrorEvent): boolean => {
+  try {
+    const probe = JSON.stringify({
+      message: event.message,
+      exception: event.exception,
+      extra: event.extra,
+      breadcrumbs: event.breadcrumbs?.slice(-10),
+    })
+    return EXTENSION_NOISE_MARKERS.some((marker) => probe.includes(marker))
+  } catch {
+    return false
+  }
+}
+
 Sentry.init({
   dsn,
 
@@ -28,6 +55,14 @@ Sentry.init({
   // Enable sending user PII (Personally Identifiable Information)
   // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/options/#sendDefaultPii
   sendDefaultPii: true,
+
+  // Drop events whose top stack frame is in a browser extension URL. Catches
+  // native exceptions thrown from extension-owned code.
+  denyUrls: [/^chrome-extension:\/\//i, /^moz-extension:\/\//i, /^safari(-web)?-extension:\/\//i],
+
+  // Catches extension content scripts that log via console in our page context
+  // (no stack frame) — see OUT-3553.
+  beforeSend: (event) => (isBrowserExtensionNoise(event) ? null : event),
 })
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart
