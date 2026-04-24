@@ -7,6 +7,8 @@ import { Popper } from '@/features/editor/components/Popper'
 import { useBackgroundColorPopup } from '@/features/editor/components/Sidebar/BackgroundColor/useBackgroundColor'
 import { hexToRgb } from '@/utils/color'
 
+const DEFAULT_HEX = '#ffffff'
+
 const normalizeHex = (value: string): string | null => {
   const stripped = value.replace(/^#/, '').trim()
   if (/^[a-f\d]{3}$/i.test(stripped)) {
@@ -22,11 +24,13 @@ const normalizeHex = (value: string): string | null => {
   return null
 }
 
+const safeHexToHsva = (value: string): HsvaColor => hexToHsva(normalizeHex(value) ?? DEFAULT_HEX)
+
 export const BackgroundColor = () => {
   const backgroundColor = useSettingsStore((s) => s.backgroundColor)
   const setSettings = useSettingsStore((s) => s.setSettings)
-  const [hexInput, setHexInput] = useState(backgroundColor.replace('#', '').toUpperCase())
-  const [hsva, setHsva] = useState<HsvaColor>(() => hexToHsva(backgroundColor))
+  const [hexInput, setHexInput] = useState((backgroundColor ?? '').replace('#', '').toUpperCase())
+  const [hsva, setHsva] = useState<HsvaColor>(() => safeHexToHsva(backgroundColor))
   const lastPickerHexRef = useRef(backgroundColor)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -34,10 +38,10 @@ export const BackgroundColor = () => {
 
   useEffect(() => {
     if (!isFocusedRef.current) {
-      setHexInput(backgroundColor.replace('#', '').toUpperCase())
+      setHexInput((backgroundColor ?? '').replace('#', '').toUpperCase())
     }
     if (backgroundColor !== lastPickerHexRef.current) {
-      setHsva(hexToHsva(backgroundColor))
+      setHsva(safeHexToHsva(backgroundColor))
       lastPickerHexRef.current = backgroundColor
     }
   }, [backgroundColor])
@@ -68,7 +72,7 @@ export const BackgroundColor = () => {
       setSettings({ backgroundColor: normalized })
       setHexInput(normalized.replace('#', '').toUpperCase())
     } else {
-      setHexInput(backgroundColor.replace('#', '').toUpperCase())
+      setHexInput((backgroundColor ?? '').replace('#', '').toUpperCase())
     }
   }
 
