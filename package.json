@@ -8,7 +8,7 @@
     "build:all": "sh scripts/build/build.sh",
     "start": "next start",
     "start:clean": "next build && next start",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
     "lint": "biome check",
     "format": "biome check --write",
     "lint-staged": "lint-staged",
