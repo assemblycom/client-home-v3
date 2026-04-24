@@ -29,7 +29,7 @@ const safeHexToHsva = (value: string): HsvaColor => hexToHsva(normalizeHex(value
 export const BackgroundColor = () => {
   const backgroundColor = useSettingsStore((s) => s.backgroundColor)
   const setSettings = useSettingsStore((s) => s.setSettings)
-  const [hexInput, setHexInput] = useState((backgroundColor ?? '').replace('#', '').toUpperCase())
+  const [hexInput, setHexInput] = useState(backgroundColor.replace('#', '').toUpperCase())
   const [hsva, setHsva] = useState<HsvaColor>(() => safeHexToHsva(backgroundColor))
   const lastPickerHexRef = useRef(backgroundColor)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -38,7 +38,7 @@ export const BackgroundColor = () => {
 
   useEffect(() => {
     if (!isFocusedRef.current) {
-      setHexInput((backgroundColor ?? '').replace('#', '').toUpperCase())
+      setHexInput(backgroundColor.replace('#', '').toUpperCase())
     }
     if (backgroundColor !== lastPickerHexRef.current) {
       setHsva(safeHexToHsva(backgroundColor))
@@ -72,7 +72,7 @@ export const BackgroundColor = () => {
       setSettings({ backgroundColor: normalized })
       setHexInput(normalized.replace('#', '').toUpperCase())
     } else {
-      setHexInput((backgroundColor ?? '').replace('#', '').toUpperCase())
+      setHexInput(backgroundColor.replace('#', '').toUpperCase())
     }
   }
 
