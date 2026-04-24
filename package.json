@@ -8,7 +8,7 @@
     "build:all": "sh scripts/build/build.sh",
     "start": "next start",
     "start:clean": "next build && next start",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
     "lint": "biome check",
     "format": "biome check --write",
     "lint-staged": "lint-staged",
@@ -16,7 +16,9 @@
     "tsc": "NODE_ENV=production tsc --noemit --skipLibCheck",
     "ex": "tsx --tsconfig tsx.tsconfig.json --require dotenv/config --require tsconfig-paths/register",
     "data-migrate": "pnpm ex scripts/data-migration",
-    "nuke": "pnpm ex scripts/nuke"
+    "nuke": "pnpm ex scripts/nuke",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@assembly-js/app-bridge": "^1.1.0",
@@ -49,6 +51,7 @@
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",
+    "drizzle-seed": "^0.3.1",
     "drizzle-zod": "^0.8.3",
     "http-status": "^2.1.0",
     "import-in-the-middle": "^3.0.0",
@@ -72,6 +75,7 @@
     "@commitlint/cli": "^20.4.1",
     "@commitlint/config-conventional": "^20.4.1",
     "@commitlint/types": "^20.4.0",
+    "@electric-sql/pglite": "^0.4.4",
     "@playwright/test": "^1.58.2",
     "@svgr/webpack": "^8.1.0",
     "@tailwindcss/postcss": "^4.1.18",
@@ -85,7 +89,8 @@
     "tailwindcss": "^4.1.18",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.4"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css}": [
