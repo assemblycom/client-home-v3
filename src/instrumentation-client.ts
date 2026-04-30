@@ -15,7 +15,7 @@ Sentry.init({
   // RSC streaming aborts (navigation away, iframe unmount, network blip) surface
   // as a global "Connection closed." from react-server-dom-turbopack-client.
   // It's handled and user-invisible — drop it as noise.
-  ignoreErrors: [/Connection closed\./],
+  ignoreErrors: [/^Connection closed\.$/],
 
   // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
   tracesSampleRate: 1,
