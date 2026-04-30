@@ -55,6 +55,7 @@ export const fixEmbedUrl = (url: string) => {
   // (e.g. YouTube watch → embed). For unrecognized services, linkToIframe may
   // mangle the URL (e.g. cal.com → app.cal.com/embed/…), so fall back to the
   // original URL when the transformed host doesn't match the original.
+  if (!URL.canParse(url)) return url
   const originalHost = new URL(url).host
   const transformedHost = new URL(urlResultObject.data.src).host
   if (originalHost !== transformedHost) return url
