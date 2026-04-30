@@ -28,9 +28,7 @@ export const Heading = ({ readonly, className }: HeadingProps) => {
 
   return (
     <div className={cn('flex flex-wrap items-baseline font-medium text-custom-xl leading-7', className)}>
-      <div className={cn('capitalize', greeting ? '' : 'opacity-0')} suppressHydrationWarning>
-        Good {greeting},&nbsp;
-      </div>
+      {greeting && <div className="capitalize">Good {greeting},&nbsp;</div>}
       <span>
         <HandleBarTemplate
           template={TEMPLATE}
