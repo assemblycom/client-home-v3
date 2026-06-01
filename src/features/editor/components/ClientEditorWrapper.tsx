@@ -23,6 +23,7 @@ export const ClientEditorWrapper = () => {
   const bannerUrl = bannerImages?.find((item) => item.id === bannerId)
   const bannerPositionX = useSettingsStore((store) => store.bannerPositionX) ?? 50
   const bannerPositionY = useSettingsStore((store) => store.bannerPositionY) ?? 50
+  const showGreeting = useSettingsStore((store) => store.showGreeting)
 
   useQuery({
     queryKey: ['tasks-app-id'],
@@ -47,10 +48,12 @@ export const ClientEditorWrapper = () => {
       style={{ backgroundColor, '--bg-color': backgroundColor } as React.CSSProperties}
     >
       <div className="@container mx-auto flex w-full max-w-xl flex-col gap-5 px-4 py-5 min-[860px]:px-12 min-[860px]:py-11">
-        <div className="flex flex-col gap-1.5">
-          <Heading readonly />
-          <Subheading readonly />
-        </div>
+        {showGreeting && (
+          <div className="flex flex-col gap-1.5">
+            <Heading readonly />
+            <Subheading readonly />
+          </div>
+        )}
         {bannerUrl && getImageUrl(bannerUrl.path) && (
           <Banner
             src={getImageUrl(bannerUrl.path) ?? ''}

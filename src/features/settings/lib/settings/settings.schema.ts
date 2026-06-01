@@ -1,6 +1,6 @@
 import { media } from '@media/lib/media.schema'
 import { segments } from '@segments/lib/segments/segments.schema'
-import { index, integer, pgTable, text, unique, uuid, varchar } from 'drizzle-orm/pg-core'
+import { boolean, index, integer, pgTable, text, unique, uuid, varchar } from 'drizzle-orm/pg-core'
 import { createInsertSchema } from 'drizzle-zod'
 import type z from 'zod'
 import { id, timestamps, workspaceId } from '@/db/helpers'
@@ -29,6 +29,9 @@ export const settings = pgTable(
     // X/Y position of the banner image as a percentage (0-100), used for repositioning
     bannerPositionX: integer('banner_position_x').notNull().default(50),
     bannerPositionY: integer('banner_position_y').notNull().default(50),
+
+    // Whether to show the heading/subheading (greeting) section above the banner
+    showGreeting: boolean().notNull().default(true),
 
     // ID of IU who created the settings
     createdById: uuid(),

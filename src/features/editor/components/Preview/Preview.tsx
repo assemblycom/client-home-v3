@@ -2,6 +2,7 @@ import { Loader } from '@common/components/Loader'
 import { ReadonlyEditor } from '@editor/components/Editor/ReadonlyEditor'
 import { PreviewTopBar } from '@editor/components/Preview/PreviewTopBar'
 import { DisplayMode, useViewStore } from '@editor/stores/viewStore'
+import { useSettingsStore } from '@settings/providers/settings.provider'
 import { ActionsCard } from '@/features/action-items/components/actions-card'
 import { Banner } from '@/features/banner'
 import { isDarkColor } from '@/utils/color'
@@ -20,6 +21,7 @@ interface PreviewProps {
 export function Preview({ content, backgroundColor, bannerUrl, bannerPositionX, bannerPositionY }: PreviewProps) {
   const displayMode = useViewStore((store) => store.displayMode)
   const workspace = useViewStore((store) => store.workspace)
+  const showGreeting = useSettingsStore((store) => store.showGreeting)
   const isDark = isDarkColor(backgroundColor)
 
   return (
@@ -43,10 +45,12 @@ export function Preview({ content, backgroundColor, bannerUrl, bannerPositionX, 
             className={cn('@container flex w-full flex-col gap-5 px-6 py-5', isDark && 'dark')}
             style={{ backgroundColor, '--bg-color': backgroundColor } as React.CSSProperties}
           >
-            <div className="flex flex-col gap-1.5">
-              <Heading />
-              <Subheading readonly />
-            </div>
+            {showGreeting && (
+              <div className="flex flex-col gap-1.5">
+                <Heading />
+                <Subheading readonly />
+              </div>
+            )}
             {bannerUrl ? (
               <Banner src={bannerUrl} alt="Workspace Banner" positionX={bannerPositionX} positionY={bannerPositionY} />
             ) : null}

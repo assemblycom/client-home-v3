@@ -32,6 +32,7 @@ export function EditorWrapper({ className }: EditorWrapperProps) {
   const bannerUrl = bannerImages?.find((item) => item.id === bannerId)
   const bannerPositionX = useSettingsStore((store) => store.bannerPositionX) ?? 50
   const bannerPositionY = useSettingsStore((store) => store.bannerPositionY) ?? 50
+  const showGreeting = useSettingsStore((store) => store.showGreeting)
   const setSidebarView = useSidebarStore((store) => store.setSidebarView)
   const bannerRepositioning = useSidebarStore((store) => store.bannerRepositioning)
   const setBannerRepositioning = useSidebarStore((store) => store.setBannerRepositioning)
@@ -56,10 +57,12 @@ export function EditorWrapper({ className }: EditorWrapperProps) {
           className="@container mx-auto flex min-h-full w-full max-w-xl flex-col gap-5 rounded-xl border border-border-gray px-6 py-5"
           style={{ backgroundColor }}
         >
-          <div className="flex flex-col gap-1.5">
-            <Heading />
-            <Subheading />
-          </div>
+          {showGreeting && (
+            <div className="flex flex-col gap-1.5">
+              <Heading />
+              <Subheading />
+            </div>
+          )}
           {bannerUrl && getImageUrl(bannerUrl.path) && (
             <Banner
               src={getImageUrl(bannerUrl.path) ?? ''}
