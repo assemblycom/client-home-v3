@@ -4,6 +4,7 @@ import { ReadonlyEditor } from '@editor/components/Editor/ReadonlyEditor'
 import { useViewStore } from '@editor/stores/viewStore'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import { useQuery } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
 import { ActionsCard } from '@/features/action-items/components/actions-card'
 import { useAppDisplayNames } from '@/features/action-items/hooks/useAppDisplayNames'
 import { Banner } from '@/features/banner'
@@ -41,10 +42,25 @@ export const ClientEditorWrapper = () => {
 
   const isDark = isDarkColor(backgroundColor)
 
+  const [mounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return null
+  }
+
   return (
     <div
       className={cn('min-h-full w-full overflow-auto', isDark && 'dark')}
-      style={{ backgroundColor, '--bg-color': backgroundColor } as React.CSSProperties}
+      style={
+        {
+          backgroundColor,
+          '--bg-color': backgroundColor,
+        } as React.CSSProperties
+      }
     >
       <div className="@container mx-auto flex w-full max-w-xl flex-col gap-5 px-4 py-5 min-[860px]:px-12 min-[860px]:py-11">
         <div className="flex flex-col gap-1.5">

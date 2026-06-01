@@ -1,6 +1,10 @@
 [tools]
 node = "24"
 
+[tasks."dev"]
+description = "Run dev server using portless"
+run = "portless client-home bun dev"
+
 [tasks."migration:gen"]
 description = "Generate a new Drizzle migration (requires a name argument)"
 run = "bun --bun drizzle-kit generate --name {{arg(name=\"migration_name\")}}"
