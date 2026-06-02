@@ -47,8 +47,10 @@ export const ActionsCard = ({ readonly }: ActionCardProps) => {
       <div
         className={cn(
           'grid grid-cols-1 gap-2',
-          visibleCount >= 2 && '@min-[480px]:grid-cols-2',
-          visibleCount >= 4 ? '@min-[768px]:grid-cols-4' : '@min-[768px]:grid-cols-3',
+          visibleCount === 1 && '@min-[400px]:grid-cols-[minmax(0,240px)]',
+          visibleCount === 2 && '@min-[400px]:grid-cols-[repeat(2,minmax(0,240px))]',
+          visibleCount === 3 && '@min-[400px]:grid-cols-2 @min-[700px]:grid-cols-3',
+          visibleCount >= 4 && '@min-[400px]:grid-cols-2 @min-[700px]:grid-cols-4',
         )}
       >
         {visibleActions.map((action) => (
