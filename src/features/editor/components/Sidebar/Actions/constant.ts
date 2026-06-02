@@ -14,6 +14,8 @@ type ActionKey = keyof NonNullable<SettingsUpdateDto['actions']>
 
 export type ActionDefinition = {
   label: string
+  /** Imperative verb that prefixes the action sentence, e.g. "Pay 2 invoices". */
+  verb: string
   icon: ActionItemIcon
   template: TemplateString
   key: ActionKey
@@ -24,6 +26,7 @@ export type ActionDefinition = {
 export const ActionDefinitions = Object.freeze({
   [ActionItemLabel.INVOICE]: {
     label: 'Invoices',
+    verb: 'Pay',
     singularLabel: 'Invoice',
     icon: 'Billing',
     template: `{{invoices.count}}`,
@@ -32,6 +35,7 @@ export const ActionDefinitions = Object.freeze({
   },
   [ActionItemLabel.CONTRACT]: {
     label: 'Contracts',
+    verb: 'Sign',
     icon: 'Contract',
     singularLabel: 'Contract',
     template: `{{contracts.count}}`,
@@ -40,6 +44,7 @@ export const ActionDefinitions = Object.freeze({
   },
   [ActionItemLabel.TASKS]: {
     label: 'Tasks',
+    verb: 'Complete',
     singularLabel: 'Task',
     icon: 'Tasks',
     template: `{{tasks.count}}`,
@@ -48,6 +53,7 @@ export const ActionDefinitions = Object.freeze({
   },
   [ActionItemLabel.FORMS]: {
     label: 'Forms',
+    verb: 'Submit',
     singularLabel: 'Form',
     icon: 'Form',
     template: `{{forms.count}}`,

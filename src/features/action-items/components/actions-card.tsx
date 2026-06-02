@@ -3,7 +3,6 @@ import { useNotificationCounts } from '@notification-counts/hooks/useNotificatio
 import type { NotificationCountsDto } from '@notification-counts/notification-counts.dto'
 import { useEnabledActions } from '@settings/hooks/useEnabledActions'
 import { useAppDisplayNames } from '@/features/action-items/hooks/useAppDisplayNames'
-import { HandleBarTemplate } from '@/features/handlebar-template/components/handle-bar-template'
 import { cn } from '@/utils/tailwind'
 import { ActionItem } from './action-item'
 
@@ -19,41 +18,40 @@ export const ActionsCard = ({ readonly }: ActionCardProps) => {
   const { isLoading: isDisplayNamesLoading } = useAppDisplayNames()
 
   const isLoading = isCountsLoading || isDisplayNamesLoading
-
   const isPreviewMode = readonly || viewMode === ViewMode.PREVIEW
 
-  if (!enabledActions.length) {
+  // Client/preview only surfaces actions that actually have pending items. In the
+  // editor, counts are placeholders, so we keep every enabled action visible so the
+  // admin can still configure them.
+  const visibleActions = isPreviewMode
+    ? enabledActions.filter((action) => (counts?.[action.key as keyof NotificationCountsDto] ?? 0) > 0)
+    : enabledActions
+
+  const visibleCount = visibleActions.length
+
+  // In the client/preview view, hold off until counts resolve so the section appears
+  // fully formed or not at all — never flashing in and then collapsing.
+  if (isPreviewMode && !counts) {
     return null
   }
 
-  const totalCount = counts
-    ? enabledActions.reduce((sum, action) => sum + (counts[action.key as keyof NotificationCountsDto] ?? 0), 0)
-    : 0
+  // Nothing pending → render no section at all. There is no empty state.
+  if (!visibleCount) {
+    return null
+  }
 
   return (
-    <div className="relative rounded-2xl border border-border-gray bg-gray-100 p-6 shadow-sm transition-all duration-500 dark-bg:border-white/20 dark-bg:bg-white/10">
-      <div className="mb-4">
-        <h2 className="mb-2 text-heading-xl dark-bg:text-white">Your Actions</h2>
-        <div className="text-body-md text-text-secondary dark-bg:text-white/70">
-          You have{' '}
-          <HandleBarTemplate
-            isLoading={isLoading}
-            template="{{action.count}}"
-            mode={isPreviewMode ? ViewMode.PREVIEW : ViewMode.EDITOR}
-            fallbackValue={totalCount}
-          />{' '}
-          pending items
-        </div>
-      </div>
+    <div className="@container rounded-md border border-[#eaecf0] bg-background-primary p-3 transition-colors duration-500 dark-bg:border-white/20 dark-bg:bg-white/10">
+      <h2 className="mb-2 font-medium text-sm text-text-primary dark-bg:text-white">Your actions</h2>
 
       <div
         className={cn(
-          'grid @uxs:grid-cols-2 grid-cols-1 gap-4',
-          enabledActions.length > 2 ? '@lg:grid-cols-3' : '@lg:grid-cols-2',
-          enabledActions.length > 3 ? '@xl:grid-cols-4' : '',
+          'grid grid-cols-1 gap-2',
+          visibleCount >= 2 && '@min-[480px]:grid-cols-2',
+          visibleCount >= 4 ? '@min-[768px]:grid-cols-4' : '@min-[768px]:grid-cols-3',
         )}
       >
-        {enabledActions.map((action) => (
+        {visibleActions.map((action) => (
           <ActionItem
             key={action.key}
             isLoading={isLoading}
