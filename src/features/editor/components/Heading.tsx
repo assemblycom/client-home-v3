@@ -13,6 +13,7 @@ interface HeadingProps extends PropsWithClassname {
 export const Heading = ({ readonly, className }: HeadingProps) => {
   const heading = useSettingsStore((s) => s.heading)
   const setHeading = useSettingsStore((s) => s.setHeading)
+  const syncCanonicalContent = useSettingsStore((s) => s.syncCanonicalContent)
 
   if (readonly && isBlankContent(heading)) return null
 
@@ -20,6 +21,7 @@ export const Heading = ({ readonly, className }: HeadingProps) => {
     <MinimalEditor
       value={heading}
       onChange={setHeading}
+      onNormalize={(value) => syncCanonicalContent('heading', value)}
       editable={!readonly}
       placeholder="Heading"
       className={cn('font-medium text-custom-xl leading-7', className)}
