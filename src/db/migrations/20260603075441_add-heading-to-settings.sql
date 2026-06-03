@@ -1,0 +1,1 @@
+ALTER TABLE "settings" ADD COLUMN "heading" text DEFAULT '<p>Welcome, <autofill-field data-value="{{client.firstName}}"></autofill-field></p>' NOT NULL;

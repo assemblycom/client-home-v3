@@ -455,3 +455,27 @@ body {
   color: HighlightText;
   padding: 2.5px 0;
 }
+
+/* Minimal single-line editor (home page heading / subheading). Placed last so it
+   overrides the global `.tiptap` / `.dark .tiptap` block styles — the field
+   inherits its wrapper's typography (size, weight, color) instead. */
+.minimal-editor .tiptap {
+  @apply min-h-0 overflow-visible rounded-none outline-none;
+  color: inherit;
+  font: inherit;
+}
+
+.minimal-editor .tiptap p {
+  @apply m-0;
+  font: inherit;
+  color: inherit;
+}
+
+.minimal-editor .tiptap p.is-empty::before {
+  @apply text-text-placeholder float-left h-0 pointer-events-none;
+  content: attr(data-placeholder);
+}
+
+.dark .minimal-editor .tiptap p.is-empty::before {
+  @apply text-white/50;
+}
