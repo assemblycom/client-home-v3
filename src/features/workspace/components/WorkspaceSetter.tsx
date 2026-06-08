@@ -16,7 +16,7 @@ export const WorkspaceSetter = ({ workspace }: WorkspaceSetterProps) => {
     setWorkspace(workspace)
   }, [workspace, setWorkspace])
 
-  useTokenRefresh(workspace.portalUrl)
+  useTokenRefresh(workspace?.portalUrl)
 
   return null
 }
