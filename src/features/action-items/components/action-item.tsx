@@ -59,10 +59,12 @@ export const ActionItem = ({ action, isLoading, mode, className, count }: Action
       )}
     >
       <Icon icon={action.icon} className="size-4 shrink-0" />
-      <span className="min-w-0 truncate font-medium text-sm">
-        {action.verb}{' '}
-        <HandleBarTemplate mode={mode} template={action.template} displayContent="{{N}}" fallbackValue={count ?? 0} />{' '}
-        {noun}
+      <span className="flex min-w-0 items-center gap-1 overflow-hidden font-medium text-sm">
+        <span className="shrink-0">{action.verb}</span>
+        <span className="flex min-w-0 shrink">
+          <HandleBarTemplate mode={mode} template={action.template} displayContent="{{N}}" fallbackValue={count ?? 0} />
+        </span>
+        <span className="min-w-0 truncate [flex-shrink:9999]">{noun}</span>
       </span>
     </button>
   )
