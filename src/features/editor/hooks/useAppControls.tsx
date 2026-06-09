@@ -8,6 +8,7 @@ import { areObjKeysEqual } from '@/utils/objects'
 export const useAppControls = () => {
   const updateSettingsMutation = useSettingsMutation()
 
+  const heading = useSettingsStore((s) => s.heading)
   const subheading = useSettingsStore((s) => s.subheading)
   const bannerImageId = useSettingsStore((s) => s.bannerImageId)
   const backgroundColor = useSettingsStore((s) => s.backgroundColor)
@@ -16,6 +17,7 @@ export const useAppControls = () => {
   const content = useSettingsStore((s) => s.content)
   const settings: SettingsUpdateDto = {
     content,
+    heading,
     subheading,
     bannerImageId,
     backgroundColor,
@@ -33,7 +35,7 @@ export const useAppControls = () => {
   const initialSettings = useSettingsStore((s) => s.initialSettings)
   const orderChanged = JSON.stringify(actions.order) !== JSON.stringify(initialSettings.actions?.order)
   const show =
-    !areObjKeysEqual(settings, initialSettings, ['content', 'subheading', 'backgroundColor']) ||
+    !areObjKeysEqual(settings, initialSettings, ['content', 'heading', 'subheading', 'backgroundColor']) ||
     !areObjKeysEqual(actions, initialSettings.actions, ['tasks', 'invoices', 'contracts', 'forms']) ||
     orderChanged
 

@@ -32,7 +32,7 @@ const createAccordionItems = ({
   expandSegments: boolean
 }): AccordionItem[] => [
   {
-    title: 'Banner',
+    title: 'Header',
     content: <BannerOptions onChangeBanner={onChangeBanner} />,
   },
   {

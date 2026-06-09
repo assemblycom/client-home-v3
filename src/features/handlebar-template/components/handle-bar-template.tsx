@@ -39,7 +39,7 @@ export function HandleBarTemplate({
   if (mode === ViewMode.EDITOR) {
     const label = displayContent ?? template
     return (
-      <span className="inline-flex align-baseline">
+      <span className="inline-flex align-baseline" style={{ paddingInline: '0.2em' }}>
         <div
           title={template}
           style={{ fontSize: 'inherit', lineHeight: 1.25 }}

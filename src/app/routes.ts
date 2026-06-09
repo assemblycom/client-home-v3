@@ -6,7 +6,6 @@ export const ROUTES = Object.freeze({
     settings: '/api/settings',
     workspace: '/api/workspace',
     tasksAppId: '/api/workspace/tasks-app-id',
-    appDisplayNames: '/api/workspace/app-display-names',
     media: '/api/media',
     image: '/api/media/image',
     upload: '/api/media/upload',
@@ -54,7 +53,6 @@ export const authorizedRoutes: Record<string, RouteRule[]> = {
     ROUTES.api.segment,
     ROUTES.api.segmentConfig,
     ROUTES.api.segmentStats,
-    ROUTES.api.appDisplayNames,
   ],
   clientUsers: [
     ROUTES.api.workspace,
@@ -63,7 +61,6 @@ export const authorizedRoutes: Record<string, RouteRule[]> = {
     ROUTES.api.listCustomFields,
     ROUTES.api.customFieldOptionsMap,
     ROUTES.api.tasksAppId,
-    ROUTES.api.appDisplayNames,
     {
       path: ROUTES.api.settings,
       methods: ['GET'],

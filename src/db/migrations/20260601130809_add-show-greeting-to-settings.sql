@@ -1,0 +1,1 @@
+ALTER TABLE "settings" ADD COLUMN "show_greeting" boolean DEFAULT true NOT NULL;
