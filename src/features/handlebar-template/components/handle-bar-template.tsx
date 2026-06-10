@@ -5,6 +5,7 @@ import { useUsersStore } from '@users/stores/usersStore'
 import type { ReactNode } from 'react'
 import { useCustomFields } from '@/features/custom-fields/hooks/useCustomFields'
 import type { TemplateString } from '@/features/handlebar-template/types/hande-bar-template.type'
+import { getValueLink } from '@/features/handlebar-template/utils/get-value-link'
 import { resolveTemplate } from '@/features/handlebar-template/utils/resolve-template'
 import { cn } from '@/utils/tailwind'
 
@@ -61,5 +62,25 @@ export function HandleBarTemplate({
   }
 
   const resolved = resolveTemplate(template, previewClient, previewCompany, workspace, optionsMap)
-  return <span className={className}>{resolved || fallbackValue}</span>
+  if (!resolved) return <span className={className}>{fallbackValue}</span>
+
+  // Render URLs / emails as clickable links matching the editor's link styling
+  // (see LinkExt). `stopPropagation` on mousedown keeps ProseMirror from turning
+  // the click into a node selection so native navigation works in readonly view.
+  const link = getValueLink(resolved)
+  if (link) {
+    return (
+      <a
+        href={link.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={cn('cop-text-link cursor-pointer', className)}
+        onMouseDown={(e) => e.stopPropagation()}
+      >
+        {resolved}
+      </a>
+    )
+  }
+
+  return <span className={className}>{resolved}</span>
 }
