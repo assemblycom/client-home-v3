@@ -7,6 +7,7 @@ import tippy, { type GetReferenceClientRect, type Instance, type Props as TippyP
 const autofillSuggestionKey = new PluginKey('autofillSuggestion')
 
 import type { FieldItem } from '@editor/components/Editor/extensions/AutofillField.ext/autofill-fields.config'
+import { resolveTemplateFromStores } from '@/features/handlebar-template/utils/resolve-template-from-stores'
 import { AutofillFieldNodeView } from './AutofillFieldNodeView'
 import { AutofillSuggestionMenu, type AutofillSuggestionMenuHandle } from './AutofillSuggestionMenu'
 
@@ -41,6 +42,15 @@ export const AutofillFieldExt = Node.create({
 
   parseHTML() {
     return [{ tag: 'autofill-field[data-value]' }]
+  },
+
+  // Used by TipTap's clipboard text serializer so the node copies as real text.
+  // Resolves against the current preview client (preview/client view); falls
+  // back to the raw template when no client data is available (editor view).
+  renderText({ node }) {
+    const value = node.attrs.value as string
+    if (!value) return ''
+    return resolveTemplateFromStores(value) || value
   },
 
   renderHTML({ HTMLAttributes }) {

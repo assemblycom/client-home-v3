@@ -64,6 +64,20 @@
       "when": 1773391348151,
       "tag": "20260313084228_add-segment-configs-and-simplify-segments",
       "breakpoints": false
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1780319289633,
+      "tag": "20260601130809_add-show-greeting-to-settings",
+      "breakpoints": false
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1780473281011,
+      "tag": "20260603075441_add-heading-to-settings",
+      "breakpoints": false
     }
   ]
 }

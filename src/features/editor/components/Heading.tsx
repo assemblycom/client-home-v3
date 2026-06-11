@@ -1,41 +1,30 @@
 'use client'
 
-import { getFieldDisplayContent } from '@editor/components/Editor/extensions/AutofillField.ext/autofill-fields.config'
-import { useViewStore, ViewMode } from '@editor/stores/viewStore'
-import { useEffect, useState } from 'react'
+import { MinimalEditor } from '@editor/components/Editor/MinimalEditor'
+import { isBlankContent } from '@editor/utils/content'
+import { useSettingsStore } from '@settings/providers/settings.provider'
 import type { PropsWithClassname } from '@/app/types'
-import { HandleBarTemplate } from '@/features/handlebar-template/components/handle-bar-template'
-import { getTimeOfDay } from '@/utils/date'
 import { cn } from '@/utils/tailwind'
-
-const TEMPLATE = '{{client.firstName}}' as const
 
 interface HeadingProps extends PropsWithClassname {
   readonly?: boolean
 }
 
 export const Heading = ({ readonly, className }: HeadingProps) => {
-  const [greeting, setGreeting] = useState('')
+  const heading = useSettingsStore((s) => s.heading)
+  const setHeading = useSettingsStore((s) => s.setHeading)
+  const syncCanonicalContent = useSettingsStore((s) => s.syncCanonicalContent)
 
-  useEffect(() => {
-    setGreeting(getTimeOfDay())
-  }, [])
-
-  const viewMode = useViewStore((s) => s.viewMode)
-  const workspace = useViewStore((s) => s.workspace)
-  const displayContent = getFieldDisplayContent(TEMPLATE, workspace?.labels)
-  const isPreviewMode = readonly || viewMode === ViewMode.PREVIEW
+  if (readonly && isBlankContent(heading)) return null
 
   return (
-    <div className={cn('flex flex-wrap items-baseline font-medium text-custom-xl leading-7', className)}>
-      {greeting && <div className="capitalize">Good {greeting},&nbsp;</div>}
-      <span>
-        <HandleBarTemplate
-          template={TEMPLATE}
-          displayContent={displayContent !== TEMPLATE ? displayContent : undefined}
-          mode={isPreviewMode ? ViewMode.PREVIEW : ViewMode.EDITOR}
-        />
-      </span>
-    </div>
+    <MinimalEditor
+      value={heading}
+      onChange={setHeading}
+      onNormalize={(value) => syncCanonicalContent('heading', value)}
+      editable={!readonly}
+      placeholder="Heading"
+      className={cn('font-medium text-custom-xl leading-7', className)}
+    />
   )
 }

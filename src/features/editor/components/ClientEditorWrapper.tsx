@@ -5,7 +5,6 @@ import { useViewStore } from '@editor/stores/viewStore'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import { useQuery } from '@tanstack/react-query'
 import { ActionsCard } from '@/features/action-items/components/actions-card'
-import { useAppDisplayNames } from '@/features/action-items/hooks/useAppDisplayNames'
 import { Banner } from '@/features/banner'
 import { getImageUrl } from '@/features/banner/lib/utils'
 import { api } from '@/lib/core/axios.instance'
@@ -23,6 +22,7 @@ export const ClientEditorWrapper = () => {
   const bannerUrl = bannerImages?.find((item) => item.id === bannerId)
   const bannerPositionX = useSettingsStore((store) => store.bannerPositionX) ?? 50
   const bannerPositionY = useSettingsStore((store) => store.bannerPositionY) ?? 50
+  const showGreeting = useSettingsStore((store) => store.showGreeting)
 
   useQuery({
     queryKey: ['tasks-app-id'],
@@ -37,8 +37,6 @@ export const ClientEditorWrapper = () => {
     refetchOnWindowFocus: false,
   })
 
-  useAppDisplayNames()
-
   const isDark = isDarkColor(backgroundColor)
 
   return (
@@ -47,10 +45,12 @@ export const ClientEditorWrapper = () => {
       style={{ backgroundColor, '--bg-color': backgroundColor } as React.CSSProperties}
     >
       <div className="@container mx-auto flex w-full max-w-xl flex-col gap-5 px-4 py-5 min-[860px]:px-12 min-[860px]:py-11">
-        <div className="flex flex-col gap-1.5">
-          <Heading readonly />
-          <Subheading readonly />
-        </div>
+        {showGreeting && (
+          <div className="flex flex-col gap-1.5">
+            <Heading readonly />
+            <Subheading readonly />
+          </div>
+        )}
         {bannerUrl && getImageUrl(bannerUrl.path) && (
           <Banner
             src={getImageUrl(bannerUrl.path) ?? ''}
