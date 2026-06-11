@@ -7,9 +7,7 @@ import { HomeLayout } from '@/app/(home)/HomeLayout'
 import { AuthenticatedAPIHeaders } from '@/app/types'
 import { WorkspaceFetcher } from '@/features/workspace/components/WorkspaceFetcher'
 
-// This page awaits UsersFetcher, which fetches the full client list via /api/users.
-// For large workspaces that call can run past the default 15s limit, timing out the
-// page render itself (separate from the /api/users function's own maxDuration).
+// Awaiting the full client list during render can exceed the default 15s limit.
 export const maxDuration = 300
 
 export default async function Home() {
