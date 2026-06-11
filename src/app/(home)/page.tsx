@@ -7,6 +7,9 @@ import { HomeLayout } from '@/app/(home)/HomeLayout'
 import { AuthenticatedAPIHeaders } from '@/app/types'
 import { WorkspaceFetcher } from '@/features/workspace/components/WorkspaceFetcher'
 
+// Awaiting the full client list during render can exceed the default 15s limit.
+export const maxDuration = 300
+
 export default async function Home() {
   const appHeaders = await headers()
   const token = appHeaders.get(AuthenticatedAPIHeaders.CUSTOM_APP_TOKEN)
