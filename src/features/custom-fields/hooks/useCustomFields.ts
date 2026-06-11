@@ -11,7 +11,7 @@ import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/core/axios.instance'
 
 const CUSTOM_FIELDS_QUERY_KEY = 'custom-fields'
-const CUSTOM_FIELD_OPTIONS_MAP_QUERY_KEY = 'custom-field-options-map'
+export const CUSTOM_FIELD_OPTIONS_MAP_QUERY_KEY = 'custom-field-options-map'
 
 const CUSTOM_FIELD_TYPE_ICON: Record<CustomFieldType, IconType> = {
   [CustomFieldType.ADDRESS]: 'Location',

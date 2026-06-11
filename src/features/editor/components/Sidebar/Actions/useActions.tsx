@@ -1,11 +1,9 @@
 import { ActionDefinitions } from '@editor/components/Sidebar/Actions/constant'
-import { useViewStore } from '@editor/stores/viewStore'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 
 export const useActions = () => {
   const actions = useSettingsStore((s) => s.actions)
   const setActions = useSettingsStore((s) => s.setActions)
-  const appDisplayNames = useViewStore((s) => s.appDisplayNames)
 
   const order = actions?.order ?? []
 
@@ -18,7 +16,7 @@ export const useActions = () => {
     .map((item) => {
       return {
         key: item.key,
-        label: appDisplayNames[item.key] ?? item.label,
+        label: item.label,
         icon: item.icon,
         checked: actions?.[item.key] ?? false,
         onChange: () => {

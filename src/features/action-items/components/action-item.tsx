@@ -21,14 +21,12 @@ const PILL_BASE =
 export const ActionItem = ({ action, isLoading, mode, className, count }: ActionItemProps) => {
   const clientId = useAuthStore((s) => s.clientId)
   const tasksAppId = useViewStore((s) => s.tasksAppId)
-  const appDisplayNames = useViewStore((s) => s.appDisplayNames)
-
-  const displayLabel = appDisplayNames[action.key] ?? action.label
-  const displaySingularLabel = appDisplayNames[action.key] ?? action.singularLabel ?? action.label
 
   // In preview the noun agrees with the resolved count; in editor the count is a
   // placeholder, so we always fall back to the plural noun.
-  const noun = (mode === ViewMode.PREVIEW && count === 1 ? displaySingularLabel : displayLabel).toLocaleLowerCase()
+  const noun = (
+    mode === ViewMode.PREVIEW && count === 1 ? (action.singularLabel ?? action.label) : action.label
+  ).toLocaleLowerCase()
 
   const handleClick = () => {
     if (!clientId) return
@@ -61,10 +59,12 @@ export const ActionItem = ({ action, isLoading, mode, className, count }: Action
       )}
     >
       <Icon icon={action.icon} className="size-4 shrink-0" />
-      <span className="min-w-0 truncate font-medium text-sm">
-        {action.verb}{' '}
-        <HandleBarTemplate mode={mode} template={action.template} displayContent="{{N}}" fallbackValue={count ?? 0} />{' '}
-        {noun}
+      <span className="flex min-w-0 items-center gap-1 overflow-hidden font-medium text-sm">
+        <span className="shrink-0">{action.verb}</span>
+        <span className="flex min-w-0 shrink">
+          <HandleBarTemplate mode={mode} template={action.template} displayContent="{{N}}" fallbackValue={count ?? 0} />
+        </span>
+        <span className="min-w-0 truncate [flex-shrink:9999]">{noun}</span>
       </span>
     </button>
   )

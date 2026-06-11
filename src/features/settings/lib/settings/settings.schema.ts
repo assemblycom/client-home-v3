@@ -14,7 +14,12 @@ export const settings = pgTable(
     // Optional segment association. Null means default (non-segmented) settings.
     segmentId: uuid().references(() => segments.id, { onDelete: 'cascade' }),
 
-    // Subheading text section
+    // Heading (greeting) text section. Stores HTML so it can contain autofill fields.
+    heading: text()
+      .notNull()
+      .default('<p>Welcome, <autofill-field data-value="{{client.firstName}}"></autofill-field></p>'),
+
+    // Subheading text section. Stores HTML so it can contain autofill fields.
     subheading: text().notNull().default("Here's what needs your attention today"),
 
     // Editor content
