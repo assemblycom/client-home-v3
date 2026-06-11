@@ -47,7 +47,7 @@ export function Preview({ content, backgroundColor, bannerUrl, bannerPositionX, 
           >
             {showGreeting && (
               <div className="flex flex-col gap-1.5">
-                <Heading />
+                <Heading readonly />
                 <Subheading readonly />
               </div>
             )}

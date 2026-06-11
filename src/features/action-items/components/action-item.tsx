@@ -14,13 +14,19 @@ interface ActionItemProps {
   count?: number
 }
 
+// Shared pill shell so the loading and loaded states are pixel-identical.
+const PILL_BASE =
+  'flex min-w-0 items-center gap-2 rounded-md border border-[#eff1f4] bg-white p-3 text-text-secondary dark-bg:border-white/20 dark-bg:bg-white/10 dark-bg:text-white/70'
+
 export const ActionItem = ({ action, isLoading, mode, className, count }: ActionItemProps) => {
   const clientId = useAuthStore((s) => s.clientId)
   const tasksAppId = useViewStore((s) => s.tasksAppId)
-  const appDisplayNames = useViewStore((s) => s.appDisplayNames)
 
-  const displayLabel = appDisplayNames[action.key] ?? action.label
-  const displaySingularLabel = appDisplayNames[action.key] ?? action.singularLabel
+  // In preview the noun agrees with the resolved count; in editor the count is a
+  // placeholder, so we always fall back to the plural noun.
+  const noun = (
+    mode === ViewMode.PREVIEW && count === 1 ? (action.singularLabel ?? action.label) : action.label
+  ).toLocaleLowerCase()
 
   const handleClick = () => {
     if (!clientId) return
@@ -34,16 +40,9 @@ export const ActionItem = ({ action, isLoading, mode, className, count }: Action
 
   if (isLoading) {
     return (
-      <div
-        className={cn(
-          'flex @md:min-w-56 animate-pulse flex-col gap-3 rounded-lg border border-border-gray bg-white p-5 lg:min-w-56 dark-bg:border-white/20 dark-bg:bg-white/10',
-          className,
-        )}
-      >
-        <div className="flex items-center gap-3">
-          <div className="h-6 w-6 rounded-md bg-gray-200 dark-bg:bg-white/20" />
-          <div className="h-5 w-32 rounded bg-gray-200 dark-bg:bg-white/20" />
-        </div>
+      <div className={cn(PILL_BASE, 'animate-pulse', className)}>
+        <div className="size-4 shrink-0 rounded bg-gray-200 dark-bg:bg-white/20" />
+        <div className="h-5 w-24 rounded bg-gray-200 dark-bg:bg-white/20" />
       </div>
     )
   }
@@ -53,38 +52,20 @@ export const ActionItem = ({ action, isLoading, mode, className, count }: Action
       type="button"
       onClick={handleClick}
       className={cn(
-        'group flex flex-col gap-3 rounded-lg border border-border-gray bg-white p-5 text-left transition-all duration-300 lg:min-w-56 dark-bg:border-white/20 dark-bg:bg-white/10',
-        clientId && 'cursor-pointer',
+        'group text-left transition-colors duration-200',
+        PILL_BASE,
+        clientId && 'cursor-pointer hover:border-gray-300 dark-bg:hover:border-white/40',
         className,
       )}
     >
-      <div className="flex w-full items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <Icon
-            icon={action.icon}
-            className="size-4 transition-transform duration-300 group-hover:scale-110 dark-bg:text-white"
-          />
-          <h3 className="text-heading-md dark-bg:text-white">{displayLabel}</h3>
-        </div>
-        <Icon
-          icon="ArrowRight"
-          width={12.5}
-          height={12.5}
-          className="hidden text-text-secondary lg:block dark-bg:text-white/70"
-        />
-      </div>
-
-      <div className="flex items-center gap-2 text-body-md text-text-secondary dark-bg:text-white/70">
-        <HandleBarTemplate
-          className={cn(mode === ViewMode.PREVIEW ? 'text-text-primary dark-bg:text-white' : '')}
-          mode={mode}
-          template={action.template}
-          fallbackValue={count ?? 0}
-        />
-        {mode === ViewMode.PREVIEW
-          ? ` ${count === 1 ? displaySingularLabel?.toLocaleLowerCase() : displayLabel.toLocaleLowerCase()}`
-          : null}
-      </div>
+      <Icon icon={action.icon} className="size-4 shrink-0" />
+      <span className="flex min-w-0 items-center gap-1 overflow-hidden font-medium text-sm">
+        <span className="shrink-0">{action.verb}</span>
+        <span className="flex min-w-0 shrink">
+          <HandleBarTemplate mode={mode} template={action.template} displayContent="{{N}}" fallbackValue={count ?? 0} />
+        </span>
+        <span className="min-w-0 truncate [flex-shrink:9999]">{noun}</span>
+      </span>
     </button>
   )
 }
