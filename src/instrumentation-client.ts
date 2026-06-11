@@ -20,6 +20,18 @@ const isInjectedExtensionError = (event: Sentry.ErrorEvent): boolean => {
   return Boolean(frames?.some((frame) => INJECTED_SCRIPT_PATTERNS.some((pattern) => frame.filename?.includes(pattern))))
 }
 
+// Some extensions run obfuscated code from anonymous blob: URLs. Their
+// unhandled errors carry randomized, obfuscated messages (e.g.
+// `_0x525794.PrSAI(...)[_0x2cc5a0(...)] is not a function`) with no stable
+// filename or message to match on, but every frame originates from a blob: URL.
+// Our own bundles are served from /_next and never run from blob:, so an event
+// whose entire stack is blob-origin is not ours — drop it.
+const isBlobOriginError = (event: Sentry.ErrorEvent): boolean => {
+  const frames = event.exception?.values?.flatMap((value) => value.stacktrace?.frames ?? [])
+
+  return Boolean(frames?.length && frames.every((frame) => frame.filename?.startsWith('blob:')))
+}
+
 Sentry.init({
   dsn,
 
@@ -37,7 +49,7 @@ Sentry.init({
     /runtime\.getManifest is not a function/,
   ],
 
-  beforeSend: (event) => (isInjectedExtensionError(event) ? null : event),
+  beforeSend: (event) => (isInjectedExtensionError(event) || isBlobOriginError(event) ? null : event),
 
   // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
   tracesSampleRate: 1,
