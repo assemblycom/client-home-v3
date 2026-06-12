@@ -36,12 +36,12 @@ export const useSegmentSettings = () => {
     const expectedSegmentId = activeSegmentId ?? null
     if (data.segmentId !== expectedSegmentId) return
 
-    setSettings({ ...data })
     editorRef.current?.commands.setContent(data.content)
 
-    // After TipTap normalizes the content, use the normalized version as the
-    // baseline so switching segments doesn't trigger false change detection.
+    // Use the editor's normalized content for both the live value and the
+    // baseline so non-canonical stored content doesn't read as dirty.
     const normalizedContent = editorRef.current?.getHTML() ?? data.content
+    setSettings({ ...data, content: normalizedContent })
     setInitialSettings({ ...data, content: normalizedContent })
   }, [activeSegmentId, data, setSettings, setInitialSettings])
 }

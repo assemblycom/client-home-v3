@@ -39,8 +39,12 @@ export const useSettingsMutation = () => {
       queryClient.setQueryData([SETTINGS_QUERY_KEY, activeSegmentId ?? null], data.data)
 
       editor?.commands.setContent(data.data.content)
-      setSettings({ ...data.data })
-      setInitialSettings({ ...data.data })
+
+      // Use the editor's normalized content for both the live value and the
+      // baseline so non-canonical stored content doesn't read as dirty.
+      const normalizedContent = editor?.getHTML() ?? data.data.content
+      setSettings({ ...data.data, content: normalizedContent })
+      setInitialSettings({ ...data.data, content: normalizedContent })
     },
   })
 
