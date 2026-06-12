@@ -42,10 +42,10 @@ export const ClientEditorWrapper = () => {
 
   const isDark = isDarkColor(backgroundColor)
 
-  const [mounted, setIsMounted] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    setIsMounted(true)
+    setMounted(true)
   }, [])
 
   if (!mounted) {
