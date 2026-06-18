@@ -119,7 +119,9 @@ body {
 }
 
 .tiptap {
-  @apply text-text-primary min-h-[calc(100vh-116px)] rounded-xl min-w-0 overflow-x-hidden;
+  /* px-1/-mx-1 keeps content off the overflow-clip edge (so the first glyph and
+     selection highlight aren't shaved) while preserving left-edge alignment. */
+  @apply text-text-primary min-h-[calc(100vh-116px)] min-w-0 overflow-x-hidden px-1 -mx-1;
 
   h1 {
     @apply text-xl leading-7 font-medium mt-4 mb-1;
@@ -460,7 +462,8 @@ body {
    overrides the global `.tiptap` / `.dark .tiptap` block styles — the field
    inherits its wrapper's typography (size, weight, color) instead. */
 .minimal-editor .tiptap {
-  @apply min-h-0 overflow-visible rounded-none outline-none;
+  /* overflow-visible means no clip edge to avoid, so drop the global px/mx hack */
+  @apply min-h-0 overflow-visible rounded-none outline-none px-0 mx-0;
   color: inherit;
   font: inherit;
 }
