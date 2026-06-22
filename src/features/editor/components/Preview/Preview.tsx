@@ -27,7 +27,7 @@ export function Preview({ content, backgroundColor, bannerUrl, bannerPositionX, 
   return (
     <div
       className={cn(
-        'mx-auto flex h-full flex-col overflow-hidden rounded-lg border-gray-200 bg-white max-[860px]:rounded-none max-[860px]:border-0 max-[860px]:shadow-none min-[860px]:border min-[860px]:shadow-sm',
+        'mx-auto flex h-full flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm',
         {
           'max-w-sm': displayMode === DisplayMode.MOBILE,
         },
