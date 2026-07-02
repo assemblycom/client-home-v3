@@ -10,7 +10,6 @@ import { SETTINGS_QUERY_KEY } from '@settings/constants'
 import SettingsActionsService from '@settings/lib/settings-actions.service'
 import { SettingsProvider } from '@settings/providers/settings.provider'
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
-import { retryOnTransientDbError } from '@/lib/core/db-retry'
 import { getQueryClient } from '@/lib/core/query.utils'
 
 const inter = Inter({
@@ -32,9 +31,7 @@ export default async function RootLayout({
   const user = authenticateHeaders(requestHeaders)
 
   const settingsService = SettingsActionsService.new(user)
-  const settings = await retryOnTransientDbError(() =>
-    user.clientId ? settingsService.getForClient() : settingsService.getForWorkspace(),
-  )
+  const settings = user.clientId ? await settingsService.getForClient() : await settingsService.getForWorkspace()
 
   const queryClient = getQueryClient()
   queryClient.setQueryData([SETTINGS_QUERY_KEY, null], settings)
