@@ -19,16 +19,13 @@ const EnvSchema = z.object({
   SUPABASE_SECRET_KEY: z.string().min(1),
   SUPABASE_BUCKET_NAME: z.string().min(1),
   SUPABASE_SIGNED_URL_EXPIRY: z.number().optional().default(300),
-  NEXT_PUBLIC_SUPABASE_STORAGE_DOMAIN: z.string().nullish(),
 })
 
 const currentEnv = process.env.VERCEL_ENV
 
 const vercelUrl = currentEnv === 'production' ? process.env.VERCEL_PROJECT_PRODUCTION_URL : process.env.VERCEL_URL
 
-export const env = EnvSchema.parse({
+export default EnvSchema.parse({
   ...process.env,
   VERCEL_URL: !vercelUrl ? 'http://localhost:3000' : vercelUrl.startsWith('http') ? vercelUrl : `https://${vercelUrl}`,
 })
-
-export default env
