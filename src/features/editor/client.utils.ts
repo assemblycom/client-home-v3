@@ -6,6 +6,23 @@ import type { MediaSignedUrlResponseDto } from '@media/media.dto'
 import type { Editor } from '@tiptap/core'
 import { api } from '@/lib/core/axios.instance'
 
+/**
+ * Supabase returns a signed upload URL on the raw `*.supabase.co` host. Networks that only
+ * allowlist assembly.com (e.g. C1) block a direct browser PUT to that host, so we rewrite the
+ * origin to the custom storage domain that fronts the same Supabase storage endpoint. The path
+ * and query (which carry the signed token) are preserved unchanged.
+ */
+const rewriteToStorageDomain = (signedUrl: string): string => {
+  const storageDomain = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_DOMAIN
+  if (!storageDomain) return signedUrl
+
+  const url = new URL(signedUrl)
+  const base = new URL(storageDomain)
+  url.protocol = base.protocol
+  url.host = base.host
+  return url.toString()
+}
+
 export const uploadFileToSupabase = async (
   file: File,
   mediaFolder: MediaFolders = MediaFolders.EDITOR,
@@ -18,8 +35,9 @@ export const uploadFileToSupabase = async (
   )
 
   const { signedUrl, path } = signedUrlResponse.data.data
+  const uploadUrl = rewriteToStorageDomain(signedUrl)
 
-  const res = await fetch(signedUrl, {
+  const res = await fetch(uploadUrl, {
     method: 'PUT',
     headers: {
       'Content-Type': file.type,
