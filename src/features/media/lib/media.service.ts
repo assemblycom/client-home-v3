@@ -47,8 +47,7 @@ export default class MediaService extends BaseService {
   ): Promise<MediaSignedUrlResponseDto> {
     const path = this.getFileUploadPath(fileName, mode)
 
-    const signedUrlInfo = await this.supabase.getSignedUploadUrl(path)
-    return signedUrlInfo
+    return await this.supabase.getSignedUploadUrl(path)
   }
 
   private getFileUploadPath(fileName: string, mode: MediaFolders): string {
@@ -77,7 +76,6 @@ export default class MediaService extends BaseService {
   }
 
   async createMediaEntry(payload: CreateMediaRequestDto) {
-    const media = await this.repository.createMedia(payload, this.user.workspaceId, this.user.internalUserId ?? '')
-    return media
+    return await this.repository.createMedia(payload, this.user.workspaceId, this.user.internalUserId ?? '')
   }
 }

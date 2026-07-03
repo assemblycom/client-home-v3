@@ -1,6 +1,10 @@
 [tools]
 node = "24"
 
+[tasks."dev"]
+description = "Run Next.js dev server via portless at http://client-home.localhost:1355"
+run = "portless client-home next dev"
+
 [tasks."migration:gen"]
 description = "Generate a new Drizzle migration (requires a name argument)"
 run = "bun --bun drizzle-kit generate --name {{arg(name=\"migration_name\")}}"

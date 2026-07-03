@@ -4,7 +4,25 @@ import { AssemblyBridge } from '@assembly-js/app-bridge'
 import { MediaFolders } from '@media/constants'
 import type { MediaSignedUrlResponseDto } from '@media/media.dto'
 import type { Editor } from '@tiptap/core'
+import { publicEnv } from '@/config/public-env'
 import { api } from '@/lib/core/axios.instance'
+
+/**
+ * Supabase returns a signed upload URL on the raw `*.supabase.co` host. Networks that only
+ * allowlist assembly.com (e.g. C1) block a direct browser PUT to that host, so we rewrite the
+ * origin to the custom storage URL that fronts the same Supabase storage endpoint. The path
+ * and query (which carry the signed token) are preserved unchanged.
+ */
+const rewriteToStorageUrl = (signedUrl: string): string => {
+  const storageUrl = publicEnv.NEXT_PUBLIC_SUPABASE_STORAGE_URL
+  if (!storageUrl) return signedUrl
+
+  const url = new URL(signedUrl)
+  const base = new URL(storageUrl)
+  url.protocol = base.protocol
+  url.host = base.host
+  return url.toString()
+}
 
 export const uploadFileToSupabase = async (
   file: File,
@@ -18,8 +36,9 @@ export const uploadFileToSupabase = async (
   )
 
   const { signedUrl, path } = signedUrlResponse.data.data
+  const uploadUrl = rewriteToStorageUrl(signedUrl)
 
-  const res = await fetch(signedUrl, {
+  const res = await fetch(uploadUrl, {
     method: 'PUT',
     headers: {
       'Content-Type': file.type,
