@@ -4,6 +4,7 @@ import { AssemblyBridge } from '@assembly-js/app-bridge'
 import { MediaFolders } from '@media/constants'
 import type { MediaSignedUrlResponseDto } from '@media/media.dto'
 import type { Editor } from '@tiptap/core'
+import env from '@/config/env'
 import { api } from '@/lib/core/axios.instance'
 
 /**
@@ -13,7 +14,7 @@ import { api } from '@/lib/core/axios.instance'
  * and query (which carry the signed token) are preserved unchanged.
  */
 const rewriteToStorageDomain = (signedUrl: string): string => {
-  const storageDomain = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_DOMAIN
+  const storageDomain = env.NEXT_PUBLIC_SUPABASE_STORAGE_DOMAIN
   if (!storageDomain) return signedUrl
 
   try {
