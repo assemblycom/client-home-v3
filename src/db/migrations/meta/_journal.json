@@ -78,6 +78,13 @@
       "when": 1780473281011,
       "tag": "20260603075441_add-heading-to-settings",
       "breakpoints": false
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1784624122535,
+      "tag": "20260721085522_add-hidden-app-ids-to-actions",
+      "breakpoints": false
     }
   ]
 }
