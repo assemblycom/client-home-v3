@@ -30,7 +30,7 @@ import {
   WorkspaceResponseSchema,
 } from '@assembly/types'
 import type { AssemblyAPI as SDK } from '@assembly-js/node-sdk'
-import { assemblyApi, OpenAPI } from '@assembly-js/node-sdk'
+import { assemblyApi } from '@assembly-js/node-sdk'
 import type { z } from 'zod'
 import env from '@/config/env'
 import APIError from '@/errors/api.error'
@@ -85,12 +85,10 @@ export default class AssemblyClient {
     query?: Record<string, string>,
     init?: { method?: string; body?: unknown },
   ) {
-    // Awaiting ensures the SDK singleton (OpenAPI.BASE) is initialized for this client.
-    await this.assemblyPromise
     const { workspaceId } = (await this._getTokenPayload()) ?? {}
     const apiKey = this.customApiKey ?? env.ASSEMBLY_API_KEY
 
-    const url = new URL(`${OpenAPI.BASE}/v1/${route}`)
+    const url = new URL(`${env.ASSEMBLY_API_URL}/v1/${route}`)
     if (query) {
       for (const key of Object.keys(query)) {
         url.searchParams.set(key, query[key])
