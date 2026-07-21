@@ -4,6 +4,9 @@ import { z } from 'zod'
 
 const EnvSchema = z.object({
   ASSEMBLY_API_KEY: z.string().min(1),
+  // Base URL for direct platform API calls (AssemblyClient#_manualFetch). Defaults to production;
+  // must be overridden per environment (e.g. staging) to match the API the tokens are issued for.
+  ASSEMBLY_API_URL: z.url().default('https://api.assembly.com'),
 
   TASKS_ASSEMBLY_API_KEY: z.string().min(1),
   TASKS_APP_ID: z.uuid(),
