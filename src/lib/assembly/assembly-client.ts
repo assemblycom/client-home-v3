@@ -1,6 +1,7 @@
 import 'server-only'
 
 import {
+  type AppInstallsResponse,
   AppInstallsResponseSchema,
   type AssemblyListArgs,
   type ClientCreateRequest,
@@ -13,6 +14,8 @@ import {
   type CompanyResponse,
   CompanyResponseSchema,
   type CustomFieldEntityType,
+  type InstallNotificationSettings,
+  InstallNotificationSettingsSchema,
   type InternalUser,
   InternalUserResponseSchema,
   type InternalUsersResponse,
@@ -27,9 +30,10 @@ import {
   WorkspaceResponseSchema,
 } from '@assembly/types'
 import type { AssemblyAPI as SDK } from '@assembly-js/node-sdk'
-import { assemblyApi } from '@assembly-js/node-sdk'
+import { assemblyApi, OpenAPI } from '@assembly-js/node-sdk'
 import type { z } from 'zod'
 import env from '@/config/env'
+import APIError from '@/errors/api.error'
 import logger from '@/lib/logger'
 import { withRetry } from '@/lib/with-retry'
 import { encodePayload } from '@/utils/crypto'
@@ -75,9 +79,57 @@ export default class AssemblyClient {
     return WorkspaceResponseSchema.parse(await assembly.retrieveWorkspace())
   }
 
-  async _getAppId(appDeploymentId: string): Promise<string | null> {
+  // Direct fetch against the platform API for endpoints/params the SDK's generated types don't
+  private async _manualFetch(
+    route: string,
+    query?: Record<string, string>,
+    init?: { method?: string; body?: unknown },
+  ) {
+    // Awaiting ensures the SDK singleton (OpenAPI.BASE) is initialized for this client.
+    await this.assemblyPromise
+    const { workspaceId } = (await this._getTokenPayload()) ?? {}
+    const apiKey = this.customApiKey ?? env.ASSEMBLY_API_KEY
+
+    const url = new URL(`${OpenAPI.BASE}/v1/${route}`)
+    if (query) {
+      for (const key of Object.keys(query)) {
+        url.searchParams.set(key, query[key])
+      }
+    }
+
+    const headers: Record<string, string> = {
+      'X-API-KEY': workspaceId ? `${workspaceId}/${apiKey}` : apiKey,
+      accept: 'application/json',
+    }
+    if (init?.body !== undefined) headers['content-type'] = 'application/json'
+
+    const response = await fetch(url, {
+      method: init?.method ?? 'GET',
+      headers,
+      body: init?.body !== undefined ? JSON.stringify(init.body) : undefined,
+    })
+    const body = await response.json()
+    if (!response.ok) {
+      console.error('AssemblyClient#_manualFetch | Response is not ok', response, body)
+      throw new APIError(`Failed to perform an Assembly API call: ${JSON.stringify(body)}`, response.status)
+    }
+    return body
+  }
+
+  async _getInstalls(): Promise<AppInstallsResponse> {
+    logger.info('AssemblyClient#_getInstalls')
     const assembly = await this.assemblyPromise
-    const installedApps = AppInstallsResponseSchema.parse(await assembly.listAppInstalls())
+    return AppInstallsResponseSchema.parse(await assembly.listAppInstalls())
+  }
+
+  async _getInstallNotificationSettings(installId: string): Promise<InstallNotificationSettings> {
+    logger.info('AssemblyClient#_getInstallNotificationSettings', installId)
+    const raw = await this._manualFetch(`installs/${encodeURIComponent(installId)}/notification-settings`)
+    return InstallNotificationSettingsSchema.parse(raw)
+  }
+
+  async _getAppId(appDeploymentId: string): Promise<string | null> {
+    const installedApps = await this._getInstalls()
     return installedApps.find((app) => app.appId === appDeploymentId)?.id || null
   }
 
@@ -251,4 +303,6 @@ export default class AssemblyClient {
   getTasks = this.wrapWithRetry(this._getTasks)
   listCustomFields = this.wrapWithRetry(this._listCustomFields)
   getAppId = this.wrapWithRetry(this._getAppId)
+  getInstalls = this.wrapWithRetry(this._getInstalls)
+  getInstallNotificationSettings = this.wrapWithRetry(this._getInstallNotificationSettings)
 }

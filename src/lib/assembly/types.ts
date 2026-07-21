@@ -47,8 +47,42 @@ export const AppInstallsDataSchema = z.object({
   id: z.string().optional(),
   type: z.string().optional(),
   object: z.string().optional(),
+  // Fields present on the wire but not declared by the SDK's generated types.
+  icon: z.string().nullish(),
+  disabled: z.boolean().nullish(),
+  isDraft: z.boolean().nullish(),
+  isInternalApp: z.boolean().nullish(),
 })
+export type AppInstallsData = z.infer<typeof AppInstallsDataSchema>
 export const AppInstallsResponseSchema = z.array(AppInstallsDataSchema)
+export type AppInstallsResponse = z.infer<typeof AppInstallsResponseSchema>
+
+// Action label registered by a Studio app as part of its notification config.
+// Rendered in "Your Actions" as `[verb] [count] [singularNoun|pluralNoun]`.
+export const ActionLabelSchema = z.object({
+  verb: z.string().nullish(),
+  singularNoun: z.string().nullish(),
+  pluralNoun: z.string().nullish(),
+})
+export type ActionLabel = z.infer<typeof ActionLabelSchema>
+
+// Response schema for `GET /v1/installs/{id}/notification-settings`.
+export const InstallNotificationSettingsSchema = z.object({
+  actionLabel: ActionLabelSchema.nullish(),
+})
+export type InstallNotificationSettings = z.infer<typeof InstallNotificationSettingsSchema>
+
+// An action label counts as registered only when all three parts are present and non-empty.
+export const isActionLabelRegistered = (
+  label: ActionLabel | null | undefined,
+): label is { verb: string; singularNoun: string; pluralNoun: string } =>
+  !!label &&
+  typeof label.verb === 'string' &&
+  label.verb.trim() !== '' &&
+  typeof label.singularNoun === 'string' &&
+  label.singularNoun.trim() !== '' &&
+  typeof label.pluralNoun === 'string' &&
+  label.pluralNoun.trim() !== ''
 
 // Response schema for `/clients/{clientId}` endpoint
 export const ClientResponseSchema = z.object({
@@ -137,7 +171,9 @@ export const NotificationsResponseSchema = z.object({
       id: z.string(),
       recipientClientId: z.uuid(),
       recipientCompanyId: z.uuid().nullish(),
-      event: z.string(),
+      event: z.string().nullish(),
+      // ID of the custom app that created the notification, when applicable.
+      appId: z.string().nullish(),
     })
     .array(),
 })
