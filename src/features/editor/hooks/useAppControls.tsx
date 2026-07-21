@@ -30,14 +30,18 @@ export const useAppControls = () => {
       contracts: s.actions.contracts,
       forms: s.actions.forms,
       order: s.actions.order,
+      hiddenAppIds: s.actions.hiddenAppIds,
     })),
   )
   const initialSettings = useSettingsStore((s) => s.initialSettings)
   const orderChanged = JSON.stringify(actions.order) !== JSON.stringify(initialSettings.actions?.order)
+  const hiddenAppIdsChanged =
+    JSON.stringify(actions.hiddenAppIds) !== JSON.stringify(initialSettings.actions?.hiddenAppIds)
   const show =
     !areObjKeysEqual(settings, initialSettings, ['content', 'heading', 'subheading', 'backgroundColor']) ||
     !areObjKeysEqual(actions, initialSettings.actions, ['tasks', 'invoices', 'contracts', 'forms']) ||
-    orderChanged
+    orderChanged ||
+    hiddenAppIdsChanged
 
   useSecondaryCta(
     {

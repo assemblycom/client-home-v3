@@ -3,13 +3,16 @@ import { createInsertSchema, createSelectSchema, createUpdateSchema } from 'driz
 import { z } from 'zod'
 
 const orderSchema = z.array(z.string())
+const hiddenAppIdsSchema = z.array(z.string())
 
 export const ActionsSchema = createSelectSchema(actions, {
   order: orderSchema,
+  hiddenAppIds: hiddenAppIdsSchema,
 })
 
 export const ActionsCreateSchema = createInsertSchema(actions, {
   order: orderSchema.optional(),
+  hiddenAppIds: hiddenAppIdsSchema.optional(),
 }).omit({
   id: true,
   workspaceId: true,
@@ -20,6 +23,7 @@ export type ActionsCreatePayload = z.infer<typeof ActionsCreateSchema>
 
 export const ActionsUpdateSchema = createUpdateSchema(actions, {
   order: orderSchema.optional(),
+  hiddenAppIds: hiddenAppIdsSchema.optional(),
 }).omit({
   id: true,
   workspaceId: true,
