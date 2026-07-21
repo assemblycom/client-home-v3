@@ -108,12 +108,14 @@ export default class AssemblyClient {
       headers,
       body: init?.body !== undefined ? JSON.stringify(init.body) : undefined,
     })
-    const body = await response.json()
+    // Check status before parsing: a transient 429/500 may return a non-JSON body, and parsing it
+    // first would throw a statusless SyntaxError that `withRetry` cannot recognize as retryable.
     if (!response.ok) {
-      console.error('AssemblyClient#_manualFetch | Response is not ok', response, body)
-      throw new APIError(`Failed to perform an Assembly API call: ${JSON.stringify(body)}`, response.status)
+      const errorBody = await response.text().catch(() => '')
+      console.error('AssemblyClient#_manualFetch | Response is not ok', response.status, errorBody)
+      throw new APIError(`Failed to perform an Assembly API call: ${errorBody}`, response.status)
     }
-    return body
+    return await response.json()
   }
 
   async _getInstalls(): Promise<AppInstallsResponse> {
