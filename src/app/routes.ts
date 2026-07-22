@@ -19,6 +19,7 @@ export const ROUTES = Object.freeze({
     segment: '/api/segments/:segmentId',
     segmentConfig: '/api/segments/config',
     segmentStats: '/api/segments/stats',
+    installedApps: '/api/installed-apps',
   },
 })
 
@@ -53,6 +54,7 @@ export const authorizedRoutes: Record<string, RouteRule[]> = {
     ROUTES.api.segment,
     ROUTES.api.segmentConfig,
     ROUTES.api.segmentStats,
+    ROUTES.api.installedApps,
   ],
   clientUsers: [
     ROUTES.api.workspace,
@@ -69,5 +71,6 @@ export const authorizedRoutes: Record<string, RouteRule[]> = {
     ROUTES.api.notificationCounts,
     ROUTES.api.bannerImages,
     ROUTES.api.image,
+    ROUTES.api.installedApps,
   ],
 }
