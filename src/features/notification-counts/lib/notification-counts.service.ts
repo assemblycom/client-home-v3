@@ -52,10 +52,15 @@ export default class NotificationsCountService extends BaseService {
       ).length,
       //ALSO FILTERED FOR TASKS WHERE parentTaskId is null and companyId is null because tasks public api for client also returns tasks that are associated to this companyId.
       //ONCE we apply the changes required for clients in tasks public api, we need to remove this.
+      apps: {},
     }
 
-    notifications?.data?.forEach(({ event, recipientCompanyId: notificationRecipientCompanyId }) => {
+    notifications?.data?.forEach(({ event, appId, recipientCompanyId: notificationRecipientCompanyId }) => {
       if (recipientCompanyId && notificationRecipientCompanyId !== recipientCompanyId) return
+
+      if (appId) {
+        notificationCounts.apps[appId] = (notificationCounts.apps[appId] ?? 0) + 1
+      }
 
       const key = this.eventMap[event as NotificationEvent]
       if (key) notificationCounts[key]++

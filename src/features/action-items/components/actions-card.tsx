@@ -1,6 +1,6 @@
 import { useViewStore, ViewMode } from '@editor/stores/viewStore'
 import { useNotificationCounts } from '@notification-counts/hooks/useNotificationCounts'
-import type { NotificationCountsDto } from '@notification-counts/notification-counts.dto'
+import type { NotificationCountKey } from '@notification-counts/notification-counts.dto'
 import { useEnabledActions } from '@settings/hooks/useEnabledActions'
 import { cn } from '@/utils/tailwind'
 import { ActionItem } from './action-item'
@@ -21,7 +21,7 @@ export const ActionsCard = ({ readonly }: ActionCardProps) => {
   // editor, counts are placeholders, so we keep every enabled action visible so the
   // admin can still configure them.
   const visibleActions = isPreviewMode
-    ? enabledActions.filter((action) => (counts?.[action.key as keyof NotificationCountsDto] ?? 0) > 0)
+    ? enabledActions.filter((action) => (counts?.[action.key as NotificationCountKey] ?? 0) > 0)
     : enabledActions
 
   const visibleCount = visibleActions.length
@@ -57,7 +57,7 @@ export const ActionsCard = ({ readonly }: ActionCardProps) => {
             action={action}
             mode={isPreviewMode ? ViewMode.PREVIEW : ViewMode.EDITOR}
             portalUrl={workspace?.portalUrl}
-            count={counts?.[action.key as keyof NotificationCountsDto]}
+            count={counts?.[action.key as NotificationCountKey]}
           />
         ))}
       </div>
