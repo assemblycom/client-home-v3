@@ -3,11 +3,10 @@
 import { closestCenter, DndContext, type DragEndEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { ActionItem } from '@editor/components/Sidebar/Actions/ActionItem'
-import { AppToggleItem } from '@editor/components/Sidebar/Actions/AppToggleItem'
 import { useActions } from '@editor/components/Sidebar/Actions/useActions'
 
 export const Actions = () => {
-  const { actionItems, appItems, onReorder } = useActions()
+  const { actionItems, onReorder } = useActions()
 
   const sensors = useSensors(useSensor(PointerSensor))
 
@@ -37,15 +36,6 @@ export const Actions = () => {
                 label={action.label}
                 onChange={action.onChange}
                 checked={action.checked}
-              />
-            ))}
-            {appItems.map((app) => (
-              <AppToggleItem
-                key={app.key}
-                icon={app.icon}
-                label={app.label}
-                onChange={app.onChange}
-                checked={app.checked}
               />
             ))}
           </div>
