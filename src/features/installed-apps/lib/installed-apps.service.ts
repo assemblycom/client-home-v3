@@ -32,17 +32,6 @@ export default class InstalledAppsService extends BaseService {
   // each install's notification settings — because the list endpoint does not inline the action label.
   async getActionableInstalls(): Promise<ActionableInstallDto[]> {
     const installs = await this.assembly.getInstalls()
-    logger.info(
-      'InstalledAppsService#getActionableInstalls | installs from platform',
-      installs.map((install) => ({
-        id: install.id,
-        appId: install.appId,
-        displayName: install.displayName,
-        disabled: install.disabled,
-        isDraft: install.isDraft,
-        isInternalApp: install.isInternalApp,
-      })),
-    )
 
     const activeInstalls = installs.filter((install): install is ActiveInstall =>
       Boolean(
@@ -84,17 +73,6 @@ export default class InstalledAppsService extends BaseService {
       },
     )
 
-    const actionableInstalls = results.filter((result): result is ActionableInstallDto => result !== null)
-    logger.info(
-      'InstalledAppsService#getActionableInstalls | actionable installs for Your Actions',
-      actionableInstalls.map((install) => ({
-        installId: install.installId,
-        appId: install.appId,
-        displayName: install.displayName,
-        actionLabel: install.actionLabel,
-      })),
-    )
-
-    return actionableInstalls
+    return results.filter((result): result is ActionableInstallDto => result !== null)
   }
 }
