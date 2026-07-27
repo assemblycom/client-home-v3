@@ -31,6 +31,7 @@
       "@settings/*": ["./src/features/settings/*"],
       "@users/*": ["./src/features/users/*"],
       "@notification-counts/*": ["./src/features/notification-counts/*"],
+      "@installed-apps/*": ["./src/features/installed-apps/*"],
       "@/*": ["./src/*"]
     }
   },

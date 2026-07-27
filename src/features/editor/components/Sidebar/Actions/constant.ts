@@ -1,4 +1,5 @@
-import type { ActionItemIcon, ActionItemLabelType } from '@editor/components/Sidebar/Actions/type'
+import type { IconType } from '@assembly-js/design-system'
+import type { ActionItemLabelType } from '@editor/components/Sidebar/Actions/type'
 import type { SettingsUpdateDto } from '@settings/lib/settings-actions.dto'
 import type { TemplateString } from '@/features/handlebar-template/types/hande-bar-template.type'
 
@@ -16,7 +17,7 @@ export type ActionDefinition = {
   label: string
   /** Imperative verb that prefixes the action sentence, e.g. "Pay 2 invoices". */
   verb: string
-  icon: ActionItemIcon
+  icon: IconType
   template: TemplateString
   key: ActionKey
   singularLabel?: string
