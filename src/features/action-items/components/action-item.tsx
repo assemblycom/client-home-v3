@@ -65,8 +65,14 @@ export const ActionItem = ({ action, isLoading, mode, className, count }: Action
         <span className="shrink-0">{action.verb}</span>
         <span className="flex min-w-0 shrink">
           {isDynamicAction(action) ? (
-            // Dynamic rows have no handlebar template; the resolved unread count is the whole value.
-            <span>{count ?? 0}</span>
+            // Dynamic rows have no handlebar template. In the editor we show the same
+            // `{{N}}` placeholder chip as built-ins (the count is not yet resolved); in
+            // preview the resolved unread count is the whole value.
+            mode === ViewMode.EDITOR ? (
+              <HandleBarTemplate mode={mode} template="{{count}}" displayContent="{{N}}" />
+            ) : (
+              <span>{count ?? 0}</span>
+            )
           ) : (
             <HandleBarTemplate
               mode={mode}

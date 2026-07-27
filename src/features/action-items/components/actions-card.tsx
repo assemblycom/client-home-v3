@@ -22,13 +22,10 @@ export const ActionsCard = ({ readonly }: ActionCardProps) => {
   const getCount = (action: RenderableAction): number | undefined =>
     isDynamicAction(action) ? counts?.apps[action.appId] : counts?.[action.key as NotificationCountKey]
 
-  const visibleActions = enabledActions.filter((action) => {
-    // Dynamic app rows never render a zero/empty state, in any mode.
-    if (isDynamicAction(action)) return (getCount(action) ?? 0) > 0
-    // Built-ins: client/preview surfaces only pending items; the editor keeps every
-    // enabled action visible (counts are placeholders) so the admin can configure them.
-    return isPreviewMode ? (getCount(action) ?? 0) > 0 : true
-  })
+  // Client/preview surfaces only rows with pending items; the editor keeps every enabled
+  // action visible (counts are placeholders) so the admin can see and configure them.
+  // This holds for both built-in and dynamic Studio-app rows.
+  const visibleActions = enabledActions.filter((action) => (isPreviewMode ? (getCount(action) ?? 0) > 0 : true))
 
   const visibleCount = visibleActions.length
 
