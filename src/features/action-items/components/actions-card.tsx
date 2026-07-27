@@ -1,4 +1,5 @@
 import { useViewStore, ViewMode } from '@editor/stores/viewStore'
+import { isDynamicAction, type RenderableAction } from '@installed-apps/lib/dynamic-action'
 import { useNotificationCounts } from '@notification-counts/hooks/useNotificationCounts'
 import type { NotificationCountKey } from '@notification-counts/notification-counts.dto'
 import { useEnabledActions } from '@settings/hooks/useEnabledActions'
@@ -17,12 +18,14 @@ export const ActionsCard = ({ readonly }: ActionCardProps) => {
 
   const isPreviewMode = readonly || viewMode === ViewMode.PREVIEW
 
-  // Client/preview only surfaces actions that actually have pending items. In the
-  // editor, counts are placeholders, so we keep every enabled action visible so the
-  // admin can still configure them.
-  const visibleActions = isPreviewMode
-    ? enabledActions.filter((action) => (counts?.[action.key as NotificationCountKey] ?? 0) > 0)
-    : enabledActions
+  // Dynamic app rows read their count from the per-app map; built-ins from the named fields.
+  const getCount = (action: RenderableAction): number | undefined =>
+    isDynamicAction(action) ? counts?.apps[action.appId] : counts?.[action.key as NotificationCountKey]
+
+  // Client/preview surfaces only rows with pending items; the editor keeps every enabled
+  // action visible (counts are placeholders) so the admin can see and configure them.
+  // This holds for both built-in and dynamic Studio-app rows.
+  const visibleActions = enabledActions.filter((action) => (isPreviewMode ? (getCount(action) ?? 0) > 0 : true))
 
   const visibleCount = visibleActions.length
 
@@ -52,12 +55,12 @@ export const ActionsCard = ({ readonly }: ActionCardProps) => {
       >
         {visibleActions.map((action) => (
           <ActionItem
-            key={action.key}
+            key={isDynamicAction(action) ? action.installId : action.key}
             isLoading={isLoading}
             action={action}
             mode={isPreviewMode ? ViewMode.PREVIEW : ViewMode.EDITOR}
             portalUrl={workspace?.portalUrl}
-            count={counts?.[action.key as NotificationCountKey]}
+            count={getCount(action)}
           />
         ))}
       </div>
