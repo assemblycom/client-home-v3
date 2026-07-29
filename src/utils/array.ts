@@ -30,6 +30,19 @@ export const mapWithConcurrency = async <T, R>(
   return results
 }
 
+// Membership equality for arrays whose order carries no meaning. A missing array counts as empty.
+export const areArraysEqualAsSets = <T>(a: readonly T[] = [], b: readonly T[] = []): boolean => {
+  const setA = new Set(a)
+  const setB = new Set(b)
+  if (setA.size !== setB.size) return false
+
+  for (const item of setA) {
+    if (!setB.has(item)) return false
+  }
+
+  return true
+}
+
 export const getArraySymmetricDifference = <T>(a: T[], b: T[]): T[] => {
   const setA = new Set(a)
   const setB = new Set(b)
