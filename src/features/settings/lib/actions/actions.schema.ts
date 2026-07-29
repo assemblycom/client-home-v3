@@ -30,6 +30,10 @@ export const actions = pgTable(
     // Display order of action items
     order: jsonb().notNull().default(['invoices', 'contracts', 'tasks', 'forms']).$type<string[]>(),
 
+    // Studio apps hidden from "Your Actions", keyed by appId. Deny-list: absence = shown (default on).
+    // Kept as appId (stable across reinstalls), not installId. Stale entries are inert.
+    hiddenAppIds: jsonb().notNull().default([]).$type<string[]>(),
+
     ...timestamps,
   },
   (t) => [index('idx_actions__workspace_id').on(t.workspaceId), unique('uq_actions__settings_id').on(t.settingsId)],

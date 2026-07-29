@@ -1,12 +1,12 @@
 import { Icon } from '@assembly-js/design-system'
 import { useAuthStore } from '@auth/providers/auth.provider'
-import type { ActionDefinition } from '@editor/components/Sidebar/Actions/constant'
 import { useViewStore, ViewMode } from '@editor/stores/viewStore'
+import { isDynamicAction, type RenderableAction } from '@installed-apps/lib/dynamic-action'
 import { HandleBarTemplate } from '@/features/handlebar-template/components/handle-bar-template'
 import { cn } from '@/utils/tailwind'
 
 interface ActionItemProps {
-  action: ActionDefinition
+  action: RenderableAction
   isLoading?: boolean
   mode: ViewMode
   className?: string
@@ -31,7 +31,9 @@ export const ActionItem = ({ action, isLoading, mode, className, count }: Action
   const handleClick = () => {
     if (!clientId) return
 
-    if (action.key === 'tasks' && tasksAppId) {
+    if (isDynamicAction(action)) {
+      window.parent.postMessage({ type: 'history.push', id: action.installId, route: 'apps' }, '*')
+    } else if (action.key === 'tasks' && tasksAppId) {
       window.parent.postMessage({ type: 'history.push', id: tasksAppId, route: 'apps' }, '*')
     } else {
       window.parent.postMessage({ type: 'history.push', route: action.key }, '*')
@@ -62,7 +64,23 @@ export const ActionItem = ({ action, isLoading, mode, className, count }: Action
       <span className="flex min-w-0 items-center gap-1 overflow-hidden font-medium text-sm">
         <span className="shrink-0">{action.verb}</span>
         <span className="flex min-w-0 shrink">
-          <HandleBarTemplate mode={mode} template={action.template} displayContent="{{N}}" fallbackValue={count ?? 0} />
+          {isDynamicAction(action) ? (
+            // Dynamic rows have no handlebar template. In the editor we show the same
+            // `{{N}}` placeholder chip as built-ins (the count is not yet resolved); in
+            // preview the resolved unread count is the whole value.
+            mode === ViewMode.EDITOR ? (
+              <HandleBarTemplate mode={mode} template="{{count}}" displayContent="{{N}}" />
+            ) : (
+              <span>{count ?? 0}</span>
+            )
+          ) : (
+            <HandleBarTemplate
+              mode={mode}
+              template={action.template}
+              displayContent="{{N}}"
+              fallbackValue={count ?? 0}
+            />
+          )}
         </span>
         <span className="min-w-0 truncate [flex-shrink:9999]">{noun}</span>
       </span>

@@ -1,11 +1,10 @@
-import { Icon, Toggle } from '@assembly-js/design-system'
+import { Icon, type IconType, Toggle } from '@assembly-js/design-system'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import type { ActionItemIcon } from '@/features/editor/components/Sidebar/Actions/type'
 
 type ActionItemProps = {
   id: string
-  icon: ActionItemIcon
+  icon: IconType
   label: string
   checked: boolean
   onChange: () => void

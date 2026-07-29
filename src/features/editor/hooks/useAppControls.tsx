@@ -3,6 +3,7 @@ import { useSettingsMutation } from '@settings/hooks/useSettingsMutation'
 import type { SettingsUpdateDto } from '@settings/lib/settings-actions.dto'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import { useShallow } from 'zustand/shallow'
+import { areArraysEqualAsSets } from '@/utils/array'
 import { areObjKeysEqual } from '@/utils/objects'
 
 export const useAppControls = () => {
@@ -30,14 +31,18 @@ export const useAppControls = () => {
       contracts: s.actions.contracts,
       forms: s.actions.forms,
       order: s.actions.order,
+      hiddenAppIds: s.actions.hiddenAppIds,
     })),
   )
   const initialSettings = useSettingsStore((s) => s.initialSettings)
   const orderChanged = JSON.stringify(actions.order) !== JSON.stringify(initialSettings.actions?.order)
+  // `hiddenAppIds` is an unordered deny-list, so compare membership rather than sequence.
+  const hiddenAppIdsChanged = !areArraysEqualAsSets(actions.hiddenAppIds, initialSettings.actions?.hiddenAppIds)
   const show =
     !areObjKeysEqual(settings, initialSettings, ['content', 'heading', 'subheading', 'backgroundColor']) ||
     !areObjKeysEqual(actions, initialSettings.actions, ['tasks', 'invoices', 'contracts', 'forms']) ||
-    orderChanged
+    orderChanged ||
+    hiddenAppIdsChanged
 
   useSecondaryCta(
     {
