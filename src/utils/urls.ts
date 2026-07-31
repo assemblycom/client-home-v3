@@ -62,3 +62,11 @@ export const fixEmbedUrl = (url: string) => {
 
   return urlResultObject.data.src
 }
+
+export const getDashboardOrigin = () => {
+  try {
+    return new URL(document.referrer).origin
+  } catch {
+    return null
+  }
+}

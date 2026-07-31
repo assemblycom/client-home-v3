@@ -9,6 +9,7 @@ import { SegmentSelector } from '@editor/components/TopBar/SegmentSelector'
 import { TabBtn } from '@editor/components/TopBar/TabBtn'
 import { useSidebarStore } from '@editor/stores/sidebarStore'
 import { useViewStore, ViewMode } from '@editor/stores/viewStore'
+import { useUsersStore } from '@users/stores/usersStore'
 import { Activity, useEffect, useEffectEvent, useMemo } from 'react'
 import { getActivityMode } from '@/utils/activity'
 import { debounce } from '@/utils/debounce'
@@ -21,6 +22,9 @@ export const TopBar = () => {
   const toggleMobileSidebar = useSidebarStore((store) => store.toggleMobileSidebar)
   const changeViewInStore = useEffectEvent((viewMode: ViewMode) => changeView({ viewMode }))
   const changeViewModeDebounced = useMemo(() => debounce((view: ViewMode) => changeViewInStore(view), 100), [])
+  const isInitialized = useUsersStore((store) => store.isInitialized)
+  const clients = useUsersStore((store) => store.clients)
+  const hasClients = isInitialized ? clients.length > 0 : true
 
   useEffect(() => {
     return () => {
@@ -48,7 +52,7 @@ export const TopBar = () => {
             <SegmentSelector />
           </Activity>
           <Activity mode={getActivityMode(viewMode === ViewMode.PREVIEW)}>
-            <div className="h-5 w-px bg-border-gray" />
+            {hasClients && <div className="h-5 w-px bg-border-gray" />}
             <ClientSelector />
           </Activity>
         </div>

@@ -9,6 +9,7 @@ interface ClientContextSetterProps {
 }
 
 export const ClientContextSetter = ({ clientContext }: ClientContextSetterProps) => {
+  const setInitialized = useUsersStore((s) => s.setInitialized)
   const setClients = useUsersStore((s) => s.setClients)
   const setCompanies = useUsersStore((s) => s.setCompanies)
   const setPreviewCompanyId = useUsersStore((s) => s.setPreviewCompanyId)
@@ -19,7 +20,8 @@ export const ClientContextSetter = ({ clientContext }: ClientContextSetterProps)
       setCompanies([clientContext.company])
       setPreviewCompanyId(clientContext.company.id)
     }
-  }, [clientContext, setClients, setCompanies, setPreviewCompanyId])
+    setInitialized(true)
+  }, [clientContext, setClients, setCompanies, setPreviewCompanyId, setInitialized])
 
   return null
 }

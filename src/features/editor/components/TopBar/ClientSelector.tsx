@@ -7,6 +7,8 @@ import { useEffect, useRef, useState } from 'react'
 export const ClientSelector = () => {
   const { selectorClients, selectorCompanies, handleSelectorChange } = useSelector()
   const previewClient = useUsersStore((store) => store.previewClient)
+  const isInitialized = useUsersStore((store) => store.isInitialized)
+  const clients = useUsersStore((store) => store.clients)
   const [isOpen, setIsOpen] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
   const selectorRef = useRef<HTMLDivElement>(null)
@@ -21,6 +23,10 @@ export const ClientSelector = () => {
       })
     }
   }, [isOpen])
+
+  if (isInitialized && clients.length === 0) {
+    return null
+  }
 
   if (!previewClient) {
     return (
