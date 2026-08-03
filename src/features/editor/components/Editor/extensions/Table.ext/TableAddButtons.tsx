@@ -1,5 +1,6 @@
 'use client'
 
+import { getPosFromCellDOM } from '@editor/components/Editor/extensions/Table.ext/table-utils'
 import type { Editor } from '@tiptap/react'
 import { useEffect } from 'react'
 
@@ -66,8 +67,8 @@ export const TableAddButtons = ({ editor }: { editor: Editor }) => {
             if (table) {
               const lastCell = table.querySelector('tr:last-child td:last-child, tr:last-child th:last-child')
               if (lastCell) {
-                const pos = editor.view.posAtDOM(lastCell, 0)
-                editor.chain().focus(pos).addRowAfter().run()
+                const pos = getPosFromCellDOM({ editor, cell: lastCell as HTMLElement })
+                if (pos !== null) editor.chain().focus(pos).addRowAfter().run()
               }
             }
           })
@@ -82,8 +83,8 @@ export const TableAddButtons = ({ editor }: { editor: Editor }) => {
             if (table) {
               const lastHeaderCell = table.querySelector('tr:first-child th:last-child, tr:first-child td:last-child')
               if (lastHeaderCell) {
-                const pos = editor.view.posAtDOM(lastHeaderCell, 0)
-                editor.chain().focus(pos).addColumnAfter().run()
+                const pos = getPosFromCellDOM({ editor, cell: lastHeaderCell as HTMLElement })
+                if (pos !== null) editor.chain().focus(pos).addColumnAfter().run()
               }
             }
           })

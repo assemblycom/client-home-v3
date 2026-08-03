@@ -12,6 +12,7 @@ import {
   RemoveRowIcon,
   RemoveTableIcon,
 } from '@editor/components/Editor/extensions/Table.ext/table-icons'
+import { getPosFromCellDOM } from '@editor/components/Editor/extensions/Table.ext/table-utils'
 import type { Slice } from '@tiptap/pm/model'
 import { CellSelection } from '@tiptap/pm/tables'
 import type { EditorView } from '@tiptap/pm/view'
@@ -479,11 +480,19 @@ const HoverPillButton = ({
       onMouseDown={(e) => {
         e.preventDefault()
         e.stopPropagation()
-        const innerPos = editor.view.posAtDOM(hoverPill.cell, 0)
+        const innerPos = getPosFromCellDOM({ editor, cell: hoverPill.cell })
+        if (innerPos === null) {
+          setHoverPill(null)
+          return
+        }
         const $resolved = editor.state.doc.resolve(innerPos)
         let cellDepth = $resolved.depth
         while (cellDepth > 0 && !$resolved.node(cellDepth).type.spec.tableRole?.includes('cell')) {
           cellDepth--
+        }
+        if (cellDepth === 0) {
+          setHoverPill(null)
+          return
         }
         const $cell = editor.state.doc.resolve($resolved.before(cellDepth))
         const cellSelection =
