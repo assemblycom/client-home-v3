@@ -16,6 +16,13 @@ export const getActiveCellDOM = (editor: Editor): HTMLElement | null => {
   return null
 }
 
+// posAtDOM returns -1 when the element has no ViewDesc — i.e. ProseMirror re-rendered
+// the table and this is a detached node captured by an earlier render.
+export const getPosFromCellDOM = ({ editor, cell }: { editor: Editor; cell: HTMLElement }): number | null => {
+  const pos = editor.view.posAtDOM(cell, 0)
+  return pos < 0 ? null : pos
+}
+
 export const getActiveTableWrapper = (editor: Editor): HTMLElement | null => {
   const cell = getActiveCellDOM(editor)
   if (!cell) return null
