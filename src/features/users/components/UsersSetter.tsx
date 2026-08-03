@@ -9,17 +9,18 @@ interface UsersSetterProps {
 }
 
 export const UsersSetter = ({ users }: UsersSetterProps) => {
-  const prevClients = useUsersStore((state) => state.clients)
-  const prevCompanies = useUsersStore((state) => state.companies)
+  const isInitialized = useUsersStore((state) => state.isInitialized)
+  const setInitialized = useUsersStore((state) => state.setInitialized)
   const setClients = useUsersStore((state) => state.setClients)
   const setCompanies = useUsersStore((state) => state.setCompanies)
 
   useEffect(() => {
-    if (!users.clients.length || prevClients.length > 0 || prevCompanies.length > 0) return
+    if (isInitialized) return
 
     setClients(users.clients)
     setCompanies(users.companies)
-  }, [users, setClients, setCompanies, prevClients, prevCompanies])
+    setInitialized(true)
+  }, [users, setClients, setCompanies, isInitialized, setInitialized])
 
   return null
 }

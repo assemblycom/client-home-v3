@@ -3,12 +3,14 @@ import { ReadonlyEditor } from '@editor/components/Editor/ReadonlyEditor'
 import { PreviewTopBar } from '@editor/components/Preview/PreviewTopBar'
 import { DisplayMode, useViewStore } from '@editor/stores/viewStore'
 import { useSettingsStore } from '@settings/providers/settings.provider'
+import { useUsersStore } from '@users/stores/usersStore'
 import { ActionsCard } from '@/features/action-items/components/actions-card'
 import { Banner } from '@/features/banner'
 import { isDarkColor } from '@/utils/color'
 import { cn } from '@/utils/tailwind'
 import { Heading } from '../Heading'
 import { Subheading } from '../Subheading'
+import { EmptyClientPreview } from './EmptyClientPreview'
 
 interface PreviewProps {
   content: string
@@ -24,6 +26,13 @@ export function Preview({ content, backgroundColor, bannerUrl, bannerPositionX, 
   const showGreeting = useSettingsStore((store) => store.showGreeting)
   const isDark = isDarkColor(backgroundColor)
 
+  const isInitialized = useUsersStore((store) => store.isInitialized)
+  const clients = useUsersStore((store) => store.clients)
+
+  if (isInitialized && clients.length === 0) {
+    return <EmptyClientPreview />
+  }
+
   return (
     <div
       className={cn(
@@ -36,7 +45,7 @@ export function Preview({ content, backgroundColor, bannerUrl, bannerPositionX, 
       <PreviewTopBar url={workspace?.portalUrl} />
 
       <div className="preview-scrollable min-h-0 flex-1 overflow-y-auto overflow-x-hidden border-gray-200 border-t">
-        {!workspace ? (
+        {!workspace || !isInitialized ? (
           <div className="flex min-h-32 items-center justify-center">
             <Loader />
           </div>

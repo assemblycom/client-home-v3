@@ -2,15 +2,8 @@
 
 import { Callout, Icon } from '@assembly-js/design-system'
 import { useUsersStore } from '@users/stores/usersStore'
+import { getDashboardOrigin } from '@/utils/urls'
 import { PreviewProperty } from './PreviewProperty'
-
-const getDashboardOrigin = () => {
-  try {
-    return new URL(document.referrer).origin
-  } catch {
-    return null
-  }
-}
 
 export const PreviewSidebar = () => {
   const client = useUsersStore((store) => store.previewClient)
