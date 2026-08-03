@@ -23,15 +23,17 @@ export const useSelector = () => {
   )
   const selectorCompanies = useMemo(
     () =>
-      companies.map(
-        (company) =>
-          ({
-            ...company,
-            value: company.id,
-            label: company.name,
-            type: 'company',
-          }) satisfies UserCompanySelectorProps['companies'][0],
-      ),
+      companies
+        .map(
+          (company) =>
+            ({
+              ...company,
+              value: company.id,
+              label: company.name,
+              type: 'company',
+            }) satisfies UserCompanySelectorProps['companies'][0],
+        )
+        .filter((company) => !!company.name),
     [companies],
   )
 
