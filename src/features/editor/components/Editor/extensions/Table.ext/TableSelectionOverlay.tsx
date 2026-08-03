@@ -490,10 +490,6 @@ const HoverPillButton = ({
         while (cellDepth > 0 && !$resolved.node(cellDepth).type.spec.tableRole?.includes('cell')) {
           cellDepth--
         }
-        if (cellDepth === 0) {
-          setHoverPill(null)
-          return
-        }
         const $cell = editor.state.doc.resolve($resolved.before(cellDepth))
         const cellSelection =
           pill.type === 'row' ? CellSelection.rowSelection($cell) : CellSelection.colSelection($cell)
