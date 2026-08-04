@@ -41,6 +41,13 @@ export const WorkspaceResponseSchema = z.object({
 })
 export type WorkspaceResponse = z.infer<typeof WorkspaceResponseSchema>
 
+// Lifecycle status of an app install from the app builder. App-builder drafts are hidden from
+// "Your Actions" until published (OUT-4015).
+export enum AppInstallStatus {
+  DRAFT = 'draft',
+  PUBLISHED = 'published',
+}
+
 export const AppInstallsDataSchema = z.object({
   appId: z.string().optional(),
   displayName: z.string().optional(),
@@ -52,6 +59,7 @@ export const AppInstallsDataSchema = z.object({
   disabled: z.boolean().nullish(),
   isDraft: z.boolean().nullish(),
   isInternalApp: z.boolean().nullish(),
+  status: z.enum(AppInstallStatus).nullish(),
 })
 export type AppInstallsData = z.infer<typeof AppInstallsDataSchema>
 export const AppInstallsResponseSchema = z.array(AppInstallsDataSchema)
