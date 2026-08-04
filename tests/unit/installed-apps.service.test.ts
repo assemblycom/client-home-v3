@@ -59,16 +59,16 @@ describe('InstalledAppsService#getActionableInstalls', () => {
     expect(result[0]).toMatchObject({ installId: 'pub-1', appId: 'app-pub', actionLabel: REGISTERED_LABEL })
   })
 
-  it('shows only published installs — anything not published is hidden (allowlist)', async () => {
+  it('hides only explicit drafts — missing/null status is treated as non-draft and shown (denylist)', async () => {
     const { service } = buildService([
       createInstall({ id: 'draft-1', appId: 'app-draft', status: AppInstallStatus.DRAFT }),
-      createInstall({ id: 'unknown-1', appId: 'app-unknown', status: undefined }),
+      createInstall({ id: 'undefined-1', appId: 'app-undefined', status: undefined }),
       createInstall({ id: 'null-1', appId: 'app-null', status: null }),
     ])
 
     const result = await service.getActionableInstalls()
 
-    expect(result).toEqual([])
+    expect(result.map((r) => r.installId)).toEqual(['undefined-1', 'null-1'])
   })
 
   it('excludes a published install that has not registered a complete action label', async () => {
