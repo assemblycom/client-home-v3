@@ -44,8 +44,8 @@ export default class InstalledAppsService extends BaseService {
           !install.disabled &&
           !install.isDraft &&
           !install.isInternalApp &&
-          // isDraft is the legacy flag; status is the app-builder publish lifecycle. Show only published (OUT-4015).
-          install.status === AppInstallStatus.PUBLISHED,
+          // show non drafts apps in the action dropdown.
+          install.status !== AppInstallStatus.DRAFT,
       ),
     )
 
