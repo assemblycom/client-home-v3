@@ -1,5 +1,5 @@
 import AssemblyClient from '@assembly/assembly-client'
-import { type AppInstallsData, isActionLabelRegistered } from '@assembly/types'
+import { AppInstallStatus, type AppInstallsData, isActionLabelRegistered } from '@assembly/types'
 import type { User } from '@auth/lib/user.entity'
 import type { ActionableInstallDto } from '@installed-apps/installed-apps.dto'
 import env from '@/config/env'
@@ -27,9 +27,10 @@ export default class InstalledAppsService extends BaseService {
     return new InstalledAppsService(user, assembly)
   }
 
-  // Returns installs eligible for "Your Actions": active (not disabled/draft/internal) and carrying a
-  // complete registered action label. Discovery is a two-step fetch — list installs, then fan out to
-  // each install's notification settings — because the list endpoint does not inline the action label.
+  // Returns installs eligible for "Your Actions": active (not disabled/internal, not an app-builder
+  // draft) and carrying a complete registered action label. Discovery is a two-step fetch — list
+  // installs, then fan out to each install's notification settings — because the list endpoint does
+  // not inline the action label.
   async getActionableInstalls(): Promise<ActionableInstallDto[]> {
     const installs = await this.assembly.getInstalls()
 
@@ -42,7 +43,9 @@ export default class InstalledAppsService extends BaseService {
           install.appId !== env.TASKS_APP_ID &&
           !install.disabled &&
           !install.isDraft &&
-          !install.isInternalApp,
+          !install.isInternalApp &&
+          // isDraft is the legacy flag; status is the app-builder publish lifecycle. Show only published (OUT-4015).
+          install.status === AppInstallStatus.PUBLISHED,
       ),
     )
 
