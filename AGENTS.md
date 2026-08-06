@@ -112,3 +112,9 @@ Custom error classes in `src/errors/`: APIError, NotFoundError, UnauthorizedErro
 ## PR Requirements
 
 PRs require: changes description, testing criteria with Loom video, and impact analysis (see `.github/PULL_REQUEST_TEMPLATE.md`).
+
+## Engineering note:
+- After a successful implementation, the changes will be reviewed by the team lead and greptileAI in github.
+- Do not use let unless absolutely necessary. Use const instead.
+- Always keep the comments short, on point and easy to understand with easy wordings. This is must.
+- Follow DRY, KISS, SOLID, YAGNI principles.
