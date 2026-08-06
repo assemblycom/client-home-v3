@@ -6,6 +6,7 @@ import { useEffect } from 'react'
 
 export default function GlobalError({ error }: { error: Error & { digest?: string } }) {
   useEffect(() => {
+    // Server errors are redacted here in prod; auth errors are filtered in onRequestError.
     Sentry.captureException(error)
   }, [error])
 
