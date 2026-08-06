@@ -1,5 +1,5 @@
 import AssemblyClient from '@assembly/assembly-client'
-import { AssemblyInvalidTokenError, AssemblyTokenParseError } from '@assembly/errors'
+import { AssemblyInvalidTokenError, AssemblyMissingHeadersError, AssemblyTokenParseError } from '@assembly/errors'
 import type { User } from '@auth/lib/user.entity'
 import { getSanitizedHeaders, isAuthorized } from '@auth/lib/utils'
 import { HttpStatusCode } from 'axios'
@@ -96,18 +96,28 @@ export const authenticateProxy = async (req: NextRequest): Promise<NextResponse>
  * Uses: AuthenticatedAPIHeaders
  * @param headers containing required token payload header
  * @returns {User} instance modeled from the token payload headers
+ * @throws AssemblyMissingHeadersError when the proxy did not inject the token or workspaceId header
  * @throws AssemblyInvalidTokenError when the token payload headers are invalid
  */
 export const authenticateHeaders = (headers: Headers): User => {
   const get = (headerName: string) => headers.get(headerName) || undefined
 
-  const token = z.string().parse(get(AuthenticatedAPIHeaders.CUSTOM_APP_TOKEN))
+  const token = get(AuthenticatedAPIHeaders.CUSTOM_APP_TOKEN)
+  const workspaceId = get(AuthenticatedAPIHeaders.WORKSPACE_ID)
   const internalUserId = get(AuthenticatedAPIHeaders.INTERNAL_USER_ID)
   const clientId = get(AuthenticatedAPIHeaders.CLIENT_ID)
   const companyId = get(AuthenticatedAPIHeaders.COMPANY_ID)
-  const workspaceId = z.string().parse(get(AuthenticatedAPIHeaders.WORKSPACE_ID))
+
+  if (!token || !workspaceId) {
+    // Log the detail; throw generic so withErrorHandler can't leak it to clients.
+    const missing = [!token && 'token', !workspaceId && 'workspaceId'].filter(Boolean).join(', ')
+    console.warn(`AssemblyMissingHeadersError :: missing auth header(s): ${missing}`)
+    throw new AssemblyMissingHeadersError()
+  }
 
   if (!internalUserId && !clientId) {
+    // Log it: onRequestError drops this from Sentry.
+    console.warn('AssemblyInvalidTokenError :: headers lack both internalUserId and clientId')
     throw new AssemblyInvalidTokenError()
   }
 
