@@ -41,20 +41,21 @@ it('does not call Sentry for AssemblyMissingHeadersError', () => {
   expect(mockCaptureRequestError).not.toHaveBeenCalled()
 })
 
-it('does not call Sentry for AssemblyInvalidTokenError', () => {
+// Must reach Sentry: AssemblyClient's catch-all can mask real SDK failures as this error.
+it('calls Sentry for AssemblyInvalidTokenError', () => {
   const error = new AssemblyInvalidTokenError()
 
   onRequestError(error, fakeRequest, fakeContext)
 
-  expect(mockCaptureRequestError).not.toHaveBeenCalled()
+  expect(mockCaptureRequestError).toHaveBeenCalledWith(error, fakeRequest, fakeContext)
 })
 
-it('does not call Sentry for AssemblyTokenParseError', () => {
+it('calls Sentry for AssemblyTokenParseError', () => {
   const error = new AssemblyTokenParseError()
 
   onRequestError(error, fakeRequest, fakeContext)
 
-  expect(mockCaptureRequestError).not.toHaveBeenCalled()
+  expect(mockCaptureRequestError).toHaveBeenCalledWith(error, fakeRequest, fakeContext)
 })
 
 it('calls Sentry for a generic Error', () => {

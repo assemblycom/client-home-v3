@@ -1,4 +1,4 @@
-import { AssemblyInvalidTokenError, AssemblyMissingHeadersError, AssemblyTokenParseError } from '@assembly/errors'
+import { AssemblyMissingHeadersError } from '@assembly/errors'
 import * as Sentry from '@sentry/nextjs'
 
 export async function register() {
@@ -11,13 +11,8 @@ export async function register() {
   }
 }
 
-// Expected 401-class auth failures, not bugs — skip Sentry noise (OUT-4013). Logged where thrown.
-const isExpectedAuthError = (err: unknown) =>
-  err instanceof AssemblyMissingHeadersError ||
-  err instanceof AssemblyInvalidTokenError ||
-  err instanceof AssemblyTokenParseError
-
 export const onRequestError: typeof Sentry.captureRequestError = (err, request, context) => {
-  if (isExpectedAuthError(err)) return
+  // Only suppress expected 401 noise (OUT-4013); other auth errors may mask real SDK failures.
+  if (err instanceof AssemblyMissingHeadersError) return
   return Sentry.captureRequestError(err, request, context)
 }
