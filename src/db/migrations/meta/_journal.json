@@ -85,6 +85,13 @@
       "when": 1784624122535,
       "tag": "20260721085522_add-hidden-app-ids-to-actions",
       "breakpoints": false
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1786337141828,
+      "tag": "20260810044541_update-default-client-home-subheading",
+      "breakpoints": false
     }
   ]
 }
