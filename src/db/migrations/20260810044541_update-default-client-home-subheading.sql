@@ -1,0 +1,1 @@
+ALTER TABLE "settings" ALTER COLUMN "subheading" SET DEFAULT '<p>Everything you need to work with <autofill-field data-value="{{workspace.brand}}"></autofill-field>, all in one place.</p>';

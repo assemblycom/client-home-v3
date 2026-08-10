@@ -1,5 +1,6 @@
 import { media } from '@media/lib/media.schema'
 import { segments } from '@segments/lib/segments/segments.schema'
+import { defaultSubheading } from '@settings/constants'
 import { boolean, index, integer, pgTable, text, unique, uuid, varchar } from 'drizzle-orm/pg-core'
 import { createInsertSchema } from 'drizzle-zod'
 import type z from 'zod'
@@ -20,7 +21,7 @@ export const settings = pgTable(
       .default('<p>Welcome, <autofill-field data-value="{{client.firstName}}"></autofill-field></p>'),
 
     // Subheading text section. Stores HTML so it can contain autofill fields.
-    subheading: text().notNull().default("Here's what needs your attention today"),
+    subheading: text().notNull().default(defaultSubheading),
 
     // Editor content
     content: text().notNull(),
