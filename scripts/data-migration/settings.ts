@@ -1,4 +1,4 @@
-import { defaultContent } from '@settings/constants'
+import { defaultContent, defaultSubheading } from '@settings/constants'
 import { actions } from '@settings/lib/actions/actions.schema'
 import { type SettingsInsertPayload, settings } from '@settings/lib/settings/settings.schema'
 import { sql } from 'drizzle-orm'
@@ -66,7 +66,7 @@ export const migrateSettings = async () => {
         id: setting.id,
         workspaceId: setting.workspaceId,
         backgroundColor: setting.backgroundColor,
-        subheading: "Here's what needs your attention today",
+        subheading: defaultSubheading,
         content:
           (setting.content && migrateAutofillTags(migrateIframeToEmbed(stripNotificationWidget(setting.content)))) ||
           defaultContent,
