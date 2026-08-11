@@ -2,7 +2,7 @@
 
 import { ReadonlyEditor } from '@editor/components/Editor/ReadonlyEditor'
 import { useViewStore } from '@editor/stores/viewStore'
-import { isDefaultClientHome } from '@editor/utils/content'
+import { isDefaultContent } from '@editor/utils/content'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import { useQuery } from '@tanstack/react-query'
 import { ActionsCard } from '@/features/action-items/components/actions-card'
@@ -24,8 +24,6 @@ export const ClientEditorWrapper = () => {
   const bannerPositionX = useSettingsStore((store) => store.bannerPositionX) ?? 50
   const bannerPositionY = useSettingsStore((store) => store.bannerPositionY) ?? 50
   const showGreeting = useSettingsStore((store) => store.showGreeting)
-  const createdAt = useSettingsStore((store) => store.createdAt)
-  const updatedAt = useSettingsStore((store) => store.updatedAt)
 
   useQuery({
     queryKey: ['tasks-app-id'],
@@ -63,7 +61,7 @@ export const ClientEditorWrapper = () => {
           />
         )}
 
-        {!isDefaultClientHome({ content, createdAt, updatedAt }) && <ActionsCard readonly />}
+        {!isDefaultContent(content) && <ActionsCard readonly />}
         <ReadonlyEditor content={content} />
       </div>
     </div>
