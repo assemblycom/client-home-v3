@@ -8,6 +8,6 @@ export enum MediaFolders {
 
 export const MediaFolderSchema = z.enum([MediaFolders.EDITOR, MediaFolders.LIBRARY, MediaFolders.BANNER])
 
-export const DEFAULT_BANNER_IMAGE_PATH = 'common/Default.png'
+export const DEFAULT_BANNER_IMAGE_PATH = 'common/Container_14.png'
 
 export const MEDIA_QUERY_KEY = 'media'
