@@ -3,6 +3,7 @@ import { TableCell } from '@tiptap/extension-table/cell'
 import { TableHeader } from '@tiptap/extension-table/header'
 import { TableCellTypeEnforcer } from './table-cell-type-enforcer'
 import { TableKeyboard } from './table-keyboard'
+import { TableStaleSelectionGuard } from './table-stale-selection-guard'
 import { TableTouchSelection } from './table-touch-selection'
 
 // Allow all block nodes except `table` inside table cells to prevent nested tables
@@ -23,4 +24,5 @@ export const TableExt = [
   TableCellTypeEnforcer,
   TableKeyboard,
   TableTouchSelection,
+  TableStaleSelectionGuard,
 ]
