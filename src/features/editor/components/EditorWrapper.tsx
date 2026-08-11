@@ -5,7 +5,7 @@ import { Heading } from '@editor/components/Heading'
 import { Preview } from '@editor/components/Preview'
 import { Subheading } from '@editor/components/Subheading'
 import { useAppControls } from '@editor/hooks/useAppControls'
-import { isDefaultClientHome } from '@editor/utils/content'
+import { isDefaultContent } from '@editor/utils/content'
 import { useBannerSettingsMutation } from '@settings/hooks/useBannerSettingsMutation'
 import { useSegmentSettings } from '@settings/hooks/useSegmentSettings'
 import { useSettingsStore } from '@settings/providers/settings.provider'
@@ -33,8 +33,6 @@ export function EditorWrapper({ className }: EditorWrapperProps) {
   const bannerPositionX = useSettingsStore((store) => store.bannerPositionX) ?? 50
   const bannerPositionY = useSettingsStore((store) => store.bannerPositionY) ?? 50
   const showGreeting = useSettingsStore((store) => store.showGreeting)
-  const createdAt = useSettingsStore((store) => store.createdAt)
-  const updatedAt = useSettingsStore((store) => store.updatedAt)
   const setSidebarView = useSidebarStore((store) => store.setSidebarView)
   const bannerRepositioning = useSidebarStore((store) => store.bannerRepositioning)
   const setBannerRepositioning = useSidebarStore((store) => store.setBannerRepositioning)
@@ -82,7 +80,7 @@ export function EditorWrapper({ className }: EditorWrapperProps) {
               }
             />
           )}
-          {!isDefaultClientHome({ content, createdAt, updatedAt }) && <ActionsCard />}
+          {!isDefaultContent(content) && <ActionsCard />}
           <Editor content={content} />
         </div>
       </Activity>
