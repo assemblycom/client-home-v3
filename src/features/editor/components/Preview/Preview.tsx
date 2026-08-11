@@ -2,6 +2,7 @@ import { Loader } from '@common/components/Loader'
 import { ReadonlyEditor } from '@editor/components/Editor/ReadonlyEditor'
 import { PreviewTopBar } from '@editor/components/Preview/PreviewTopBar'
 import { DisplayMode, useViewStore } from '@editor/stores/viewStore'
+import { isDefaultClientHome } from '@editor/utils/content'
 import { useSettingsStore } from '@settings/providers/settings.provider'
 import { useUsersStore } from '@users/stores/usersStore'
 import { ActionsCard } from '@/features/action-items/components/actions-card'
@@ -24,6 +25,8 @@ export function Preview({ content, backgroundColor, bannerUrl, bannerPositionX, 
   const displayMode = useViewStore((store) => store.displayMode)
   const workspace = useViewStore((store) => store.workspace)
   const showGreeting = useSettingsStore((store) => store.showGreeting)
+  const createdAt = useSettingsStore((store) => store.createdAt)
+  const updatedAt = useSettingsStore((store) => store.updatedAt)
   const isDark = isDarkColor(backgroundColor)
 
   const isInitialized = useUsersStore((store) => store.isInitialized)
@@ -63,7 +66,7 @@ export function Preview({ content, backgroundColor, bannerUrl, bannerPositionX, 
             {bannerUrl ? (
               <Banner src={bannerUrl} alt="Workspace Banner" positionX={bannerPositionX} positionY={bannerPositionY} />
             ) : null}
-            <ActionsCard />
+            {!isDefaultClientHome({ content, createdAt, updatedAt }) && <ActionsCard />}
             <ReadonlyEditor content={content} />
           </div>
         )}
