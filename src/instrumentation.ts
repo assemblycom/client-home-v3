@@ -1,4 +1,4 @@
-import { AssemblyMissingHeadersError } from '@assembly/errors'
+import { ASSEMBLY_MISSING_HEADERS_ERROR_NAME } from '@assembly/errors'
 import * as Sentry from '@sentry/nextjs'
 
 export async function register() {
@@ -12,7 +12,7 @@ export async function register() {
 }
 
 export const onRequestError: typeof Sentry.captureRequestError = (err, request, context) => {
-  // Only suppress expected 401 noise (OUT-4013); other auth errors may mask real SDK failures.
-  if (err instanceof AssemblyMissingHeadersError) return
+  // Match by name: instrumentation is a separate bundle, so instanceof never matches.
+  if (err instanceof Error && err.name === ASSEMBLY_MISSING_HEADERS_ERROR_NAME) return
   return Sentry.captureRequestError(err, request, context)
 }

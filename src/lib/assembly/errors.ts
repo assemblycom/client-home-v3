@@ -31,8 +31,10 @@ export const AssemblyTokenParseError = baseServerErrorFactory(
 /**
  * Raised when the proxy did not inject the expected auth headers for a server component
  */
+// Shared so the Sentry filter can match by name across bundles.
+export const ASSEMBLY_MISSING_HEADERS_ERROR_NAME = 'AssemblyMissingHeadersError'
 export const AssemblyMissingHeadersError = baseServerErrorFactory(
-  'AssemblyMissingHeadersError',
+  ASSEMBLY_MISSING_HEADERS_ERROR_NAME,
   'Authenticated headers were not set by the proxy',
   status.UNAUTHORIZED,
 )
