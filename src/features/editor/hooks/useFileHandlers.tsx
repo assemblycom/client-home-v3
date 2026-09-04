@@ -17,6 +17,9 @@ export const useFileHandlers = () => {
 
       fileReader.readAsDataURL(file)
       fileReader.onload = async () => {
+        // onload fires on a later tick, so the editor may already be gone (unmount / re-init).
+        if (currentEditor.isDestroyed) return
+
         const randId = crypto.randomUUID()
 
         currentEditor
@@ -38,20 +41,32 @@ export const useFileHandlers = () => {
           return // Keep the blob image for now
         }
 
-        const { path } = await uploadFileToSupabase(file)
-        const proxyUrl = `/api/media/image?token=${token}&filePath=${path}`
-        const { doc } = currentEditor.state
-        let imagePos: number | null = null
-        doc.descendants((node, pos) => {
-          if (node.type.name === 'image' && node.attrs.title === randId) {
-            imagePos = pos
-            return false //short circuit the search for image position.
-          }
-        })
+        try {
+          const { path } = await uploadFileToSupabase(file)
 
-        if (imagePos !== null) {
-          currentEditor.chain().focus().setNodeSelection(imagePos).updateAttributes('image', { src: proxyUrl }).run()
-          setContent(currentEditor.getHTML())
+          // Editor may be destroyed while the upload is in flight; bail before touching it.
+          if (currentEditor.isDestroyed) {
+            console.warn('Editor destroyed before image src swap; keeping blob placeholder')
+            return
+          }
+
+          const proxyUrl = `/api/media/image?token=${token}&filePath=${path}`
+          const { doc } = currentEditor.state
+          let imagePos: number | null = null
+          doc.descendants((node, pos) => {
+            if (node.type.name === 'image' && node.attrs.title === randId) {
+              imagePos = pos
+              return false //short circuit the search for image position.
+            }
+          })
+
+          if (imagePos !== null) {
+            currentEditor.chain().focus().setNodeSelection(imagePos).updateAttributes('image', { src: proxyUrl }).run()
+            setContent(currentEditor.getHTML())
+          }
+        } catch (error) {
+          // Keep the blob placeholder on failure instead of throwing an unhandled rejection.
+          console.error('Failed to upload image to supabase', error)
         }
       }
     })
