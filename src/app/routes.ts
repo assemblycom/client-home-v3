@@ -13,7 +13,7 @@ export const ROUTES = Object.freeze({
     users: '/api/users',
     clientContext: '/api/client-context',
     notificationCounts: '/api/users/:id/notification-counts',
-    listCustomFields: '/api/custom-fields/:entityType',
+    listCustomFields: '/api/custom-fields',
     customFieldOptionsMap: '/api/custom-fields/options-map',
     segments: '/api/segments',
     segment: '/api/segments/:segmentId',
