@@ -1,26 +1,16 @@
 import AssemblyClient from '@assembly/assembly-client'
-import { CustomFieldEntityType } from '@assembly/types'
 import { authenticateHeaders } from '@auth/lib/authenticate'
 import { type NextRequest, NextResponse } from 'next/server'
-import z from 'zod'
 import type { APIResponse } from '@/app/types'
-import { NotFoundError } from '@/errors/not-found.error'
 
-export const listCustomFields = async (
-  req: NextRequest,
-  { params }: { params: Promise<{ entityType: string }> },
-): Promise<NextResponse<APIResponse>> => {
+// Returns custom fields for all entity types in a single call.
+// The client splits them by entityType, avoiding one request per type.
+export const listCustomFields = async (req: NextRequest): Promise<NextResponse<APIResponse>> => {
   const user = authenticateHeaders(req.headers)
 
   const assembly = new AssemblyClient(user.token)
 
-  const entityTypeResult = z.enum(CustomFieldEntityType).safeParse((await params).entityType)
-
-  if (entityTypeResult.error) {
-    throw new NotFoundError()
-  }
-
-  const response = await assembly.listCustomFields({ entityType: entityTypeResult.data })
+  const response = await assembly.listCustomFields()
 
   return NextResponse.json(response)
 }
