@@ -18,6 +18,9 @@ const EnvSchema = z.object({
   VERCEL_URL: z.url(),
 
   DATABASE_URL: z.url(),
+  // Session/direct connection (port 5432) used for migrations, which can't run
+  // over the transaction-mode pooler. Falls back to DATABASE_URL when unset.
+  DIRECT_URL: z.url().optional(),
   SUPABASE_URL: z.url(),
   SUPABASE_SECRET_KEY: z.string().min(1),
   SUPABASE_BUCKET_NAME: z.string().min(1),
