@@ -32,6 +32,16 @@ const isBlobOriginError = (event: Sentry.ErrorEvent): boolean => {
   return Boolean(frames?.length && frames.every((frame) => frame.filename?.startsWith('blob:')))
 }
 
+// Firefox throws "SecurityError: The operation is insecure." for browser APIs
+// (history, storage, locks) denied in restricted iframe/privacy contexts. It's
+// environmental noise we can't fix at the call site — drop the whole family.
+const isRestrictedContextError = (event: Sentry.ErrorEvent): boolean =>
+  Boolean(
+    event.exception?.values?.some(
+      (value) => value.type === 'SecurityError' && /operation is insecure/i.test(value.value ?? ''),
+    ),
+  )
+
 Sentry.init({
   dsn,
 
@@ -49,7 +59,8 @@ Sentry.init({
     /runtime\.getManifest is not a function/,
   ],
 
-  beforeSend: (event) => (isInjectedExtensionError(event) || isBlobOriginError(event) ? null : event),
+  beforeSend: (event) =>
+    isInjectedExtensionError(event) || isBlobOriginError(event) || isRestrictedContextError(event) ? null : event,
 
   // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
   tracesSampleRate: 1,
