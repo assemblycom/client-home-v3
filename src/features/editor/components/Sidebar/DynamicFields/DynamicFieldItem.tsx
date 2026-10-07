@@ -9,10 +9,10 @@ type DynamicFieldItemProps = {
 }
 
 export const DynamicFieldItem = ({ fieldContent, value, name, icon }: DynamicFieldItemProps) => {
-  const editor = useEditorStore((s) => s.editor)
-
   const handleClick = () => {
-    editor?.chain().focus().insertAutofillField({ value }).run()
+    const { editor, focusedEditor } = useEditorStore.getState()
+    const target = focusedEditor && !focusedEditor.isDestroyed ? focusedEditor : editor
+    target?.chain().focus().insertAutofillField({ value }).run()
   }
 
   return (

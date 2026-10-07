@@ -1,5 +1,6 @@
 'use client'
 
+import { useEditorStore } from '@editor/stores/editorStore'
 import { getMinimalExtensions } from '@extensions/minimal-extensions'
 import { EditorContent, useEditor } from '@tiptap/react'
 import { useEffect, useRef } from 'react'
@@ -54,6 +55,7 @@ export const MinimalEditor = ({
         return true
       },
     },
+    onFocus: ({ editor }) => useEditorStore.getState().setFocusedEditor(editor),
     onUpdate: ({ editor }) => onChange?.(editor.getHTML()),
   })
 
