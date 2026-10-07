@@ -11,7 +11,7 @@ const company = { id: client.companyId, name: 'Hessington Oil' }
 
 describe('usersStore preview company', () => {
   beforeEach(() => {
-    useUsersStore.setState({ clients: [], companies: [], previewClient: null, previewCompany: null })
+    useUsersStore.setState(useUsersStore.getInitialState())
   })
 
   it('derives the first client company when clients load before companies', () => {
