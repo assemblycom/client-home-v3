@@ -29,13 +29,24 @@ const initialState: UsersState = {
   previewCompany: null,
 }
 
+const findCompany = (companies: CompaniesDto[], companyId?: string | null) =>
+  companies.find((company) => company.id === companyId) ?? null
+
 export const useUsersStore = create<UsersState & UsersActions>()((set) => ({
   ...initialState,
   setInitialized: (isInitialized: boolean) => set({ isInitialized }),
   setClients: (clients: ClientsDto[]) => {
-    set({ clients, previewClient: clients[0] ?? null, previewClientId: clients[0]?.id ?? null })
+    const previewClient = clients[0] ?? null
+    set((state) => ({
+      clients,
+      previewClient,
+      previewClientId: previewClient?.id ?? null,
+      previewCompanyId: previewClient?.companyId ?? null,
+      previewCompany: findCompany(state.companies, previewClient?.companyId),
+    }))
   },
-  setCompanies: (companies: CompaniesDto[]) => set({ companies }),
+  setCompanies: (companies: CompaniesDto[]) =>
+    set((state) => ({ companies, previewCompany: findCompany(companies, state.previewCompanyId) })),
   setPreviewClientId: (previewClientId: string) => {
     set((state) => ({
       previewClientId,
