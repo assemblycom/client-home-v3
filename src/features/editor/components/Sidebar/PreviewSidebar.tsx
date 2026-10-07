@@ -9,15 +9,7 @@ export const PreviewSidebar = () => {
   const client = useUsersStore((store) => store.previewClient)
   const company = useUsersStore((store) => store.previewCompany)
 
-  const values = [
-    client?.firstName,
-    client?.lastName,
-    client?.email,
-    company?.name,
-    client?.customFields?.address?.addressLine1,
-    company?.customFields?.website,
-  ]
-  const hasMissingValues = values.some((v) => !v)
+  const hasMissingValues = [client?.firstName, client?.lastName, client?.email, company?.name].some((v) => !v)
 
   return (
     <div>
