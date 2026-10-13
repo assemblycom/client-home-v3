@@ -26,7 +26,7 @@ export const BUILT_IN_FIELDS: BuiltInField[] = [
   { value: '{{company.name}}', name: 'Name', icon: 'Profile', entityType: 'company' },
   { value: '{{company.address}}', name: 'Address', icon: 'Location', entityType: 'company' },
   { value: '{{company.email}}', name: 'Email', icon: 'Email', entityType: 'company' },
-  { value: '{{workspace.brand}}', name: 'Company Name', icon: 'Customization', entityType: 'workspace' },
+  { value: '{{workspace.brand}}', name: 'Brand Name', icon: 'Customization', entityType: 'workspace' },
 ]
 
 /**

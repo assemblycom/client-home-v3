@@ -54,6 +54,7 @@ export const Editor = ({ content }: EditorProps) => {
     content,
     immediatelyRender: false, // Avoid SSR & hydration issues
     editorProps: { attributes: { class: 'text-custom-xs' } },
+    onFocus: ({ editor }) => useEditorStore.getState().setFocusedEditor(editor),
     onUpdate: ({ editor }) => {
       settingsStoreApi?.getState().setSettings({
         content: editor.getHTML(),

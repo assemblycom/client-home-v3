@@ -6,6 +6,9 @@ interface EditorState {
   setEditor: (editor: Editor) => void
   destroyEditor: () => void
 
+  focusedEditor: Editor | null
+  setFocusedEditor: (editor: Editor) => void
+
   showEmbedInput: boolean
   setShowEmbedInput: (showEmbedInput: boolean) => void
 
@@ -21,6 +24,9 @@ export const useEditorStore = create<EditorState>()((set) => ({
   editor: null,
   setEditor: (editor: Editor) => set({ editor }),
   destroyEditor: () => set({ editor: null }),
+
+  focusedEditor: null,
+  setFocusedEditor: (focusedEditor: Editor) => set({ focusedEditor }),
 
   showEmbedInput: false,
   setShowEmbedInput: (showEmbedInput: boolean) => set({ showEmbedInput }),
