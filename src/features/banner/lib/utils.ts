@@ -16,7 +16,7 @@ export const getImageUrl = (path: string | undefined) => {
     })
     return undefined
   }
-  return `/api/media/image?token=${token}&filePath=${path}`
+  return `/api/media/image?token=${token}&filePath=${encodeURIComponent(path)}`
 }
 
 export const handleBannerFileUpload = async (file: File) => {

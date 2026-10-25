@@ -50,7 +50,7 @@ export const useFileHandlers = () => {
             return
           }
 
-          const proxyUrl = `/api/media/image?token=${token}&filePath=${path}`
+          const proxyUrl = `/api/media/image?token=${token}&filePath=${encodeURIComponent(path)}`
           const { doc } = currentEditor.state
           let imagePos: number | null = null
           doc.descendants((node, pos) => {
