@@ -1,6 +1,11 @@
 import env from '@/config/env'
 
-const normalizeFileName = (fileName: string) => fileName.replace(/[\u00A0\u2000-\u200B\u202F\u205F\u3000]/g, ' ').trim()
+// Supabase Storage rejects keys with chars outside this set (InvalidKey)
+const normalizeFileName = (fileName: string) =>
+  fileName
+    .replace(/[\u00A0\u2000-\u200B\u202F\u205F\u3000]/g, ' ')
+    .replace(/[^\w !\-.*'()&$@=;:+,]/g, '_')
+    .trim()
 
 export const getFileNameWithTimestamp = (fileName: string) => {
   const normalized = normalizeFileName(fileName)

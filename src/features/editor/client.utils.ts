@@ -100,7 +100,7 @@ export const triggerImageUpload = (editor: Editor) => {
 
       const { path: rawPath } = await uploadFileToSupabase(file)
       const path = rawPath.startsWith('media/') ? rawPath.substring(6) : rawPath
-      const proxyUrl = `/api/media/image?token=${token}&filePath=${path}`
+      const proxyUrl = `/api/media/image?token=${token}&filePath=${encodeURIComponent(path)}`
 
       replaceEditorImageSrcByUploadId(editor, randId, proxyUrl)
 
