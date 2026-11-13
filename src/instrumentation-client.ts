@@ -12,7 +12,7 @@ const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN
 // "'set' on proxy: trap returned falsish for property 'tronlinkParams'") they
 // bubble into our global handlers even though it's not our code. Drop any
 // event whose stack originates from a known injected script.
-const INJECTED_SCRIPT_PATTERNS = ['inpage.js', 'injected.js']
+const INJECTED_SCRIPT_PATTERNS = ['inpage.js', 'injected.js', 'injectScript.js']
 
 const isInjectedExtensionError = (event: Sentry.ErrorEvent): boolean => {
   const frames = event.exception?.values?.flatMap((value) => value.stacktrace?.frames ?? [])
