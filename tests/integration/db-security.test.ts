@@ -7,6 +7,7 @@ vi.mock('server-only', () => ({}))
 vi.mock('@/db', () => ({ default: {} }))
 
 const TABLES = ['settings', 'actions', 'segments', 'conditions', 'segment_configs', 'media', '__drizzle_migrations']
+const ALL_PRIVILEGES = 'SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER'
 const MIGRATION = 'src/db/migrations/20261119060545_enable-rls.sql'
 
 let client: PGlite
@@ -21,14 +22,17 @@ const rows = async <T>(sql: string) => (await client.query<T>(sql)).rows
 
 beforeAll(async () => {
   client = (await createTestDb()).client
-  // Mirror Supabase: API roles exist and hold ALL on every public table and sequence.
+  // Mirror pre-migration Supabase: RLS off, API roles hold ALL now and by default.
   await client.exec(`
     create role anon nologin;
     create role authenticated nologin;
     create table "__drizzle_migrations" (id serial primary key, hash text not null, created_at bigint);
+    ${TABLES.map((t) => `alter table "${t}" disable row level security;`).join('\n')}
     grant usage on schema public to anon, authenticated;
     grant all on all tables in schema public to anon, authenticated;
     grant all on all sequences in schema public to anon, authenticated;
+    alter default privileges in schema public grant all on tables to anon, authenticated;
+    alter default privileges in schema public grant all on sequences to anon, authenticated;
   `)
   await client.exec(readFileSync(MIGRATION, 'utf8'))
 })
@@ -93,8 +97,8 @@ describe('database security', () => {
         await tx.exec('create table public.__rls_probe (id int)')
         const { rows: probe } = await tx.query(`
           select rowsecurity as rls,
-                 has_table_privilege('anon', 'public.__rls_probe', 'SELECT, INSERT, UPDATE, DELETE') as anon,
-                 has_table_privilege('authenticated', 'public.__rls_probe', 'SELECT, INSERT, UPDATE, DELETE') as authenticated
+                 has_table_privilege('anon', 'public.__rls_probe', '${ALL_PRIVILEGES}') as anon,
+                 has_table_privilege('authenticated', 'public.__rls_probe', '${ALL_PRIVILEGES}') as authenticated
           from pg_tables where schemaname = 'public' and tablename = '__rls_probe'`)
         expect(probe).toEqual([{ rls: true, anon: false, authenticated: false }])
         await tx.rollback()
