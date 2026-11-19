@@ -16,4 +16,4 @@ export const segments = pgTable(
     ...timestamps,
   },
   (t) => [index('idx_segments__workspace_id').on(t.workspaceId)],
-)
+).enableRLS()

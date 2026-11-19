@@ -30,4 +30,4 @@ export const media = pgTable(
     ...timestamps,
   },
   (t) => [index('idx_media__workspace_id').on(t.workspaceId)],
-)
+).enableRLS()

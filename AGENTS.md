@@ -62,6 +62,7 @@ class SettingsService extends BaseService {
 - Migrations at `src/db/migrations/` with timestamp prefix
 - Snake case in DB, camelCase in TypeScript
 - Singleton Drizzle instance at `src/db/db.ts`
+- Every public table has RLS on with no policies, and `anon`/`authenticated` have no grants. The app connects as the table owner, so it is unaffected. New tables must call `.enableRLS()` on the `pgTable`. Never `GRANT` to API roles, add policies, or `DISABLE`/`FORCE` RLS without asking. `tests/integration/db-security.test.ts` guards this.
 
 ### State Management
 
