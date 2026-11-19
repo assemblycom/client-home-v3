@@ -20,4 +20,4 @@ export const conditions = pgTable(
     deletedAt: timestamp({ withTimezone: true, mode: 'date' }),
   },
   (t) => [index('idx_conditions__segment_id').on(t.segmentId)],
-)
+).enableRLS()

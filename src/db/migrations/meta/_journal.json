@@ -92,6 +92,13 @@
       "when": 1786337141828,
       "tag": "20260810044541_update-default-client-home-subheading",
       "breakpoints": false
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1795068345817,
+      "tag": "20261119060545_enable-rls",
+      "breakpoints": false
     }
   ]
 }

@@ -37,4 +37,4 @@ export const actions = pgTable(
     ...timestamps,
   },
   (t) => [index('idx_actions__workspace_id').on(t.workspaceId), unique('uq_actions__settings_id').on(t.settingsId)],
-)
+).enableRLS()

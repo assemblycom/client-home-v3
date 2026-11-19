@@ -22,4 +22,4 @@ export const segmentConfigs = pgTable(
     ...timestamps,
   },
   (t) => [uniqueIndex('uq_segment_configs__workspace_id').on(t.workspaceId)],
-)
+).enableRLS()

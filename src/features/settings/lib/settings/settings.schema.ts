@@ -48,7 +48,7 @@ export const settings = pgTable(
     index('idx_settings__workspace_id').on(t.workspaceId),
     unique('uq_settings__workspace_id_segment_id').on(t.workspaceId, t.segmentId),
   ],
-)
+).enableRLS()
 
 export const SettingsInsertPayloadSchema = createInsertSchema(settings)
 export type SettingsInsertPayload = z.infer<typeof SettingsInsertPayloadSchema>

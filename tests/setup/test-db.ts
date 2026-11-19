@@ -13,6 +13,7 @@ import { media, mediaTypeEnum } from '@media/lib/media.schema'
 import { conditions } from '@segments/lib/conditions/conditions.schema'
 import { customFieldEntityTypeEnum, segmentConfigs } from '@segments/lib/segment-config/segment-config.schema'
 import { segments } from '@segments/lib/segments/segments.schema'
+import { actions } from '@settings/lib/actions/actions.schema'
 import { settings } from '@settings/lib/settings/settings.schema'
 import { drizzle } from 'drizzle-orm/pglite'
 import { schema } from '@/db/schema'
@@ -25,7 +26,16 @@ export const TEST_WORKSPACE_ID = 'ws-test-001'
 
 export type TestDB = ReturnType<typeof drizzle<typeof schema>>
 
-const tableSchemas = { media, mediaTypeEnum, segments, conditions, settings, segmentConfigs, customFieldEntityTypeEnum }
+const tableSchemas = {
+  media,
+  mediaTypeEnum,
+  segments,
+  conditions,
+  settings,
+  actions,
+  segmentConfigs,
+  customFieldEntityTypeEnum,
+}
 
 export const createTestDb = async (): Promise<{ db: TestDB; client: PGlite }> => {
   const client = new PGlite()
